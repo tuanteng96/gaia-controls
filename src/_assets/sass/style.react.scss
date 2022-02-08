@@ -1,0 +1,18 @@
+//
+// Main Styles
+//
+////////////////////////////////////////////////////////////////
+///////////// DO NOT MODIFY BELOW INCLUDE ORDER ////////////////
+////////////////////////////////////////////////////////////////
+// 1: Initialize
+@import "init";
+// 2: Bootstrap framework includes
+@import "~bootstrap/scss/bootstrap";
+// 3: Components
+@import "./components/utilities",
+"./components/button",
+"./components/modal";
+// 4: Plugins
+@import "./vendors/plugins/perfect-scrollbar";
+// 5: Layout
+@import "./layout/init";
