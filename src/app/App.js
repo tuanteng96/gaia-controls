@@ -1,4 +1,5 @@
 import React from "react";
+import { ToastContainer } from "react-bootstrap";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
@@ -14,6 +15,7 @@ function App({ store, persistor, basename }) {
         <BrowserRouter basename={basename}>
           <AuthInit>
             <RoutesPage />
+            <ToastContainer />
           </AuthInit>
         </BrowserRouter>
       </PersistGate>

@@ -49,7 +49,6 @@ function BaseTablesCustom({
           return (
             <>
               <BootstrapTable
-                bootstrap4
                 wrapperClasses={`table-responsive ${className}`}
                 rowClasses="text-nowrap"
                 classes={classes}

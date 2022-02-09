@@ -451,6 +451,8 @@ $table-bg: transparent !default;
 $table-accent-bg: transparent !default;
 $table-th-font-weight: null !default;
 $table-striped-color: $table-color !default;
+$table-head-font-size: 1rem !default; // Custom variable
+$table-head-font-weight: 600 !default; // Custom variable
 $table-striped-bg-factor: .05 !default;
 $table-striped-bg: rgba($black, $table-striped-bg-factor) !default;
 $table-active-color: $table-color !default;
@@ -466,6 +468,13 @@ $table-striped-order: odd !default;
 $table-group-separator-color: currentColor !default;
 $table-caption-color: $text-muted !default;
 $table-bg-scale: -80% !default;
+$table-head-bg: $gray-100 !default; // Custom variable
+$table-compact-head-font-size: 0.9rem !default; // Custom variable
+$table-compact-head-color: $text-muted !default; // Custom variable
+$table-compact-head-text-transform: uppercase !default; // Custom variable
+$table-compact-head-font-weight: 600 !default; // Custom variable
+$table-compact-head-font-weight: 600 !default; // Custom variable
+$table-compact-head-letter-spacing: 0.1rem !default; // Custom variable
 // scss-docs-end table-variables
 // scss-docs-start table-loop
 $table-variants: ( "primary": shift-color($primary, $table-bg-scale), "secondary": shift-color($secondary, $table-bg-scale), "success": shift-color($success, $table-bg-scale), "info": shift-color($info, $table-bg-scale), "warning": shift-color($warning, $table-bg-scale), "danger": shift-color($danger, $table-bg-scale), "light": $light, "dark": $dark, ) !default;
@@ -840,6 +849,11 @@ $dropdown-border-width: $border-width !default;
 $dropdown-inner-border-radius: subtract($dropdown-border-radius,
 $dropdown-border-width) !default;
 $dropdown-divider-bg: $dropdown-border-color !default;
+$dropdown-menu-widths: ( sm: 175px,
+md: 250px,
+lg: 350px,
+xl: 400px,
+xxl: 600px); // Custom variable
 $dropdown-divider-margin-y: $spacer * .5 !default;
 $dropdown-box-shadow: $box-shadow !default;
 $dropdown-link-color: $gray-900 !default;

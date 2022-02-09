@@ -60,7 +60,7 @@ function Lesson(props) {
                 Thêm mới
               </button>
             </div>
-            <div className="panel-body">
+            <div className="panel-body overflow-visible">
               <BaseTablesCustom
                 data={[{ Id: 1, Name: "abc" }]}
                 options={{
@@ -100,6 +100,7 @@ function Lesson(props) {
                 loading={false}
                 keyField="Id"
                 className="table-responsive-attr"
+                classes="table table-bordered"
               />
             </div>
           </div>
