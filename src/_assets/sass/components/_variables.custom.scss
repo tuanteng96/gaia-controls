@@ -22,3 +22,5 @@ $transition: all 0.15s ease !default; // Custom variable
 $transition-link: color 0.15s ease;
 // Btn 
 $btn-icon-size-xs: 24px !default; //custom parameter
+// Spinner
+$spinner-config: ( size: 1.5rem, size-sm: 1.25rem, size-lg: 2rem) !default;

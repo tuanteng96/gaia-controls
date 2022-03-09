@@ -15,7 +15,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     padding: 2rem;
     @include border-radius($border-radius);
     .swal2-icon {
-        margin: 2rem 0 0rem 0;
+        margin: 2rem auto 0rem auto;
     }
     .swal2-title {
         font-weight: 800;

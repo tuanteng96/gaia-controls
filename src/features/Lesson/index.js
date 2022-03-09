@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
+import ModalLesson from "./components/Modal/ModalLesson";
+import Sidebar from "./components/Sidebar/Sidebar";
 
 function Lesson(props) {
   const [filters, setFilters] = useState({
@@ -8,6 +10,15 @@ function Lesson(props) {
     Ps: 10,
   });
   const [PageTotal, setPageTotal] = useState(1);
+  const [ModalAdd, setModalAdd] = useState(false);
+
+  const onOpenModal = () => {
+    setModalAdd(true);
+  };
+
+  const onHideModal = () => {
+    setModalAdd(false);
+  };
 
   return (
     <div className="container-fluid py-3">
@@ -22,41 +33,16 @@ function Lesson(props) {
       </div>
       <div className="row">
         <div className="col-lg-4">
-          <div className="hpanel hgreen">
-            <div className="panel-heading hbuilt">
-              Nhóm bài giảng
-              <button className="btn btn-sm btn-success position-absolute top-9px right-9px">
-                Thêm mới
-              </button>
-            </div>
-            <div className="panel-body">
-              <div className="dd tree">
-                <div className="dd-list">
-                  {Array(6)
-                    .fill()
-                    .map((item, index) => (
-                      <div className="dd-item" key={index}>
-                        <div className="dd-handle font-weight-500">
-                          <span className="label h-bg-navy-blue">
-                            <i className="fal fa-layer-group"></i>
-                          </span>
-                          Mỹ phẩm {index + 1}
-                          <button className="btn btn-sm btn-success position-absolute top-9px right-9px">
-                            <i className="fal fa-plus pe-0 icon-sm"></i>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <Sidebar />
         </div>
         <div className="col-lg-8">
           <div className="hpanel hgreen">
             <div className="panel-heading hbuilt">
               Danh sách bài giảng
-              <button className="btn btn-sm btn-success position-absolute top-9px right-9px">
+              <button
+                className="btn btn-sm btn-success position-absolute top-9px right-9px"
+                onClick={() => onOpenModal()}
+              >
                 Thêm mới
               </button>
             </div>
@@ -105,6 +91,7 @@ function Lesson(props) {
             </div>
           </div>
         </div>
+        <ModalLesson show={ModalAdd} onHide={onHideModal} />
       </div>
     </div>
   );

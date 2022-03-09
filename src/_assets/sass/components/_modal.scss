@@ -2,11 +2,16 @@
 // Modal
 //
 .modal {
+    &.show {
+        opacity: 1 !important;
+    }
     &.modal-ckeditor {
         // transition: none !important;
     }
     // Header
     .modal-header {
+        border-bottom: 1px solid #EBEDF3;
+        background: $white;
         align-items: center;
         .modal-title {
             font-weight: $modal-title-font-weight;
@@ -17,6 +22,9 @@
                 font-size: $modal-title-small-font-size;
                 color: $modal-title-small-color;
             }
+        }
+        .btn-close {
+            box-shadow: none !important;
         }
         .close {
             outline: none !important;
@@ -50,6 +58,19 @@
                     display: block;
                 }
             }
+        }
+    }
+    .modal-content {
+        -webkit-box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 10%);
+        box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 10%);
+        border: 0;
+    }
+    .modal-footer {
+        border-top: 1px solid #EBEDF3;
+        background: $white;
+        padding: 1.5rem;
+        >* {
+            margin: inherit;
         }
     }
     // Sticky Modal
