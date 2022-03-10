@@ -12,7 +12,7 @@ function App({ store, persistor, basename }) {
     /* Provide Redux store */
     <Provider store={store}>
       <PersistGate loading={<LayoutSplashScreen />} persistor={persistor}>
-        <BrowserRouter basename={basename}>
+        <BrowserRouter basename={"/admin/r"}>
           <AuthInit>
             <RoutesPage />
           </AuthInit>

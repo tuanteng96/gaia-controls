@@ -36,6 +36,7 @@ function BaseTablesCustom({
   className,
   classes,
   keyField,
+  textDataNull,
 }) {
   const onTableChange = (type, { page, sizePerPage }) => {
     //console.log(page);
@@ -62,7 +63,7 @@ function BaseTablesCustom({
                   loading ? (
                     <LoaderTable text="Đang tải dữ liệu ..." />
                   ) : (
-                    <NoData />
+                    <NoData text={textDataNull} />
                   )
                 }
                 {...paginationTableProps}

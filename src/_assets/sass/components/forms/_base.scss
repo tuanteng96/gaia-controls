@@ -109,6 +109,30 @@
     width: 100%;
     height: calc(1.5em + 1.3rem + 2px);
     margin-bottom: 0;
+    &.custom-file-show {
+        .custom-file-current {
+            display: flex;
+        }
+        .custom-file-label {
+            span {
+                opacity: 0;
+            }
+        }
+    }
+    &.loading {
+        pointer-events: none;
+        .custom-file-loading {
+            display: flex;
+        }
+        .custom-file-current {
+            display: none;
+        }
+        .custom-file-label {
+            span {
+                opacity: 0;
+            }
+        }
+    }
     .custom-file-input {
         position: relative;
         z-index: 2;
@@ -142,6 +166,7 @@
             bottom: 0;
             z-index: 3;
             display: block;
+            width: 75px;
             height: calc(1.5em + 1.3rem);
             padding: 0.65rem 1rem;
             line-height: 1.5;
@@ -151,6 +176,39 @@
             border-left: inherit;
             border-radius: 0 0.42rem 0.42rem 0;
         }
+    }
+    .custom-file-current {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        padding: 10px;
+        width: calc(100% - 75px);
+        display: none;
+        cursor: pointer;
+        span {
+            width: calc(100% - 25px);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        i {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+    .custom-file-loading {
+        position: absolute;
+        top: 0;
+        height: 100% !important;
+        z-index: 2;
+        width: calc(100% - 75px) !important;
+        display: none;
+        align-items: center;
+        padding-left: 12px;
+        font-size: 13px;
     }
 }
 

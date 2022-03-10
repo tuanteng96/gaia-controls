@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Button, Modal } from "react-bootstrap";
 import * as Yup from "yup";
@@ -10,17 +10,31 @@ ModalCategories.propTypes = {
   handleClose: PropTypes.func,
 };
 
-const initialValues = {
-  Name: "",
-  Count: "",
+const initialValue = {
+  Title: "",
+  Order: "",
 };
 
 const categoriesSchema = Yup.object().shape({
-  Name: Yup.string().required("Vui lòng nhập tên danh mục."),
+  Title: Yup.string().required("Vui lòng nhập tên danh mục."),
 });
 
-function ModalCategories({ show, onHide, onAddEdit }) {
-  
+function ModalCategories({ show, onHide, onAddEdit, loading, defaultValues }) {
+  const [initialValues, setInitialValues] = useState(initialValue);
+
+  useEffect(() => {
+    if (show && defaultValues.ID) {
+      setInitialValues((prev) => ({
+        ...prev,
+        ID: defaultValues.ID,
+        Title: defaultValues.Title,
+        Order: defaultValues.Order,
+      }));
+    } else {
+      setInitialValues(initialValue);
+    }
+  }, [defaultValues, show]);
+
   return (
     <Modal show={show} onHide={onHide} dialogClassName="modal-max2-sm">
       <Formik
@@ -41,7 +55,9 @@ function ModalCategories({ show, onHide, onAddEdit }) {
           return (
             <Form>
               <Modal.Header closeButton>
-                <Modal.Title>Thêm mới nhóm</Modal.Title>
+                <Modal.Title>
+                  {!values.ID ? "Thêm mới nhóm" : "Chỉnh sửa nhóm"}
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <div className="form-group">
@@ -51,14 +67,14 @@ function ModalCategories({ show, onHide, onAddEdit }) {
                   <input
                     type="text"
                     className={`form-control ${
-                      errors.Name && touched.Name
+                      errors.Title && touched.Title
                         ? "is-invalid solid-invalid"
                         : ""
                     }`}
-                    name="Name"
+                    name="Title"
                     placeholder="Nhập tên nhóm"
                     autoComplete="off"
-                    value={values.Name}
+                    value={values.Title}
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
@@ -69,15 +85,15 @@ function ModalCategories({ show, onHide, onAddEdit }) {
                     type="text"
                     autoComplete="off"
                     allowNegative={false}
-                    name={`Count`}
+                    name="Order"
                     placeholder={"Nhập vị trí"}
                     className={`form-control`}
                     isNumericString={true}
                     //thousandSeparator={true}
-                    value={values.Count}
+                    value={values.Order}
                     onValueChange={(val) => {
                       setFieldValue(
-                        `Count`,
+                        `Order`,
                         val.floatValue ? val.floatValue : val.value
                       );
                     }}
@@ -90,11 +106,16 @@ function ModalCategories({ show, onHide, onAddEdit }) {
                   Đóng
                 </Button>
                 <Button
+                  type="submit"
                   variant="primary"
-                  className="btn btn-primary spinner spinner-white spinner-right w-auto h-auto"
-                  disabled={true}
+                  className={`btn btn-primary ${
+                    loading
+                      ? "spinner spinner-white spinner-right w-auto h-auto"
+                      : ""
+                  }`}
+                  disabled={loading}
                 >
-                  Thêm mới
+                  {!values.ID ? "Thêm mới" : "Lưu thay đổi"}
                 </Button>
               </Modal.Footer>
             </Form>

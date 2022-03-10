@@ -791,6 +791,18 @@ $zindex-tooltip: 1080 !default;
 // scss-docs-end zindex-stack
 // Navs
 // scss-docs-start nav-variables
+$nav-link-px: 1.5rem;
+$nav-link-py: 0.75rem;
+$nav-btn-px: 1rem;
+$nav-section-py: 0.5rem;
+$nav-elem-space: 0.25rem;
+$nav-link-bg-hover: $gray-100;
+$nav-link-bg-active: $gray-200;
+$nav-header-py: 1rem;
+$nav-footer-py: 1rem;
+$nav-font-size: 1rem;
+$nav-icon-size: 1.25rem;
+$nav-icon-width: 2rem;
 $nav-link-padding-y: .5rem !default;
 $nav-link-padding-x: 1rem !default;
 $nav-link-font-size: null !default;
@@ -1013,6 +1025,7 @@ $tooltip-margin: 0 !default;
 $tooltip-arrow-width: .8rem !default;
 $tooltip-arrow-height: .4rem !default;
 $tooltip-arrow-color: $tooltip-bg !default;
+$tooltip-box-shadow: $box-shadow !default; // Custom variable
 // scss-docs-end tooltip-variables
 // Form tooltips must come after regular tooltips
 // scss-docs-start tooltip-feedback-variables
