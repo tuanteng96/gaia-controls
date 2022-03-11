@@ -4,10 +4,8 @@
             text-decoration: none;
             color: #333;
             &.active {
-                .dd-item {
-                    .dd-handle {
-                        background: #f0f0f0;
-                    }
+                .dd-handle {
+                    background: #f0f0f0;
                 }
             }
         }

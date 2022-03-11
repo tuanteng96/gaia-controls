@@ -117,7 +117,8 @@ function Sidebar({ openModal }) {
       <div className="panel-heading hbuilt">
         Nhóm bài giảng
         <button
-          className="btn btn-sm btn-success position-absolute top-9px right-9px"
+          type="button"
+          className="btn btn-sm btn-fix btn-success position-absolute top-9px right-9px"
           onClick={onOpenModal}
         >
           Thêm mới
@@ -130,47 +131,50 @@ function Sidebar({ openModal }) {
               {listCate && listCate.length > 0 ? (
                 listCate &&
                 listCate.map((item, index) => (
-                  <NavLink
-                    to={`/admin/r/bai-giang/${item.ID}`}
-                    className={(links) => (links.isActive ? "active" : "")}
-                    key={index}
-                  >
-                    <div className="dd-item">
+                  <div className="dd-item" key={index}>
+                    <NavLink
+                      to={`/bai-giang/${item.ID}`}
+                      className={(links) => (links.isActive ? "active" : "")}
+                      key={index}
+                    >
                       <div className="dd-handle font-weight-500">
                         <span className="label h-bg-navy-blue">
                           <i className="fal fa-layer-group"></i>
                         </span>
                         {item.Title}
-                        <div className="position-absolute top-9px right-9px">
-                          <button
-                            className="btn btn-sm btn-success w-24px h-24px"
-                            onClick={() =>
-                              openModal({
-                                Type: {
-                                  label: item.Title,
-                                  value: item.ID,
-                                },
-                              })
-                            }
-                          >
-                            <i className="fal fa-plus pe-0 icon-sm"></i>
-                          </button>
-                          <button
-                            className="btn btn-sm btn-primary ms-2 w-24px h-24px"
-                            onClick={() => onOpenModal(item)}
-                          >
-                            <i className="fas fa-pen icon-sm pe-0"></i>
-                          </button>
-                          <button
-                            className="btn btn-sm btn-danger ms-2 w-24px h-24px"
-                            onClick={() => onDelete(item)}
-                          >
-                            <i className="fas fa-trash icon-sm pe-0"></i>
-                          </button>
-                        </div>
                       </div>
+                    </NavLink>
+                    <div className="position-absolute top-9px right-9px">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-success w-24px h-24px"
+                        onClick={() =>
+                          openModal({
+                            Type: {
+                              label: item.Title,
+                              value: item.ID,
+                            },
+                          })
+                        }
+                      >
+                        <i className="fal fa-plus pe-0 icon-sm"></i>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary ms-2 w-24px h-24px"
+                        onClick={() => onOpenModal(item)}
+                      >
+                        <i className="fas fa-pen icon-sm pe-0"></i>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger ms-2 w-24px h-24px"
+                        onClick={() => onDelete(item)}
+                      >
+                        <i className="fas fa-trash icon-sm pe-0"></i>
+                      </button>
                     </div>
-                  </NavLink>
+                  </div>
                 ))
               ) : (
                 <div>Chưa có nhóm bài giảng</div>

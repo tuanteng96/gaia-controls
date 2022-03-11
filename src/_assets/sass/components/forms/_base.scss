@@ -33,7 +33,9 @@
 // Form control
 .form-control {
     // Readonly state
-    height: 40px !important;
+    &:not(textarea) {
+        height: 40px !important;
+    }
     &[readonly] {
         background-color: $input-readonly-bg;
     }

@@ -244,7 +244,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={onHide}>
+                <Button type="button" variant="secondary" onClick={onHide}>
                   Đóng
                 </Button>
                 <Button

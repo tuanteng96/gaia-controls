@@ -206,6 +206,10 @@ $text in $text-decoration-config {
     pointer-events: none;
 }
 
+.text-underline {
+    text-decoration: underline;
+}
+
 // Link transition
 a {
     transition: $transition-link;

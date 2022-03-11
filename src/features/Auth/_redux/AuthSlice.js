@@ -2,12 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 import persistReducer from "redux-persist/es/persistReducer";
 import storage from "redux-persist/lib/storage";
 
-const userInfo = localStorage.getItem("_info_review") ? JSON.parse(localStorage.getItem("_info_review")) : {};
+const tokenFake = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNTY4IiwibmJmIjoxNjQ2OTcxMzM2LCJleHAiOjE2Nzg1MDczMzYsImlhdCI6MTY0Njk3MTMzNn0.r1C3GMbcDZhnC3BanFOHBYI92MFlbi_wWZQl1zuI6QQ';
 
 const auth = createSlice({
     name: "auth",
     initialState: {
-        user: userInfo
+        Token: window.Token || tokenFake
     },
     reducers: {
         setUser: (state, action) => {

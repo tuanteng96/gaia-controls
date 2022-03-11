@@ -102,7 +102,7 @@ function ModalCategories({ show, onHide, onAddEdit, loading, defaultValues }) {
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={onHide}>
+                <Button type="button" variant="secondary" onClick={onHide}>
                   Đóng
                 </Button>
                 <Button

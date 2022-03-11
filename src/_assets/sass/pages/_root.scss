@@ -1,0 +1,24 @@
+a {
+    text-decoration: none;
+}
+
+.dropdown-toggle:after {
+    display: none !important;
+}
+
+#side-menu li a {
+    font-size: 13px !important;
+}
+
+.collapse.in {
+    display: block !important;
+}
+
+#root {
+    .btn-sm {
+        padding: inherit !important;
+    }
+    .btn-sm.btn-fix {
+        padding: 2px 8px !important;
+    }
+}

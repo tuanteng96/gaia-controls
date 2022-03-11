@@ -1,41 +1,40 @@
-import React, { useEffect, useRef, useState } from "react";
-import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
-import ModalLesson from "./components/Modal/ModalLesson";
-import Sidebar from "./components/Sidebar/Sidebar";
-import LessonCrud from "./_redux/LessonCrud";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { toAbsoluteUrl } from "../../helpers/AssetsHelpers";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { isDevelopment } from "../../helpers/DevelopmentHelpers";
 import { getRequestParams } from "../../helpers/ParamsHelpers";
+import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
+import ModalSchool from "./components/Modal/ModalSchool";
+import ModalContacts from "./components/Modal/ModalContacts";
+import SchoolManageCrud from "./_redux/SchoolManageCrud";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
-function Lesson(props) {
-  const { id } = useParams();
+function SchoolManage(props) {
   const [filters, setFilters] = useState({
-    Type: 662,
     _pi: 1,
     _ps: 10,
     _key: "",
     _orders: {
-      RenewDate: true,
+      Id: true,
     },
   });
-  const [ListLesson, setListLesson] = useState([]);
+  const [ListSchool, setListSchool] = useState([]);
   const [PageTotal, setPageTotal] = useState(0);
-  const [ModalAdd, setModalAdd] = useState(false);
+  const [VisibleModal, setVisibleModal] = useState({
+    School: false,
+  });
   const [loading, setLoading] = useState(false);
-  const [btnLoading, setBtnLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState({
+    School: false,
+    Contacts: false,
+  });
   const [defaultValues, setDefaultValues] = useState({});
 
-  const typingTimeoutRef = useRef(null);
-
-  const retrieveLesson = (callback) => {
+  const retrieveSchool = (callback) => {
     !loading && setLoading(true);
     const params = getRequestParams(filters);
-    LessonCrud.getListLesson(params)
+    SchoolManageCrud.getAllSchool(params)
       .then(({ list, pi, ps, total }) => {
-        setListLesson(list);
+        setListSchool(list);
         setPageTotal(total);
         setLoading(false);
         callback && callback();
@@ -44,39 +43,55 @@ function Lesson(props) {
   };
 
   useEffect(() => {
-    if (id) {
-      setFilters((prevState) => ({ ...prevState, Type: id }));
-    }
-  }, [id]);
-
-  useEffect(() => {
-    retrieveLesson();
+    retrieveSchool();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
-  const onOpenModal = (item = {}) => {
+  const openModalSchool = (item = {}) => {
     setDefaultValues(item);
-    setModalAdd(true);
+    setVisibleModal((prevState) => ({ ...prevState, School: true }));
+  };
+  const openModalContacts = (item = {}) => {
+    setDefaultValues(item);
+    setVisibleModal((prevState) => ({ ...prevState, Contacts: true }));
   };
 
-  const onHideModal = () => {
+  const hideModalSchool = () => {
     setDefaultValues({});
-    setModalAdd(false);
+    setVisibleModal((prevState) => ({ ...prevState, School: false }));
+  };
+
+  const hideModalContacts = () => {
+    setDefaultValues({});
+    setVisibleModal((prevState) => ({ ...prevState, Contacts: false }));
   };
 
   const onAddEdit = (values) => {
-    setBtnLoading(true);
     const objPost = {
-      ...values,
-      FileMaHoa: values.FileMaHoa ? values.FileMaHoa.value : "",
-      LinkOnline: values.LinkOnline ? values.LinkOnline.value : "",
-      Type: values.Type ? values.Type.value : "",
+      Title: values.Title,
+      Phone: values.Phone,
+      Email: values.Email,
+      Address: values.Address,
+      Contacts: [],
     };
-    LessonCrud.addEditLesson(objPost)
-      .then(() => {
-        retrieveLesson(() => {
-          onHideModal();
-          setBtnLoading(false);
+    if (values.ID) {
+      objPost.ID = values.ID;
+    }
+    if (values.City) {
+      objPost.PID = values.City.value;
+      objPost.PTitle = values.City.label;
+    }
+    if (values.District) {
+      objPost.DID = values.District.value;
+      objPost.DTitle = values.District.label;
+    }
+    objPost.Levels = values.Levels ? [values.Levels] : [];
+    setBtnLoading((prevState) => ({ ...prevState, School: true }));
+    SchoolManageCrud.addEditSchool(objPost)
+      .then((response) => {
+        retrieveSchool(() => {
+          hideModalSchool();
+          setBtnLoading((prevState) => ({ ...prevState, School: false }));
           toast.success(
             values.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
             {
@@ -95,8 +110,8 @@ function Lesson(props) {
       deleteId: item.ID,
     };
     Swal.fire({
-      title: "Bạn muốn xóa bài giảng ?",
-      text: "Bạn có chắc chắn muốn xóa bài giảng này không ?",
+      title: "Bạn muốn xóa trường ?",
+      text: "Bạn có chắc chắn muốn xóa trường này không ?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -107,9 +122,9 @@ function Lesson(props) {
       allowOutsideClick: () => !Swal.isLoading(),
       preConfirm: () => {
         return new Promise((resolve, reject) => {
-          LessonCrud.deleteLesson(dataPost)
+          SchoolManageCrud.deleteSchool(dataPost)
             .then(() => {
-              retrieveLesson(() => {
+              retrieveSchool(() => {
                 setTimeout(() => {
                   resolve();
                 }, 300);
@@ -120,28 +135,12 @@ function Lesson(props) {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        toast.success("Xóa bài giảng thành công !", {
+        toast.success("Xóa trường thành công !", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 1500,
         });
       }
     });
-  };
-
-  const onChangeSearch = (value) => {
-    setLoading(true);
-    setListLesson([]);
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    typingTimeoutRef.current = setTimeout(() => {
-      if (value) {
-        setFilters({ ...filters, _Pi: 1, _key: value, Type: 662 });
-      }
-      else {
-        setFilters({ ...filters, _Pi: 1, _key: value, Type: id });
-      }
-    }, 500);
   };
 
   return (
@@ -150,23 +149,20 @@ function Lesson(props) {
         <div className="panel-body">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-uppercase font-size-h3 mb-0">
-              Quản lý nhóm bài giảng / Bài giảng
+              Quản lý trường lớp
             </h2>
           </div>
         </div>
       </div>
       <div className="row">
-        <div className="col-lg-4">
-          <Sidebar openModal={onOpenModal} />
-        </div>
-        <div className="col-lg-8">
+        <div className="col-lg-12">
           <div className="hpanel hgreen">
             <div className="panel-heading hbuilt">
-              Danh sách bài giảng
+              Danh sách trường lớp
               <button
                 type="button"
                 className="btn btn-sm btn-fix btn-success position-absolute top-9px right-9px"
-                onClick={() => onOpenModal()}
+                onClick={openModalSchool}
               >
                 Thêm mới
               </button>
@@ -176,15 +172,15 @@ function Lesson(props) {
                 <input
                   type="text"
                   className="form-control pr-50px"
-                  placeholder="Nhập tên bài giảng ..."
-                  onChange={(e) => onChangeSearch(e.target.value)}
+                  placeholder="Nhập tên trường ..."
+                  //onChange={(e) => onChangeSearch(e.target.value)}
                 />
                 <div className="position-absolute top-12px right-15px pointer-events-none">
                   <i className="far fa-search"></i>
                 </div>
               </div>
               <BaseTablesCustom
-                data={ListLesson}
+                data={ListSchool}
                 textDataNull="Không có bài giảng."
                 options={{
                   custom: true,
@@ -193,12 +189,12 @@ function Lesson(props) {
                   sizePerPage: filters._ps,
                   alwaysShowAllBtns: true,
                   onSizePerPageChange: (sizePerPage) => {
-                    setListLesson([]);
+                    setListSchool([]);
                     const Ps = sizePerPage;
                     setFilters({ ...filters, _ps: Ps });
                   },
                   onPageChange: (page) => {
-                    setListLesson([]);
+                    setListSchool([]);
                     const Pi = page;
                     setFilters({ ...filters, _pi: Pi });
                   },
@@ -221,114 +217,93 @@ function Lesson(props) {
                   },
                   {
                     dataField: "Title",
-                    text: "Tên bài giảng",
+                    text: "Tên trường",
                     headerAlign: "center",
                     style: { textAlign: "center" },
                     attrs: { "data-title": "Tên" },
+                    headerStyle: () => {
+                      return { minWidth: "200px", width: "200px" };
+                    },
+                  },
+                  {
+                    dataField: "Email",
+                    text: "TEL / Email",
+                    headerAlign: "center",
+                    style: { textAlign: "center" },
+                    attrs: { "data-title": "TEL / Email" },
+                    formatter: (cell, row) => (
+                      <div>
+                        <div>{row.Phone}</div>
+                        <div>{row.Email}</div>
+                      </div>
+                    ),
+                    headerStyle: () => {
+                      return { minWidth: "200px", width: "200px" };
+                    },
+                  },
+                  {
+                    dataField: "LevelJson",
+                    text: "Cấp",
+                    headerAlign: "center",
+                    style: { textAlign: "center" },
+                    attrs: { "data-title": "Cấp" },
+                    formatter: (cell, row) => (
+                      <div>
+                        {row.LevelJson &&
+                          JSON.parse(row.LevelJson) &&
+                          JSON.parse(row.LevelJson)[0]?.Title}
+                      </div>
+                    ),
+                    headerStyle: () => {
+                      return { minWidth: "100px", width: "100px" };
+                    },
+                  },
+                  {
+                    dataField: "Address",
+                    text: "Địa chỉ",
+                    headerAlign: "center",
+                    style: { textAlign: "center" },
+                    attrs: { "data-title": "Địa chỉ" },
+                    formatter: (cell, row) => (
+                      <div>
+                        <div>{row.Address}</div>
+                        <div>
+                          Tỉnh : {row.PTitle ? row.PTitle : "Chưa có tỉnh"}
+                        </div>
+                        <div>
+                          Huyện : {row.DTitle ? row.DTitle : "Chưa có huyện"}
+                        </div>
+                      </div>
+                    ),
                     headerStyle: () => {
                       return { minWidth: "250px", width: "250px" };
                     },
                   },
                   {
-                    dataField: "DynamicID",
-                    text: "Mã",
+                    dataField: "Contacts",
+                    text: "Người liên hệ",
                     headerAlign: "center",
                     style: { textAlign: "center" },
-                    attrs: { "data-title": "Mã" },
-                    headerStyle: () => {
-                      return { minWidth: "100%", width: "85px" };
-                    },
-                  },
-                  {
-                    dataField: "TypeName",
-                    text: "Nhóm",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
-                    attrs: { "data-title": "Nhóm" },
-                  },
-                  {
-                    dataField: "LinkOnline",
-                    text: "LinkOnline",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
-                    attrs: { "data-title": "LinkOnline" },
+                    attrs: { "data-title": "Người liên hệ" },
                     formatter: (cell, row) => (
-                      <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(
-                            `/upload/image/${row.LinkOnline}`
-                          )}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block white-space-pw"
-                        >
-                          {row.LinkOnline}
-                        </a>
+                      <div
+                        className="text-primary text-underline cursor-pointer"
+                        onClick={() => openModalContacts(row)}
+                      >
+                        <span className="font-weight-border">
+                          [{row.Contacts.length}]
+                        </span>{" "}
+                        liên hệ
                       </div>
                     ),
                   },
                   {
-                    dataField: "GiaoAnPdf",
-                    text: "Giáo án",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
-                    attrs: { "data-title": "Giáo án" },
-                    formatter: (cell, row) => (
-                      <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(`/upload/image/${row.GiaoAnPdf}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block white-space-pw"
-                        >
-                          {row.GiaoAnPdf}
-                        </a>
-                      </div>
-                    ),
-                  },
-                  {
-                    dataField: "FileMaHoa",
-                    text: "File Mã hóa",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
-                    attrs: { "data-title": "File Mã hóa" },
-                    formatter: (cell, row) => (
-                      <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(`/upload/image/${row.FileMaHoa}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block white-space-pw"
-                        >
-                          {row.FileMaHoa}
-                        </a>
-                      </div>
-                    ),
-                  },
-                  {
-                    dataField: "Thumbnail",
-                    text: "Hình ảnh",
+                    dataField: "Class",
+                    text: "Lớp",
                     headerAlign: "center",
                     style: { textAlign: "center" },
                     attrs: { "data-title": "Hình ảnh" },
-                    formatter: (cell, row) => (
-                      <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(`/upload/image/${row.Thumbnail}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block"
-                        >
-                          <img
-                            className="w-100"
-                            src={toAbsoluteUrl(
-                              `/upload/image/${row.Thumbnail}`
-                            )}
-                            alt={row.Thumbnail}
-                          />
-                        </a>
-                      </div>
-                    ),
+                    formatter: (cell, row) => <div className="w-100px"></div>,
                     headerStyle: () => {
                       return { minWidth: "100%", width: "115px" };
                     },
@@ -342,7 +317,7 @@ function Lesson(props) {
                           <button
                             type="button"
                             className="btn btn-sm btn-primary w-24px h-24px"
-                            onClick={() => onOpenModal(row)}
+                            onClick={() => openModalSchool(row)}
                           >
                             <i
                               className="fas fa-pen icon-sm pe-0"
@@ -364,7 +339,7 @@ function Lesson(props) {
                     },
                     headerAlign: "center",
                     headerStyle: () => {
-                      return { minWidth: "100%", width: "85px" };
+                      return { minWidth: "85px", width: "85px" };
                     },
                     attrs: { "data-action": "true" },
                   },
@@ -377,16 +352,21 @@ function Lesson(props) {
             </div>
           </div>
         </div>
-        <ModalLesson
-          show={ModalAdd}
-          onHide={onHideModal}
-          defaultValues={defaultValues}
-          onAddEdit={onAddEdit}
-          btnLoading={btnLoading}
-        />
       </div>
+      <ModalSchool
+        show={VisibleModal.School}
+        onHide={hideModalSchool}
+        onAddEdit={onAddEdit}
+        btnLoading={btnLoading.School}
+        defaultValues={defaultValues}
+      />
+      <ModalContacts
+        defaultValues={defaultValues}
+        show={VisibleModal.Contacts}
+        onHide={hideModalContacts}
+      />
     </div>
   );
 }
 
-export default Lesson;
+export default SchoolManage;
