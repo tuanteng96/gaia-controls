@@ -61,7 +61,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
 
   useEffect(() => {
     setArrCate((prev) =>
-      listCate.map((item) => ({ ...item, value: item.ID, label: item.Title }))
+      listCate ? listCate.map((item) => ({ ...item, value: item.ID, label: item.Title })) : []
     );
   }, [listCate]);
 

@@ -6,6 +6,7 @@ const GET_LEVEL_URL = "/api/v3/content?cmd=all&type=WowLevelEnt";
 const GET_ALL_SCHOOL_URL = "/api/v3/content?cmd=pgs&type=WowSchoolEnt";
 const ADD_EDIT_SCHOOL_URL = "/api/v3/content?cmd=edit&type=WowSchoolEnt";
 const DELETE_SCHOOL_URL = "/api/v3/content?cmd=delete&type=WowSchoolEnt";
+const ADD_EDIT_CLASS_URL = "/api/v3/content?cmd=edits&type=WowClassEnt";
 
 const getAllCity = (data) => {
     return axiosClient.post(GET_ALL_CITY_URL, JSON.stringify(data));
@@ -25,6 +26,9 @@ const addEditSchool = (data) => {
 const deleteSchool = (data) => {
     return axiosClient.post(DELETE_SCHOOL_URL, JSON.stringify(data));
 };
+const addEditClass = (data) => {
+    return axiosClient.post(ADD_EDIT_CLASS_URL, JSON.stringify(data));
+}
 
 const SchoolManageCrud = {
     getAllCity,
@@ -32,6 +36,7 @@ const SchoolManageCrud = {
     getAllLevel,
     addEditSchool,
     getAllSchool,
-    deleteSchool
+    deleteSchool,
+    addEditClass
 };
 export default SchoolManageCrud;

@@ -113,7 +113,10 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
       clearTimeout(typingTimeoutRef.current);
     }
     typingTimeoutRef.current = setTimeout(() => {
-      SchoolManageCrud.getAllDistrict({ ProvinceID: CityID })
+      SchoolManageCrud.getAllDistrict({
+        ProvinceID: CityID,
+        _key: `~${inputValue}`,
+      })
         .then(({ data }) => {
           const newData =
             data &&

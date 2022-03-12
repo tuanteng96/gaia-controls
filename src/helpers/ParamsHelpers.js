@@ -15,5 +15,14 @@ export const getRequestParams = (filters) => {
     if (filters._key) {
         params._key = filters._key;
     }
+    if (filters.PID) {
+        params.PID = filters.PID;
+    }
+    if (filters.DID) {
+        params.DID = filters.DID;
+    }
+    if (filters.Levels) {
+        params.Levels = filters.Levels;
+    }
     return params;
 };

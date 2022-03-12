@@ -9,6 +9,7 @@ import { toAbsoluteUrl } from "../../helpers/AssetsHelpers";
 import { useParams } from "react-router-dom";
 import { isDevelopment } from "../../helpers/DevelopmentHelpers";
 import { getRequestParams } from "../../helpers/ParamsHelpers";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function Lesson(props) {
   const { id } = useParams();
@@ -34,11 +35,24 @@ function Lesson(props) {
     !loading && setLoading(true);
     const params = getRequestParams(filters);
     LessonCrud.getListLesson(params)
-      .then(({ list, pi, ps, total }) => {
-        setListLesson(list);
-        setPageTotal(total);
-        setLoading(false);
-        callback && callback();
+      .then(({ list, total, error, right }) => {
+        if (error && right) {
+          Swal.fire({
+            icon: "error",
+            title: "Bạn không có quyền.",
+            text: "Vui lòng xin cấp quyền để truy cập !",
+            confirmButtonColor: "#3699FF",
+            allowOutsideClick: false,
+          }).then(() => {
+            window.location.href = "/";
+          });
+        }
+        else {
+          setListLesson(list);
+          setPageTotal(total);
+          setLoading(false);
+          callback && callback();
+        }
       })
       .catch((error) => console.log(error));
   };
@@ -222,8 +236,8 @@ function Lesson(props) {
                   {
                     dataField: "Title",
                     text: "Tên bài giảng",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Tên" },
                     headerStyle: () => {
                       return { minWidth: "250px", width: "250px" };
@@ -232,8 +246,8 @@ function Lesson(props) {
                   {
                     dataField: "DynamicID",
                     text: "Mã",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Mã" },
                     headerStyle: () => {
                       return { minWidth: "100%", width: "85px" };
@@ -242,74 +256,110 @@ function Lesson(props) {
                   {
                     dataField: "TypeName",
                     text: "Nhóm",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Nhóm" },
                   },
                   {
                     dataField: "LinkOnline",
                     text: "LinkOnline",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "LinkOnline" },
                     formatter: (cell, row) => (
                       <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(
-                            `/upload/image/${row.LinkOnline}`
-                          )}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block white-space-pw"
-                        >
-                          {row.LinkOnline}
-                        </a>
+                        {row.LinkOnline && (
+                          <OverlayTrigger
+                            key="top"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                {row.LinkOnline}
+                              </Tooltip>
+                            }
+                          >
+                            <a
+                              href={toAbsoluteUrl(`/${row.LinkOnline}`)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="d-inline-block white-space-pw"
+                            >
+                              <i className="fas fa-link icon-md"></i>
+                            </a>
+                          </OverlayTrigger>
+                        )}
                       </div>
                     ),
                   },
                   {
                     dataField: "GiaoAnPdf",
                     text: "Giáo án",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Giáo án" },
                     formatter: (cell, row) => (
                       <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(`/upload/image/${row.GiaoAnPdf}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block white-space-pw"
-                        >
-                          {row.GiaoAnPdf}
-                        </a>
+                        {row.GiaoAnPdf && (
+                          <OverlayTrigger
+                            key="top"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                {row.GiaoAnPdf}
+                              </Tooltip>
+                            }
+                          >
+                            <a
+                              href={toAbsoluteUrl(
+                                `/upload/image/${row.GiaoAnPdf}`
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="d-inline-block white-space-pw"
+                            >
+                              <i className="fas fa-file-pdf icon-md"></i>
+                            </a>
+                          </OverlayTrigger>
+                        )}
                       </div>
                     ),
                   },
                   {
                     dataField: "FileMaHoa",
                     text: "File Mã hóa",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "File Mã hóa" },
                     formatter: (cell, row) => (
                       <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(`/upload/image/${row.FileMaHoa}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block white-space-pw"
-                        >
-                          {row.FileMaHoa}
-                        </a>
+                        {row.FileMaHoa && (
+                          <OverlayTrigger
+                            key="top"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                {row.FileMaHoa}
+                              </Tooltip>
+                            }
+                          >
+                            <a
+                              href={toAbsoluteUrl(`/${row.FileMaHoa}`)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="d-inline-block white-space-pw"
+                            >
+                              <i className="fas fa-file-alt icon-md"></i>
+                            </a>
+                          </OverlayTrigger>
+                        )}
                       </div>
                     ),
                   },
                   {
                     dataField: "Thumbnail",
                     text: "Hình ảnh",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Hình ảnh" },
                     formatter: (cell, row) => (
                       <div className="w-100px">

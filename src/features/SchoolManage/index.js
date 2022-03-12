@@ -7,6 +7,8 @@ import ModalContacts from "./components/Modal/ModalContacts";
 import SchoolManageCrud from "./_redux/SchoolManageCrud";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import ModalClass from "./components/Modal/ModalClass";
+import FiltersSchool from "./components/Filters/FiltersSchool";
 
 function SchoolManage(props) {
   const [filters, setFilters] = useState({
@@ -21,11 +23,14 @@ function SchoolManage(props) {
   const [PageTotal, setPageTotal] = useState(0);
   const [VisibleModal, setVisibleModal] = useState({
     School: false,
+    Contacts: false,
+    Class: false,
   });
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState({
     School: false,
     Contacts: false,
+    Class: false,
   });
   const [defaultValues, setDefaultValues] = useState({});
 
@@ -33,11 +38,24 @@ function SchoolManage(props) {
     !loading && setLoading(true);
     const params = getRequestParams(filters);
     SchoolManageCrud.getAllSchool(params)
-      .then(({ list, pi, ps, total }) => {
-        setListSchool(list);
-        setPageTotal(total);
-        setLoading(false);
-        callback && callback();
+      .then(({ list, total, error, right }) => {
+        if (error && right) {
+          Swal.fire({
+            icon: "error",
+            title: "Bạn không có quyền.",
+            text: "Vui lòng xin cấp quyền để truy cập !",
+            confirmButtonColor: "#3699FF",
+            allowOutsideClick: false,
+          }).then(() => {
+            window.location.href = "/";
+          });
+        }
+        else {
+          setListSchool(list);
+          setPageTotal(total);
+          setLoading(false);
+          callback && callback();
+        }
       })
       .catch((error) => console.log(error));
   };
@@ -47,6 +65,23 @@ function SchoolManage(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  const onFilters = (values) => {
+    const newObj = {
+      _pi: 1,
+      _key: values._key,
+    };
+    if (values.PID) {
+      newObj.PID = values.PID.value;
+    }
+    if (values.DID) {
+      newObj.DID = values.DID.value;
+    }
+    if (values.Levels) {
+      newObj.Levels = values.Levels.value;
+    }
+    setFilters(prevState => ({ ...prevState, ...newObj }));
+  };
+
   const openModalSchool = (item = {}) => {
     setDefaultValues(item);
     setVisibleModal((prevState) => ({ ...prevState, School: true }));
@@ -54,6 +89,10 @@ function SchoolManage(props) {
   const openModalContacts = (item = {}) => {
     setDefaultValues(item);
     setVisibleModal((prevState) => ({ ...prevState, Contacts: true }));
+  };
+  const openModalClass = (item = {}) => {
+    setDefaultValues(item);
+    setVisibleModal((prevState) => ({ ...prevState, Class: true }));
   };
 
   const hideModalSchool = () => {
@@ -65,6 +104,63 @@ function SchoolManage(props) {
     setDefaultValues({});
     setVisibleModal((prevState) => ({ ...prevState, Contacts: false }));
   };
+  const hideModalClass = () => {
+    setDefaultValues({});
+    setVisibleModal((prevState) => ({ ...prevState, Class: false }));
+  };
+
+  const onSubmitContacts = (values) => {
+    const objPost = {
+      ID: values.ID,
+      Title: values.Title,
+      Phone: values.Phone,
+      Email: values.Email,
+      Address: values.Address,
+      Contacts:
+        values.Contacts &&
+        values.Contacts.filter((item) => typeof item === "object" && item.ten),
+    };
+    if (values.City) {
+      objPost.PID = values.City.value;
+      objPost.PTitle = values.City.label;
+    }
+    if (values.District) {
+      objPost.DID = values.District.value;
+      objPost.DTitle = values.District.label;
+    }
+    objPost.Levels = values.Levels ? [values.Levels] : [];
+    setBtnLoading((prevState) => ({ ...prevState, Contacts: true }));
+    SchoolManageCrud.addEditSchool(objPost)
+      .then((response) => {
+        retrieveSchool(() => {
+          hideModalContacts();
+          setBtnLoading((prevState) => ({ ...prevState, Contacts: false }));
+          toast.success("Cập nhập liên hệ thành công", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500,
+          });
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const onSubmitClass = ({ Class }) => {
+    setBtnLoading((prevState) => ({ ...prevState, Class: true }));
+    const objSubmit =
+      Class && Class.filter((item) => typeof item === "object" && item.Title);
+    SchoolManageCrud.addEditClass(objSubmit)
+      .then((response) => {
+        retrieveSchool(() => {
+          hideModalClass();
+          setBtnLoading((prevState) => ({ ...prevState, Class: false }));
+          toast.success("Cập nhập lớp thành công", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500,
+          });
+        });
+      })
+      .catch((error) => console.log(error));
+  };
 
   const onAddEdit = (values) => {
     const objPost = {
@@ -72,7 +168,7 @@ function SchoolManage(props) {
       Phone: values.Phone,
       Email: values.Email,
       Address: values.Address,
-      Contacts: [],
+      Contacts: values.Contacts,
     };
     if (values.ID) {
       objPost.ID = values.ID;
@@ -168,17 +264,7 @@ function SchoolManage(props) {
               </button>
             </div>
             <div className="panel-body overflow-visible">
-              <div className="max-w-450px mb-4 position-relative">
-                <input
-                  type="text"
-                  className="form-control pr-50px"
-                  placeholder="Nhập tên trường ..."
-                  //onChange={(e) => onChangeSearch(e.target.value)}
-                />
-                <div className="position-absolute top-12px right-15px pointer-events-none">
-                  <i className="far fa-search"></i>
-                </div>
-              </div>
+              <FiltersSchool onSubmit={onFilters} loading={loading} />
               <BaseTablesCustom
                 data={ListSchool}
                 textDataNull="Không có bài giảng."
@@ -296,16 +382,29 @@ function SchoolManage(props) {
                         liên hệ
                       </div>
                     ),
+                    headerStyle: () => {
+                      return { minWidth: "150px", width: "150px" };
+                    },
                   },
                   {
-                    dataField: "Class",
+                    dataField: "ClassList",
                     text: "Lớp",
                     headerAlign: "center",
                     style: { textAlign: "center" },
-                    attrs: { "data-title": "Hình ảnh" },
-                    formatter: (cell, row) => <div className="w-100px"></div>,
+                    attrs: { "data-title": "Lớp" },
+                    formatter: (cell, row) => (
+                      <div
+                        className="text-primary text-underline cursor-pointer"
+                        onClick={() => openModalClass(row)}
+                      >
+                        <span className="font-weight-border">
+                          [{(row.ClassList && row.ClassList.length) || 0}]
+                        </span>{" "}
+                        lớp
+                      </div>
+                    ),
                     headerStyle: () => {
-                      return { minWidth: "100%", width: "115px" };
+                      return { minWidth: "200px", width: "200px" };
                     },
                   },
                   {
@@ -364,6 +463,15 @@ function SchoolManage(props) {
         defaultValues={defaultValues}
         show={VisibleModal.Contacts}
         onHide={hideModalContacts}
+        onAddEdit={onSubmitContacts}
+        btnLoading={btnLoading.Contacts}
+      />
+      <ModalClass
+        defaultValues={defaultValues}
+        show={VisibleModal.Class}
+        onHide={hideModalClass}
+        onAddEdit={onSubmitClass}
+        btnLoading={btnLoading.Class}
       />
     </div>
   );

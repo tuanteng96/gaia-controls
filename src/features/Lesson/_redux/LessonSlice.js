@@ -37,6 +37,6 @@ const LessonSlice = createSlice({
     }
 });
 
-const { reducer, actions } = LessonSlice;
+const { reducer } = LessonSlice;
 //export const {  } = actions;
 export default reducer;
