@@ -8,6 +8,7 @@ import { LayoutSplashScreen } from "../layout/_core/EzsSplashScreen";
 import RoutesPage from "./RoutesPage";
 
 function App({ store, persistor, basename }) {
+
   return (
     /* Provide Redux store */
     <Provider store={store}>

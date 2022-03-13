@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import persistReducer from "redux-persist/es/persistReducer";
 import storage from "redux-persist/lib/storage";
 
-const tokenFake = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNTY4IiwibmJmIjoxNjQ2OTcxMzM2LCJleHAiOjE2Nzg1MDczMzYsImlhdCI6MTY0Njk3MTMzNn0.r1C3GMbcDZhnC3BanFOHBYI92MFlbi_wWZQl1zuI6QQ';
+const tokenFake = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNTg1IiwibmJmIjoxNjQ3MTgxMTUxLCJleHAiOjE2Nzg3MTcxNTEsImlhdCI6MTY0NzE4MTE1MX0.jo3YvwXzk2AsutHG1QcHb3L92UQkJW4GWkWJqPpNYBk';
 
 const auth = createSlice({
     name: "auth",

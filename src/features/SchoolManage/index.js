@@ -202,6 +202,17 @@ function SchoolManage(props) {
 
   const onDelete = (item) => {
     if (!item.ID) return;
+    if (item.ClassList && item.ClassList.length > 0) {
+      Swal.fire({
+        title: `Không thể xóa trường ${item.Title} ?`,
+        text: "Bạn cần xóa hết danh sách lớp để có thể thực hiện xóa trường ?",
+        icon: "warning",
+        confirmButtonColor: "#3699FF",
+        cancelButtonText: "Đóng",
+        showLoaderOnConfirm: true,
+      });
+      return;
+    }
     const dataPost = {
       deleteId: item.ID,
     };
@@ -304,9 +315,9 @@ function SchoolManage(props) {
                   {
                     dataField: "Title",
                     text: "Tên trường",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
-                    attrs: { "data-title": "Tên" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Tên trường" },
                     headerStyle: () => {
                       return { minWidth: "200px", width: "200px" };
                     },
@@ -314,8 +325,8 @@ function SchoolManage(props) {
                   {
                     dataField: "Email",
                     text: "TEL / Email",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "TEL / Email" },
                     formatter: (cell, row) => (
                       <div>
@@ -330,8 +341,8 @@ function SchoolManage(props) {
                   {
                     dataField: "LevelJson",
                     text: "Cấp",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Cấp" },
                     formatter: (cell, row) => (
                       <div>
@@ -347,8 +358,8 @@ function SchoolManage(props) {
                   {
                     dataField: "Address",
                     text: "Địa chỉ",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Địa chỉ" },
                     formatter: (cell, row) => (
                       <div>
@@ -368,12 +379,12 @@ function SchoolManage(props) {
                   {
                     dataField: "Contacts",
                     text: "Người liên hệ",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Người liên hệ" },
                     formatter: (cell, row) => (
                       <div
-                        className="text-primary text-underline cursor-pointer"
+                        className="text-underline cursor-pointer"
                         onClick={() => openModalContacts(row)}
                       >
                         <span className="font-weight-border">
@@ -389,12 +400,12 @@ function SchoolManage(props) {
                   {
                     dataField: "ClassList",
                     text: "Lớp",
-                    headerAlign: "center",
-                    style: { textAlign: "center" },
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
                     attrs: { "data-title": "Lớp" },
                     formatter: (cell, row) => (
                       <div
-                        className="text-primary text-underline cursor-pointer"
+                        className="text-underline cursor-pointer"
                         onClick={() => openModalClass(row)}
                       >
                         <span className="font-weight-border">
@@ -404,7 +415,7 @@ function SchoolManage(props) {
                       </div>
                     ),
                     headerStyle: () => {
-                      return { minWidth: "200px", width: "200px" };
+                      return { minWidth: "150px", width: "150px" };
                     },
                   },
                   {

@@ -17,7 +17,7 @@ const initialValue = {
 };
 
 function FiltersSchool({ onSubmit, loading }) {
-  const [initialValues, setInitialValues] = useState(initialValue);
+  const [initialValues, ] = useState(initialValue);
   const [ListCity, setListCity] = useState([]);
   const [LoadingCity, setLoadingCity] = useState(false);
   const [LoadingDistrict, setLoadingDistrict] = useState(false);

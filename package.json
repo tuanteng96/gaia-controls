@@ -2,9 +2,10 @@
     "name": "gaiav2-controls",
     "version": "0.1.0",
     "private": true,
-    "homepage": "/Admin/ReactAdmin/",
+    "_homepage": "/Admin/ReactAdmin/",
     "dependencies": {
         "@material-ui/lab": "^4.0.0-alpha.60",
+        "@reach/combobox": "^0.16.5",
         "@reduxjs/toolkit": "^1.7.1",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.2",
@@ -28,6 +29,7 @@
         "redux": "^4.1.2",
         "redux-persist": "^6.0.0",
         "sweetalert2": "^11.4.0",
+        "use-places-autocomplete": "^2.0.0",
         "web-vitals": "^2.1.4",
         "webpack": "^5.68.0",
         "yup": "^0.32.11"
