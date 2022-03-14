@@ -49,8 +49,7 @@ function SchoolManage(props) {
           }).then(() => {
             window.location.href = "/";
           });
-        }
-        else {
+        } else {
           setListSchool(list);
           setPageTotal(total);
           setLoading(false);
@@ -70,16 +69,10 @@ function SchoolManage(props) {
       _pi: 1,
       _key: values._key,
     };
-    if (values.PID) {
-      newObj.PID = values.PID.value;
-    }
-    if (values.DID) {
-      newObj.DID = values.DID.value;
-    }
-    if (values.Levels) {
-      newObj.Levels = values.Levels.value;
-    }
-    setFilters(prevState => ({ ...prevState, ...newObj }));
+    newObj.PID = values.PID ? values.PID.value : "";
+    newObj.DID = values.DID ? values.DID.value : "";
+    newObj.LevelJson = values.LevelJson ? `~${values.LevelJson.value}` : "";
+    setFilters((prevState) => ({ ...prevState, ...newObj }));
   };
 
   const openModalSchool = (item = {}) => {
@@ -169,6 +162,8 @@ function SchoolManage(props) {
       Email: values.Email,
       Address: values.Address,
       Contacts: values.Contacts,
+      Lat: values.Lat,
+      Lng: values.Lng,
     };
     if (values.ID) {
       objPost.ID = values.ID;
@@ -278,7 +273,7 @@ function SchoolManage(props) {
               <FiltersSchool onSubmit={onFilters} loading={loading} />
               <BaseTablesCustom
                 data={ListSchool}
-                textDataNull="Không có bài giảng."
+                textDataNull="Không có dữ liệu."
                 options={{
                   custom: true,
                   totalSize: PageTotal,

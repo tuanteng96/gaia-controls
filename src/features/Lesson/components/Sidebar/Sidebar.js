@@ -24,7 +24,14 @@ function Sidebar({ openModal }) {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchCateList({ ParentID: 662 }))
+    dispatch(
+      fetchCateList({
+        ParentID: 662,
+        _orders: {
+          Order: false,
+        },
+      })
+    )
       .unwrap()
       .catch((rejectedValueOrSerializedError) => {
         console.log(rejectedValueOrSerializedError);
@@ -72,6 +79,18 @@ function Sidebar({ openModal }) {
 
   const onDelete = (item) => {
     if (!item.ID) return;
+    if (item.TypeItemCount > 0) {
+      Swal.fire({
+        title: `Không thể xóa nhóm ${item.Title} ?`,
+        text:
+          "Bạn cần xóa hết danh sách bài giảng để có thể thực hiện xóa nhóm ?",
+        icon: "warning",
+        confirmButtonColor: "#3699FF",
+        cancelButtonText: "Đóng",
+        showLoaderOnConfirm: true,
+      });
+      return;
+    }
     const dataPost = {
       deleteId: item.ID,
     };

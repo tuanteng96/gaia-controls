@@ -21,8 +21,8 @@ export const getRequestParams = (filters) => {
     if (filters.DID) {
         params.DID = filters.DID;
     }
-    if (filters.Levels) {
-        params.Levels = filters.Levels;
+    if (filters.LevelJson) {
+        params.LevelJson = filters.LevelJson;
     }
     return params;
 };

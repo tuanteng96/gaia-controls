@@ -13,7 +13,7 @@ const initialValue = {
   _key: "",
   PID: null,
   DID: null,
-  Levels: null,
+  LevelJson: null,
 };
 
 function FiltersSchool({ onSubmit, loading }) {
@@ -76,7 +76,7 @@ function FiltersSchool({ onSubmit, loading }) {
     typingTimeoutRef.current = setTimeout(() => {
       SchoolManageCrud.getAllDistrict({
         ProvinceID: CityID,
-        _key: `~${inputValue}`,
+        _key: inputValue,
       })
         .then(({ data }) => {
           const newData =
@@ -168,12 +168,12 @@ function FiltersSchool({ onSubmit, loading }) {
                   isLoading={LoadingLevel}
                   isClearable={true}
                   isSearchable={true}
-                  name="Levels"
+                  name="LevelJson"
                   options={ListLevel}
                   placeholder="Chọn cấp"
-                  value={values.Levels}
+                  value={values.LevelJson}
                   onChange={(option) => {
-                    setFieldValue("Levels", option, false);
+                    setFieldValue("LevelJson", option, false);
                   }}
                   onBlur={handleBlur}
                 />

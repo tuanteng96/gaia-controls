@@ -6,15 +6,7 @@ import { Button, Modal } from "react-bootstrap";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import SchoolManageCrud from "../../_redux/SchoolManageCrud";
-import usePlacesAutocomplete from "use-places-autocomplete";
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxPopover,
-  ComboboxList,
-  ComboboxOption
-} from "@reach/combobox";
-import "@reach/combobox/styles.css";
+import MapContainer from "../Maps/MapContainer";
 
 ModalSchool.propTypes = {
   show: PropTypes.bool,
@@ -29,6 +21,8 @@ const initialValue = {
   District: null,
   Contacts: [],
   Levels: null,
+  Lng: 0,
+  Lat: 0,
 };
 
 const schoolSchema = Yup.object().shape({
@@ -43,39 +37,6 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   const [ListLevel, setListLevel] = useState([]);
   const [LoadingLevel, setLoadingLevel] = useState([]);
 
-  const {
-    ready,
-    value,
-    suggestions: { status, data },
-    setValue
-  } = usePlacesAutocomplete();
-
-  const handleInput = (e) => {
-    setValue(e.target.value);
-  };
-
-  const handleSelect = (val) => {
-    setValue(val, false);
-  };
-
-  const renderSuggestions = () => {
-    const suggestions = data.map(({ place_id, description }) => (
-      <ComboboxOption key={place_id} value={description} />
-    ));
-
-    return (
-      <>
-        {suggestions}
-        <li className="logo">
-          <img
-            src="https://developers.google.com/maps/documentation/images/powered_by_google_on_white.png"
-            alt="Powered by Google"
-          />
-        </li>
-      </>
-    );
-  };
-
   const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -87,6 +48,8 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         Phone: defaultValues.Phone,
         Email: defaultValues.Email,
         Address: defaultValues.Address,
+        Lng: defaultValues.Lng,
+        Lat: defaultValues.Lat,
         City: defaultValues.PID
           ? { value: defaultValues.PID, label: defaultValues.PTitle }
           : null,
@@ -97,10 +60,10 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         Levels:
           defaultValues.LevelJson && JSON.parse(defaultValues.LevelJson)
             ? JSON.parse(defaultValues.LevelJson).map((item) => ({
-              ...item,
-              label: item?.Title,
-              value: item?.ID,
-            }))[0]
+                ...item,
+                label: item?.Title,
+                value: item?.ID,
+              }))[0]
             : null,
       }));
     } else {
@@ -157,7 +120,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
     typingTimeoutRef.current = setTimeout(() => {
       SchoolManageCrud.getAllDistrict({
         ProvinceID: CityID,
-        _key: `~${inputValue}`,
+        _key: inputValue,
       })
         .then(({ data }) => {
           const newData =
@@ -175,7 +138,12 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   };
 
   return (
-    <Modal show={show} onHide={onHide} dialogClassName="modal-max2-sm">
+    <Modal
+      show={show}
+      onHide={onHide}
+      dialogClassName="modal-max2-sm"
+      scrollable={true}
+    >
       <Formik
         initialValues={initialValues}
         validationSchema={schoolSchema}
@@ -192,7 +160,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
             setFieldValue,
           } = formikProps;
           return (
-            <Form>
+            <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
                 <Modal.Title>
                   {values.ID ? "Chỉnh sửa bài giảng" : "Thêm mới bài giảng"}
@@ -205,10 +173,11 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${errors.Title && touched.Title
+                    className={`form-control ${
+                      errors.Title && touched.Title
                         ? "is-invalid solid-invalid"
                         : ""
-                      }`}
+                    }`}
                     name="Title"
                     placeholder="Nhập tên trường"
                     autoComplete="off"
@@ -219,27 +188,19 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 </div>
                 <div className="form-group">
                   <label>Địa chỉ</label>
-                  <Combobox onSelect={handleSelect} aria-labelledby="demo">
-                    <ComboboxInput
-                      style={{ width: 300, maxWidth: "90%" }}
-                      value={value}
-                      onChange={handleInput}
-                      disabled={!ready}
-                    />
-                    <ComboboxPopover>
-                      <ComboboxList>{status === "OK" && renderSuggestions()}</ComboboxList>
-                    </ComboboxPopover>
-                  </Combobox>
-                  <textarea
-                    rows="3"
-                    type="text"
-                    className="form-control"
-                    name="Address"
-                    placeholder="Nhập địa chỉ"
-                    autoComplete="off"
-                    value={values.Address}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                  <MapContainer
+                    onChange={({ address, LatLng }) => {
+                      setFieldValue("Address", address, false);
+                      setFieldValue("Lat", LatLng.lat, false);
+                      setFieldValue("Lng", LatLng.lng, false);
+                    }}
+                    initialValues={{
+                      Address: values.Address,
+                      LatLng: {
+                        lat: values.Lat,
+                        lng: values.Lng,
+                      },
+                    }}
                   />
                 </div>
                 <div className="form-group">
@@ -261,7 +222,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     type="text"
                     className="form-control"
                     name="Email"
-                    placeholder="Nhập số điện thoại"
+                    placeholder="Nhập Email"
                     autoComplete="off"
                     value={values.Email}
                     onChange={handleChange}
@@ -271,6 +232,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 <div className="form-group">
                   <label>Tỉnh / Thành phố</label>
                   <Select
+                    menuPosition="fixed"
                     className="select-control"
                     classNamePrefix="select"
                     isDisabled={LoadingCity}
@@ -290,6 +252,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 <div className="form-group">
                   <label>Quận / Huyện</label>
                   <AsyncSelect
+                    menuPosition="fixed"
                     key={values?.City?.value}
                     className="select-control"
                     classNamePrefix="select"
@@ -311,6 +274,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 <div className="form-group mb-0">
                   <label>Cấp</label>
                   <Select
+                    menuPosition="fixed"
                     className="select-control"
                     classNamePrefix="select"
                     isDisabled={LoadingLevel}

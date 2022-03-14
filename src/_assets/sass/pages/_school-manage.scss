@@ -1,0 +1,33 @@
+@import "./../init";
+.list-map-google {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    top: 0;
+    box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+    background: $white;
+    border-radius: 0.25rem;
+    li {
+        position: relative;
+        outline: none !important;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-weight: bolder;
+        word-break: break-all;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all .2s;
+        border-bottom: 1px solid #f5f4f7;
+        &:hover {
+            background: #F3F6F9;
+            color: #212529;
+        }
+        i {
+            font-size: 12px;
+            margin-right: 5px;
+        }
+    }
+}

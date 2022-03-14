@@ -46,8 +46,7 @@ function Lesson(props) {
           }).then(() => {
             window.location.href = "/";
           });
-        }
-        else {
+        } else {
           setListLesson(list);
           setPageTotal(total);
           setLoading(false);
@@ -151,8 +150,7 @@ function Lesson(props) {
     typingTimeoutRef.current = setTimeout(() => {
       if (value) {
         setFilters({ ...filters, _Pi: 1, _key: value, Type: 662 });
-      }
-      else {
+      } else {
         setFilters({ ...filters, _Pi: 1, _key: value, Type: id });
       }
     }, 500);
@@ -199,7 +197,7 @@ function Lesson(props) {
               </div>
               <BaseTablesCustom
                 data={ListLesson}
-                textDataNull="Không có bài giảng."
+                textDataNull="Không có dữ liệu."
                 options={{
                   custom: true,
                   totalSize: PageTotal,
@@ -254,11 +252,12 @@ function Lesson(props) {
                     },
                   },
                   {
-                    dataField: "TypeName",
-                    text: "Nhóm",
+                    dataField: "Version",
+                    text: "Version",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "Nhóm" },
+                    attrs: { "data-title": "Version" },
+                    formatter: (cell, row) => <div>{row.Version}</div>,
                   },
                   {
                     dataField: "LinkOnline",
@@ -367,10 +366,10 @@ function Lesson(props) {
                           href={toAbsoluteUrl(`/upload/image/${row.Thumbnail}`)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="d-block"
+                          className="d-block text-center"
                         >
                           <img
-                            className="w-100"
+                            className="max-w-100"
                             src={toAbsoluteUrl(
                               `/upload/image/${row.Thumbnail}`
                             )}

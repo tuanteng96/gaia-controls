@@ -17,6 +17,7 @@
                 padding: 10px 15px;
                 cursor: pointer;
                 font-weight: $font-weight-bolder;
+                word-break: break-all;
             }
             .select__option--is-focused,
             .select__option--is-selected {

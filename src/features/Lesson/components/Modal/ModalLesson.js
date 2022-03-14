@@ -20,6 +20,7 @@ const initialValue = {
   GiaoAnPdf: "",
   LinkOnline: null,
   DynamicID: "",
+  Version: "",
 };
 
 const lessonSchema = Yup.object().shape({
@@ -36,23 +37,33 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
     listCate: lesson.listCate,
     loading: lesson.loading,
   }));
-  const [PathFile, setPathFile] = useState([]);
+  const [PathFile, setPathFile] = useState({
+    Online: [],
+    Wow: [],
+  });
   const [loadingPath, setLoadingPath] = useState(false);
 
-  const getPathRoot = () => {
+  const getPathRoot = async () => {
     setLoadingPath(true);
-    LessonCrud.getRootFile()
-      .then((result) => {
-        setPathFile(() =>
-          result.map((item) => ({
-            ...item,
-            label: item.title,
-            value: item.name,
-          }))
-        );
-        setLoadingPath(false);
-      })
-      .catch((error) => console.log(error));
+    try {
+      const PathWow = await LessonCrud.getRootFile();
+      const PathOnline = await LessonCrud.getRootFile("Upload/LMS/");
+      setPathFile(() => ({
+        Online: PathOnline.map((item) => ({
+          ...item,
+          label: item.title,
+          value: item.name,
+        })),
+        Wow: PathWow.map((item) => ({
+          ...item,
+          label: item.title,
+          value: item.name,
+        })),
+      }));
+      setLoadingPath(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -61,7 +72,13 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
 
   useEffect(() => {
     setArrCate((prev) =>
-      listCate ? listCate.map((item) => ({ ...item, value: item.ID, label: item.Title })) : []
+      listCate
+        ? listCate.map((item) => ({
+            ...item,
+            value: item.ID,
+            label: item.Title,
+          }))
+        : []
     );
   }, [listCate]);
 
@@ -90,6 +107,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
             }
           : "",
         DynamicID: defaultValues.DynamicID,
+        Version: defaultValues.Version,
       }));
     } else {
       setInitialValues(() => ({
@@ -161,6 +179,19 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   />
                 </div>
                 <div className="form-group">
+                  <label>Version</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="Version"
+                    placeholder="Nhập Version"
+                    autoComplete="off"
+                    value={values.Version}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </div>
+                <div className="form-group">
                   <label>Danh mục</label>
                   <Select
                     className={`select-control ${
@@ -188,7 +219,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   <Select
                     isDisabled={loadingPath}
                     isLoading={loadingPath}
-                    options={PathFile}
+                    options={PathFile.Online}
                     isClearable
                     name="LinkOnline"
                     value={values.LinkOnline}
@@ -217,7 +248,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   <Select
                     isDisabled={loadingPath}
                     isLoading={loadingPath}
-                    options={PathFile}
+                    options={PathFile.Wow}
                     isClearable
                     name="FileMaHoa"
                     value={values.FileMaHoa}
