@@ -19,15 +19,16 @@ const initialValue = {
   Email: "",
   UserName: "",
   Password: "1234",
-  SchoolID: 1,
-  SchoolTitle: "",
+  SchoolID: null,
+  SchoolTitle: null,
   Status: null,
   IsSchoolTeacher: true,
 };
 
 const teachSchema = Yup.object().shape({
   FullName: Yup.string().required("Vui lòng nhập tên danh mục."),
-  SchoolID: Yup.string().required("Vui lòng chọn trường."),
+  Password: Yup.string().required("Vui lòng nhập mật khẩu."),
+  SchoolID: Yup.object().required("Vui lòng chọn trường.").nullable(),
 });
 
 function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
@@ -42,31 +43,25 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
       setInitialValues((prevState) => ({
         ...prevState,
         ID: defaultValues.ID,
-        Title: defaultValues.Title,
+        FullName: defaultValues.FullName,
         Phone: defaultValues.Phone,
         Email: defaultValues.Email,
-        Address: defaultValues.Address,
-        Lng: defaultValues.Lng,
-        Lat: defaultValues.Lat,
-        City: defaultValues.PID
-          ? { value: defaultValues.PID, label: defaultValues.PTitle }
-          : null,
-        District: defaultValues.DID
-          ? { value: defaultValues.DID, label: defaultValues.DTitle }
-          : null,
-        Contacts: [],
-        Levels:
-          defaultValues.LevelJson && JSON.parse(defaultValues.LevelJson)
-            ? JSON.parse(defaultValues.LevelJson).map((item) => ({
-                ...item,
-                label: item?.Title,
-                value: item?.ID,
-              }))[0]
-            : null,
+        UserName: defaultValues.UserName,
+        Password: defaultValues.Password,
+        SchoolID: {
+          label: defaultValues.SchoolID,
+          value: defaultValues.SchoolTitle
+        },
+        SchoolTitle: {
+          label: defaultValues.SchoolID,
+          value: defaultValues.SchoolTitle
+        },
+        Status: ListStatus.filter(item => item.value === Number(defaultValues.Status))[0],
+        IsSchoolTeacher: true,
       }));
     } else {
-      setInitialValues((prevState) => ({
-        ...prevState,
+      setInitialValues(() => ({
+        ...initialValue,
         Status: ListStatus[1],
       }));
     }
@@ -97,7 +92,7 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   };
 
   const suggestUser = (FullName, setFieldValue) => {
-    if (!FullName) return;
+    if (!FullName || defaultValues.ID) return;
     setLoadingUser(true);
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -152,15 +147,14 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${
-                      errors.FullName && touched.FullName
-                        ? "is-invalid solid-invalid"
-                        : ""
-                    }`}
+                    className={`form-control ${errors.FullName && touched.FullName
+                      ? "is-invalid solid-invalid"
+                      : ""
+                      }`}
                     name="FullName"
                     placeholder="Nhập giáo viên"
                     autoComplete="off"
-                    value={values.Title}
+                    value={values.FullName}
                     onChange={(evt) => {
                       setFieldValue("FullName", evt.target.value, false);
                       suggestUser(evt.target.value, setFieldValue);
@@ -197,7 +191,10 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 <div className="form-group">
                   <label>Trường</label>
                   <AsyncPaginate
-                    className="select-control"
+                    className={`select-control ${errors.FullName && touched.FullName
+                      ? "is-invalid solid-invalid"
+                      : ""
+                      }`}
                     classNamePrefix="select"
                     isClearable={true}
                     name="SchoolID"
@@ -232,7 +229,7 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Username</label>
+                  <label>Tên đăng nhập</label>
                   <div
                     className={`${loadingUser &&
                       "spinner spinner-primary spinner-right"} m-0 w-auto h-auto`}
@@ -240,12 +237,30 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Username"
+                      placeholder="Tên đăng nhập"
                       autoComplete="off"
                       value={values.UserName}
                       disabled={true}
                     />
                   </div>
+                </div>
+                <div className="form-group mb-0">
+                  <label>
+                    Mật khẩu <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.Password && touched.Password
+                      ? "is-invalid solid-invalid"
+                      : ""
+                      }`}
+                    name="Password"
+                    placeholder="Nhập mật khẩu"
+                    autoComplete="off"
+                    value={values.Password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
                 </div>
               </Modal.Body>
               <Modal.Footer>

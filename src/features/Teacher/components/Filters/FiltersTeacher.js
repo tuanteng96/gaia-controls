@@ -4,6 +4,7 @@ import Select from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Form, Formik } from "formik";
 import SchoolManageCrud from "../../../SchoolManage/_redux/SchoolManageCrud";
+import { useSelector } from "react-redux";
 
 FiltersTeacher.propTypes = {
   onSubmit: PropTypes.func,
@@ -11,14 +12,15 @@ FiltersTeacher.propTypes = {
 
 const initialValue = {
   _key: "",
-  PID: null,
-  DID: null,
-  LevelJson: null,
+  Status: null,
+  SchoolID: null,
 };
 
 function FiltersTeacher({ onSubmit, loading }) {
   const [initialValues] = useState(initialValue);
-
+  const { ListStatus } = useSelector(({ teacher }) => ({
+    ListStatus: teacher.Status,
+  }));
   const getAllSchool = async (search, loadedOptions, { page }) => {
     const newPost = {
       _key: search,
@@ -73,12 +75,12 @@ function FiltersTeacher({ onSubmit, loading }) {
                   className="select-control"
                   classNamePrefix="select"
                   isClearable={true}
-                  name="PID"
+                  name="SchoolID"
                   loadOptions={getAllSchool}
                   placeholder="Chọn trường"
-                  value={values.PID}
+                  value={values.SchoolID}
                   onChange={(option) => {
-                    setFieldValue("PID", option, false);
+                    setFieldValue("SchoolID", option, false);
                   }}
                   onBlur={handleBlur}
                   additional={{
@@ -94,12 +96,12 @@ function FiltersTeacher({ onSubmit, loading }) {
                   isLoading={false}
                   isClearable={true}
                   isSearchable={true}
-                  name="PID"
-                  options={[]}
+                  name="Status"
+                  options={ListStatus}
                   placeholder="Trạng thái"
-                  value={values.PID}
+                  value={values.Status}
                   onChange={(option) => {
-                    setFieldValue("PID", option, false);
+                    setFieldValue("Status", option, false);
                   }}
                   onBlur={handleBlur}
                 />

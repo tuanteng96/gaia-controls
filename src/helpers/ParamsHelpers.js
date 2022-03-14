@@ -12,6 +12,9 @@ export const getRequestParams = (filters) => {
     if (filters._orders) {
         params._orders = filters._orders;
     }
+    if (filters._appends) {
+        params._appends = filters._appends;
+    }
     if (filters._key) {
         params._key = filters._key;
     }
@@ -23,6 +26,12 @@ export const getRequestParams = (filters) => {
     }
     if (filters.LevelJson) {
         params.LevelJson = filters.LevelJson;
+    }
+    if (filters.SchoolID) {
+        params.SchoolID = filters.SchoolID;
+    }
+    if (filters.Status || filters.Status === 0) {
+        params.Status = filters.Status;
     }
     return params;
 };

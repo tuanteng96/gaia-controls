@@ -16,6 +16,9 @@ function Teacher(props) {
     _orders: {
       Id: true,
     },
+    _appends: {
+      IsSchoolTeacher: 1
+    },
   });
   const [ListTeacher, setListTeacher] = useState([]);
   const [PageTotal, setPageTotal] = useState(0);
@@ -61,7 +64,7 @@ function Teacher(props) {
 
   const hideModal = (item = {}) => {
     setDefaultValues({});
-    setVisibleModal(true);
+    setVisibleModal(false);
   };
 
   const onFilters = (values) => {
@@ -69,10 +72,35 @@ function Teacher(props) {
       _pi: 1,
       _key: values._key,
     };
-    newObj.PID = values.PID ? values.PID.value : "";
-    newObj.DID = values.DID ? values.DID.value : "";
-    newObj.LevelJson = values.LevelJson ? `~${values.LevelJson.value}` : "";
+    newObj.SchoolID = values.SchoolID ? values.SchoolID.value : "";
+    newObj.Status = values.Status ? values.Status.value : "";
     setFilters((prevState) => ({ ...prevState, ...newObj }));
+  };
+
+  const onAddEdit = (values) => {
+    const objPost = {
+      ...values,
+      SchoolID: values.SchoolID.ID,
+      SchoolTitle: values.SchoolTitle.Title,
+      Status: values.Status.value || 1
+    };
+
+    setBtnLoading(true);
+    TeacherCrud.addEditTeacher(objPost)
+      .then((response) => {
+        retrieveTeacher(() => {
+          hideModal();
+          setBtnLoading(false);
+          toast.success(
+            values.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
+            {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1500,
+            }
+          );
+        });
+      })
+      .catch((error) => console.log(error));
   };
 
   const onDelete = (item) => {
@@ -286,7 +314,7 @@ function Teacher(props) {
           defaultValues={defaultValues}
           show={VisibleModal}
           onHide={hideModal}
-          //onAddEdit={onSubmitClass}
+          onAddEdit={onAddEdit}
           btnLoading={btnLoading}
         />
       </div>
