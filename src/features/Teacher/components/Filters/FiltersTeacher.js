@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -16,11 +16,19 @@ const initialValue = {
   SchoolID: null,
 };
 
-function FiltersTeacher({ onSubmit, loading }) {
-  const [initialValues] = useState(initialValue);
+function FiltersTeacher({ onSubmit, loading, filters }) {
+  const [initialValues, setInitialValues] = useState(initialValue);
   const { ListStatus } = useSelector(({ teacher }) => ({
     ListStatus: teacher.Status,
   }));
+
+  useEffect(() => {
+    setInitialValues((prevState) => ({
+      ...prevState,
+      Status: ListStatus.filter((item) => item.value === filters.Status)[0],
+    }));
+  }, [filters, ListStatus]);
+
   const getAllSchool = async (search, loadedOptions, { page }) => {
     const newPost = {
       _key: search,

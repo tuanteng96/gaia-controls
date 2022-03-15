@@ -46,8 +46,8 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   const getPathRoot = async () => {
     setLoadingPath(true);
     try {
-      const PathWow = await LessonCrud.getRootFile();
-      const PathOnline = await LessonCrud.getRootFile("Upload/LMS/");
+      const PathWow = await LessonCrud.getRootFile("Upload/Ftp/Data/");
+      const PathOnline = await LessonCrud.getRootFile("Upload/Ftp/LMS/");
       setPathFile(() => ({
         Online: PathOnline.map((item) => ({
           ...item,

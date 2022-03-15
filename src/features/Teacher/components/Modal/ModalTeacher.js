@@ -147,10 +147,11 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${errors.FullName && touched.FullName
-                      ? "is-invalid solid-invalid"
-                      : ""
-                      }`}
+                    className={`form-control ${
+                      errors.FullName && touched.FullName
+                        ? "is-invalid solid-invalid"
+                        : ""
+                    }`}
                     name="FullName"
                     placeholder="Nhập giáo viên"
                     autoComplete="off"
@@ -191,10 +192,11 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 <div className="form-group">
                   <label>Trường</label>
                   <AsyncPaginate
-                    className={`select-control ${errors.FullName && touched.FullName
-                      ? "is-invalid solid-invalid"
-                      : ""
-                      }`}
+                    className={`select-control ${
+                      errors.SchoolID && touched.SchoolID
+                        ? "is-invalid solid-invalid"
+                        : ""
+                    }`}
                     classNamePrefix="select"
                     isClearable={true}
                     name="SchoolID"
@@ -250,10 +252,11 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${errors.Password && touched.Password
-                      ? "is-invalid solid-invalid"
-                      : ""
-                      }`}
+                    className={`form-control ${
+                      errors.Password && touched.Password
+                        ? "is-invalid solid-invalid"
+                        : ""
+                    }`}
                     name="Password"
                     placeholder="Nhập mật khẩu"
                     autoComplete="off"

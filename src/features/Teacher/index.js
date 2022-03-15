@@ -13,12 +13,14 @@ function Teacher(props) {
     _pi: 1,
     _ps: 10,
     _key: "",
+    Status: 1,
     _orders: {
       Id: true,
     },
     _appends: {
-      IsSchoolTeacher: 1
+      IsSchoolTeacher: 1,
     },
+    _ignoredf: ["Status"],
   });
   const [ListTeacher, setListTeacher] = useState([]);
   const [PageTotal, setPageTotal] = useState(0);
@@ -82,9 +84,8 @@ function Teacher(props) {
       ...values,
       SchoolID: values.SchoolID.ID,
       SchoolTitle: values.SchoolTitle.Title,
-      Status: values.Status.value || 1
+      Status: values.Status.value,
     };
-
     setBtnLoading(true);
     TeacherCrud.addEditTeacher(objPost)
       .then((response) => {
@@ -167,7 +168,11 @@ function Teacher(props) {
               </button>
             </div>
             <div className="panel-body overflow-visible">
-              <FiltersTeacher onSubmit={onFilters} loading={loading} />
+              <FiltersTeacher
+                filters={filters}
+                onSubmit={onFilters}
+                loading={loading}
+              />
               <BaseTablesCustom
                 data={ListTeacher}
                 textDataNull="Không có dữ liệu."
@@ -262,6 +267,27 @@ function Teacher(props) {
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "User" },
                     formatter: (cell, row) => <div>{row.UserName}</div>,
+                    headerStyle: () => {
+                      return { minWidth: "150px", width: "150px" };
+                    },
+                  },
+                  {
+                    dataField: "Status",
+                    text: "Trạng thái",
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Trạng thái" },
+                    formatter: (cell, row) => (
+                      <div>
+                        <label
+                          className={`label label-${
+                            row.Status === 1 ? "success" : "danger"
+                          }`}
+                        >
+                          {row.Status === 1 ? "Hoạt động" : "Vô hiệu hóa"}
+                        </label>
+                      </div>
+                    ),
                     headerStyle: () => {
                       return { minWidth: "150px", width: "150px" };
                     },

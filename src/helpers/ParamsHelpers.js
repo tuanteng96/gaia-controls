@@ -33,5 +33,8 @@ export const getRequestParams = (filters) => {
     if (filters.Status || filters.Status === 0) {
         params.Status = filters.Status;
     }
+    if (filters._ignoredf) {
+        params._ignoredf = filters._ignoredf;
+    }
     return params;
 };
