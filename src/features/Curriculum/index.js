@@ -1,38 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { isDevelopment } from "../../helpers/DevelopmentHelpers";
+import { getRequestParams } from "../../helpers/ParamsHelpers";
 import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
+import CurriculumCrud from "./_redux/CurriculumCrud";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import TeacherCrud from "./_redux/TeacherCrud";
-import { getRequestParams } from "../../helpers/ParamsHelpers";
-import FiltersTeacher from "./components/Filters/FiltersTeacher";
-import ModalTeacher from "./components/Modal/ModalTeacher";
+import ModalKTT from "./components/Modal/ModalKTT";
 
-function Teacher(props) {
+function Curriculum(props) {
   const [filters, setFilters] = useState({
     _pi: 1,
     _ps: 10,
     _key: "",
     Status: 1,
-    _orders: {
-      Id: true,
-    },
-    _appends: {
-      IsSchoolTeacher: 1,
-    },
+    _orders: {},
     _ignoredf: ["Status"],
   });
-  const [ListTeacher, setListTeacher] = useState([]);
   const [PageTotal, setPageTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [ListCurriculum, setListCurriculum] = useState([]);
   const [VisibleModal, setVisibleModal] = useState(false);
-  const [btnLoading, setBtnLoading] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
 
-  const retrieveTeacher = (callback) => {
+  const retrieveCurriculum = (callback) => {
     !loading && setLoading(true);
     const params = getRequestParams(filters);
-    TeacherCrud.getAllTeacher(params)
+    CurriculumCrud.getAll(params)
       .then(({ list, total, error, right }) => {
         if (error && right) {
           Swal.fire({
@@ -45,7 +38,7 @@ function Teacher(props) {
             window.location.href = "/";
           });
         } else {
-          setListTeacher(list);
+          setListCurriculum(list);
           setPageTotal(total);
           setLoading(false);
           callback && callback();
@@ -55,7 +48,7 @@ function Teacher(props) {
   };
 
   useEffect(() => {
-    retrieveTeacher();
+    retrieveCurriculum();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
@@ -63,46 +56,9 @@ function Teacher(props) {
     setDefaultValues(item);
     setVisibleModal(true);
   };
-
   const hideModal = (item = {}) => {
-    setDefaultValues({});
+    setDefaultValues(item);
     setVisibleModal(false);
-  };
-
-  const onFilters = (values) => {
-    const newObj = {
-      _pi: 1,
-      _key: values._key,
-    };
-    newObj.SchoolID = values.SchoolID ? values.SchoolID.value : "";
-    newObj.Status = values.Status ? values.Status.value : "";
-    setFilters((prevState) => ({ ...prevState, ...newObj }));
-  };
-
-  const onAddEdit = (values) => {
-    const objPost = {
-      ...values,
-      SchoolID: values.SchoolID.ID,
-      SchoolTitle: values.SchoolTitle.Title,
-      Status: values.Status.value,
-      ClassList: values.ClassList.map((item) => item.value).toString(),
-    };
-    setBtnLoading(true);
-    TeacherCrud.addEditTeacher(objPost)
-      .then((response) => {
-        retrieveTeacher(() => {
-          hideModal();
-          setBtnLoading(false);
-          toast.success(
-            values.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
-            {
-              position: toast.POSITION.TOP_RIGHT,
-              autoClose: 1500,
-            }
-          );
-        });
-      })
-      .catch((error) => console.log(error));
   };
 
   const onDelete = (item) => {
@@ -111,8 +67,8 @@ function Teacher(props) {
       deleteId: item.ID,
     };
     Swal.fire({
-      title: "Bạn muốn xóa giáo viên ?",
-      text: "Bạn có chắc chắn muốn xóa giáo viên này không ?",
+      title: "Bạn muốn xóa Khung trương trình ?",
+      text: "Bạn có chắc chắn muốn xóa Khung trương trình này không ?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -123,9 +79,9 @@ function Teacher(props) {
       allowOutsideClick: () => !Swal.isLoading(),
       preConfirm: () => {
         return new Promise((resolve, reject) => {
-          TeacherCrud.deleteTeacher(dataPost)
+          CurriculumCrud.Delete(dataPost)
             .then(() => {
-              retrieveTeacher(() => {
+              retrieveCurriculum(() => {
                 setTimeout(() => {
                   resolve();
                 }, 300);
@@ -136,7 +92,7 @@ function Teacher(props) {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        toast.success("Xóa giáo viên thành công !", {
+        toast.success("Xóa Khung trương trình thành công !", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 1500,
         });
@@ -150,7 +106,7 @@ function Teacher(props) {
         <div className="panel-body">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-uppercase font-size-h3 mb-0">
-              Quản lý giáo viên
+              Khung chương trình
             </h2>
           </div>
         </div>
@@ -159,7 +115,7 @@ function Teacher(props) {
         <div className="col-lg-12">
           <div className="hpanel hgreen">
             <div className="panel-heading hbuilt">
-              Danh sách giáo viên
+              Danh sách khung chương trình
               <button
                 type="button"
                 className="btn btn-sm btn-fix btn-success position-absolute top-9px right-9px"
@@ -169,13 +125,8 @@ function Teacher(props) {
               </button>
             </div>
             <div className="panel-body overflow-visible">
-              <FiltersTeacher
-                filters={filters}
-                onSubmit={onFilters}
-                loading={loading}
-              />
               <BaseTablesCustom
-                data={ListTeacher}
+                data={ListCurriculum}
                 textDataNull="Không có dữ liệu."
                 options={{
                   custom: true,
@@ -184,12 +135,12 @@ function Teacher(props) {
                   sizePerPage: filters._ps,
                   alwaysShowAllBtns: true,
                   onSizePerPageChange: (sizePerPage) => {
-                    setListTeacher([]);
+                    setListCurriculum([]);
                     const Ps = sizePerPage;
                     setFilters({ ...filters, _ps: Ps });
                   },
                   onPageChange: (page) => {
-                    setListTeacher([]);
+                    setListCurriculum([]);
                     const Pi = page;
                     setFilters({ ...filters, _pi: Pi });
                   },
@@ -302,7 +253,7 @@ function Teacher(props) {
                           <button
                             type="button"
                             className="btn btn-sm btn-primary w-24px h-24px"
-                            onClick={() => openModal(row)}
+                            //onClick={() => openModal(row)}
                           >
                             <i
                               className="fas fa-pen icon-sm pe-0"
@@ -337,16 +288,14 @@ function Teacher(props) {
             </div>
           </div>
         </div>
-        <ModalTeacher
-          defaultValues={defaultValues}
-          show={VisibleModal}
-          onHide={hideModal}
-          onAddEdit={onAddEdit}
-          btnLoading={btnLoading}
-        />
       </div>
+      <ModalKTT
+        show={VisibleModal}
+        onHide={hideModal}
+        defaultValues={defaultValues}
+      />
     </div>
   );
 }
 
-export default Teacher;
+export default Curriculum;

@@ -6,7 +6,8 @@ import { Button, Modal } from "react-bootstrap";
 import Select from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
 import SchoolManageCrud from "../../../SchoolManage/_redux/SchoolManageCrud";
-import { useSelector } from "react-redux";
+import { fetchLevelSchool } from "../../_redux/TeacherSlice";
+import { useSelector, useDispatch } from "react-redux";
 import TeacherCrud from "../../_redux/TeacherCrud";
 
 ModalTeacher.propTypes = {
@@ -23,21 +24,36 @@ const initialValue = {
   SchoolTitle: null,
   Status: null,
   IsSchoolTeacher: true,
+  ClassList: null,
 };
 
 const teachSchema = Yup.object().shape({
   FullName: Yup.string().required("Vui lòng nhập tên danh mục."),
   Password: Yup.string().required("Vui lòng nhập mật khẩu."),
-  SchoolID: Yup.object().required("Vui lòng chọn trường.").nullable(),
+  SchoolID: Yup.object()
+    .required("Vui lòng chọn trường.")
+    .nullable(),
+  ClassList: Yup.array()
+    .required("Vui lòng chọn khối.")
+    .nullable(),
 });
 
 function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   const [initialValues, setInitialValues] = useState(initialValue);
   const [loadingUser, setLoadingUser] = useState(false);
-  const { ListStatus } = useSelector(({ teacher }) => ({
+  const { ListStatus, ListLevels } = useSelector(({ teacher }) => ({
     ListStatus: teacher.Status,
+    ListLevels: teacher.listLevels,
   }));
+  const [CurrentLevels, setCurrentLevels] = useState([]);
   const typingTimeoutRef = useRef(null);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchLevelSchool());
+  }, [dispatch]);
+
   useEffect(() => {
     if (defaultValues.ID) {
       setInitialValues((prevState) => ({
@@ -49,14 +65,22 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         UserName: defaultValues.UserName,
         Password: defaultValues.Password,
         SchoolID: {
-          label: defaultValues.SchoolID,
-          value: defaultValues.SchoolTitle
+          label: defaultValues.SchoolTitle,
+          value: defaultValues.SchoolID,
         },
         SchoolTitle: {
-          label: defaultValues.SchoolID,
-          value: defaultValues.SchoolTitle
+          label: defaultValues.SchoolTitle,
+          value: defaultValues.SchoolID,
         },
-        Status: ListStatus.filter(item => item.value === Number(defaultValues.Status))[0],
+        Status: ListStatus.filter(
+          (item) => item.value === Number(defaultValues.Status)
+        )[0],
+        ClassList: defaultValues.ClassList
+          ? defaultValues.ClassList.split(",").map((item) => ({
+              label: `Khối ${item}`,
+              value: item,
+            }))
+          : [],
         IsSchoolTeacher: true,
       }));
     } else {
@@ -66,6 +90,28 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
       }));
     }
   }, [defaultValues, ListStatus]);
+
+  useEffect(() => {
+    if (defaultValues.ID) {
+      const { ClassList } = defaultValues;
+      const newClassList = ClassList && ClassList.split(",");
+      const CurrentClass =
+        ListLevels &&
+        ListLevels.filter((item) => {
+          const newClassLists = item.ClassList && item.ClassList.split(",");
+          return newClassLists.some((item) => newClassList.includes(item));
+        });
+      if (CurrentClass && CurrentClass.length > 0) {
+        const CurrentLevel = CurrentClass[0].ClassList.split(",").map(
+          (item) => ({
+            label: `Khối ${item}`,
+            value: item,
+          })
+        );
+        setCurrentLevels(CurrentLevel);
+      }
+    }
+  }, [defaultValues, ListLevels]);
 
   const getAllSchool = async (search, loadedOptions, { page }) => {
     const newPost = {
@@ -207,11 +253,56 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     onChange={(option) => {
                       setFieldValue("SchoolID", option, false);
                       setFieldValue("SchoolTitle", option, false);
+                      if (option) {
+                        const { LevelJson } = option;
+                        const levels = LevelJson
+                          ? JSON.parse(LevelJson)[0]
+                          : [];
+                        if (levels.ID) {
+                          const newLevels =
+                            ListLevels &&
+                            ListLevels.filter((item) => item.ID === levels.ID);
+                          const newClassList = newLevels[0].ClassList.split(
+                            ","
+                          ).map((item) => ({
+                            label: `Khối ${item}`,
+                            value: item,
+                          }));
+                          setCurrentLevels(newClassList);
+                        } else {
+                          setCurrentLevels([]);
+                        }
+                      } else {
+                        setCurrentLevels([]);
+                      }
+                      setFieldValue("ClassList", null, false);
                     }}
                     onBlur={handleBlur}
                     additional={{
                       page: 1,
                     }}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Khối</label>
+                  <Select
+                    isMulti
+                    className={`select-control ${
+                      errors.ClassList && touched.ClassList
+                        ? "is-invalid solid-invalid"
+                        : ""
+                    }`}
+                    classNamePrefix="select"
+                    name="ClassList"
+                    options={CurrentLevels}
+                    placeholder="Chọn khối"
+                    value={values.ClassList}
+                    onChange={(option) => {
+                      setFieldValue("ClassList", option, false);
+                    }}
+                    onBlur={handleBlur}
+                    menuPosition="fixed"
+                    isDisabled={CurrentLevels && CurrentLevels.length === 0}
                   />
                 </div>
                 <div className="form-group">

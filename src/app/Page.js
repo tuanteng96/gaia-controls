@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import Curriculum from '../features/Curriculum';
 import Lesson from "../features/Lesson";
 import SchoolManage from '../features/SchoolManage';
 import Teacher from '../features/Teacher';
@@ -12,6 +13,7 @@ export default function Page() {
         <Route path="/bai-giang/:id" element={<Lesson />} />
         <Route path="/truong-lop" element={<SchoolManage />} />
         <Route path="/giao-vien" element={<Teacher />} />
+        <Route path="/khung-chuong-trinh" element={<Curriculum />} />
       </Routes>
     );
 }

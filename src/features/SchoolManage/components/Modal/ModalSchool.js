@@ -27,6 +27,7 @@ const initialValue = {
 
 const schoolSchema = Yup.object().shape({
   Title: Yup.string().required("Vui lòng nhập tên danh mục."),
+  Levels: Yup.object().required("Vui lòng chọn cấp."),
 });
 
 function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
@@ -163,7 +164,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
                 <Modal.Title>
-                  {values.ID ? "Chỉnh sửa bài giảng" : "Thêm mới bài giảng"}
+                  {values.ID ? "Chỉnh sửa trường" : "Thêm mới trường"}
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
@@ -275,7 +276,11 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   <label>Cấp</label>
                   <Select
                     menuPosition="fixed"
-                    className="select-control"
+                    className={`select-control ${
+                      errors.Levels && touched.Levels
+                        ? "is-invalid solid-invalid"
+                        : ""
+                    }`}
                     classNamePrefix="select"
                     isDisabled={LoadingLevel}
                     isLoading={LoadingLevel}
