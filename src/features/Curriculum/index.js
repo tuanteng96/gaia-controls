@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { isDevelopment } from "../../helpers/DevelopmentHelpers";
 import { getRequestParams } from "../../helpers/ParamsHelpers";
 import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
@@ -21,6 +21,9 @@ function Curriculum(props) {
   const [ListCurriculum, setListCurriculum] = useState([]);
   const [VisibleModal, setVisibleModal] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
+  const [btnLoading, setBtnLoading] = useState(false);
+
+  const typingTimeoutRef = useRef(null);
 
   const retrieveCurriculum = (callback) => {
     !loading && setLoading(true);
@@ -61,6 +64,36 @@ function Curriculum(props) {
     setVisibleModal(false);
   };
 
+  const onAddEdit = (values) => {
+    setBtnLoading(true);
+    const objPost = {
+      ...values,
+      Status: values.Status ? values.Status.value : 1,
+      SchoolList:
+        values.SchoolList && values.SchoolList.length > 0
+          ? values.SchoolList.map((item) => ({
+              ID: item.ID,
+              Title: item.Title,
+            }))
+          : [],
+      Levels: values.Levels ? values.Levels.value : "",
+    };
+    CurriculumCrud.addEdit(objPost)
+      .then((response) => {
+        retrieveCurriculum(() => {
+          hideModal();
+          setBtnLoading(false);
+          toast.success(
+            values.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
+            {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1500,
+            }
+          );
+        });
+      })
+      .catch((error) => console.log(error));
+  };
   const onDelete = (item) => {
     if (!item.ID) return;
     const dataPost = {
@@ -100,6 +133,42 @@ function Curriculum(props) {
     });
   };
 
+  const RenderCountLess = (lessons) => {
+    if (lessons && lessons.length === 0) {
+      return (
+        <span className="text-decoration-underline cursor-pointer">
+          Chưa có bài giảng
+        </span>
+      );
+    }
+    if (lessons && lessons.length > 0) {
+      var total = 0;
+      for (var lesson of lessons) {
+        total += lesson.Lessons.length;
+      }
+      return (
+        <span className="text-decoration-underline cursor-pointer">
+          Có {total} bài giảng
+        </span>
+      );
+    }
+  };
+
+  const onChangeSearch = (value) => {
+    setLoading(true);
+    setListCurriculum([]);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      if (value) {
+        setFilters({ ...filters, _Pi: 1, _key: value });
+      } else {
+        setFilters({ ...filters, _Pi: 1, _key: value });
+      }
+    }, 500);
+  };
+
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
       <div className="hpanel">
@@ -125,6 +194,17 @@ function Curriculum(props) {
               </button>
             </div>
             <div className="panel-body overflow-visible">
+              <div className="max-w-450px mb-4 position-relative">
+                <input
+                  type="text"
+                  className="form-control pr-50px"
+                  placeholder="Nhập tên khung chương trình ..."
+                  onChange={(e) => onChangeSearch(e.target.value)}
+                />
+                <div className="position-absolute top-12px right-15px pointer-events-none">
+                  <i className="far fa-search"></i>
+                </div>
+              </div>
               <BaseTablesCustom
                 data={ListCurriculum}
                 textDataNull="Không có dữ liệu."
@@ -162,50 +242,41 @@ function Curriculum(props) {
                     attrs: { "data-title": "STT" },
                   },
                   {
-                    dataField: "FullName",
-                    text: "Tên giáo viên",
+                    dataField: "Title",
+                    text: "Tên khung chương trình",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Tên trường" },
                     headerStyle: () => {
-                      return { minWidth: "200px", width: "200px" };
+                      return { minWidth: "250px", width: "250px" };
                     },
                   },
                   {
-                    dataField: "Phone",
-                    text: "Số điện thoại",
+                    dataField: "Cấp",
+                    text: "Cấp",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Số điện thoại" },
                     formatter: (cell, row) => (
                       <div>
-                        <div>{row.Phone}</div>
+                        {row.Levels ? `Cấp ${row.Levels}` : "Chưa chọn cấp"}
                       </div>
                     ),
-                    headerStyle: () => {
-                      return { minWidth: "200px", width: "200px" };
-                    },
-                  },
-                  {
-                    dataField: "Email",
-                    text: "Email",
-                    //headerAlign: "center",
-                    //style: { textAlign: "center" },
-                    attrs: { "data-title": "Email" },
-                    formatter: (cell, row) => <div>{row.Email}</div>,
                     headerStyle: () => {
                       return { minWidth: "100px", width: "100px" };
                     },
                   },
                   {
-                    dataField: "SchoolTitle",
+                    dataField: "SchoolList",
                     text: "Trường",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Trường" },
                     formatter: (cell, row) => (
                       <div>
-                        <div>{row.SchoolTitle}</div>
+                        {row.SchoolList && row.SchoolList.length > 0
+                          ? row.SchoolList.map((item) => item.Title).join(", ")
+                          : "Chưa có trường"}
                       </div>
                     ),
                     headerStyle: () => {
@@ -213,14 +284,33 @@ function Curriculum(props) {
                     },
                   },
                   {
-                    dataField: "UserName",
-                    text: "User",
+                    dataField: "Desc",
+                    text: "Mô tả",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "User" },
-                    formatter: (cell, row) => <div>{row.UserName}</div>,
+                    attrs: { "data-title": "Mô tả" },
+                    formatter: (cell, row) => (
+                      <div>{row.Desc ? row.Desc : "Chưa có mô tả"}</div>
+                    ),
                     headerStyle: () => {
-                      return { minWidth: "150px", width: "150px" };
+                      return { minWidth: "200px", width: "200px" };
+                    },
+                  },
+                  {
+                    dataField: "LessonList",
+                    text: "Bài giảng",
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Bài giảng" },
+                    formatter: (cell, row) => (
+                      <div
+                        onClick={() => openModal({ ...row, isLesson: true })}
+                      >
+                        {RenderCountLess(row.LessonList)}
+                      </div>
+                    ),
+                    headerStyle: () => {
+                      return { minWidth: "250px", width: "250px" };
                     },
                   },
                   {
@@ -233,10 +323,12 @@ function Curriculum(props) {
                       <div>
                         <label
                           className={`label label-${
-                            row.Status === 1 ? "success" : "danger"
+                            Number(row.Status) ? "success" : "danger"
                           }`}
                         >
-                          {row.Status === 1 ? "Hoạt động" : "Vô hiệu hóa"}
+                          {Number(row.Status) === 1
+                            ? "Hoạt động"
+                            : "Ngừng hoạt động"}
                         </label>
                       </div>
                     ),
@@ -253,7 +345,7 @@ function Curriculum(props) {
                           <button
                             type="button"
                             className="btn btn-sm btn-primary w-24px h-24px"
-                            //onClick={() => openModal(row)}
+                            onClick={() => openModal(row)}
                           >
                             <i
                               className="fas fa-pen icon-sm pe-0"
@@ -293,6 +385,8 @@ function Curriculum(props) {
         show={VisibleModal}
         onHide={hideModal}
         defaultValues={defaultValues}
+        onAddEdit={onAddEdit}
+        btnLoading={btnLoading}
       />
     </div>
   );

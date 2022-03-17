@@ -46,6 +46,8 @@
     .nav-link.active {
         transition: $transition-link;
         color: $primary;
+        outline: none;
+        border-bottom: 0;
         .nav-text {
             transition: $transition-link;
             color: $primary;
