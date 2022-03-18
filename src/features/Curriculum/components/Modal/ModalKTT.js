@@ -8,6 +8,8 @@ import SchoolManageCrud from "../../../SchoolManage/_redux/SchoolManageCrud";
 import { useSelector } from "react-redux";
 import { AsyncPaginate } from "react-select-async-paginate";
 import ModalKTTLessons from "./ModalKTTLessons";
+import UploadFile from "../../../../_shared/files/UploadFile";
+
 import moment from "moment";
 import "moment/locale/vi";
 moment.locale("vi");
@@ -23,6 +25,7 @@ const initialValue = {
   Levels: null,
   LessonList: [],
   SchoolList: [],
+  PDF: "",
 };
 
 const kttSchema = Yup.object().shape({
@@ -52,6 +55,7 @@ function ModalKTT({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         ID: defaultValues.ID,
         Title: defaultValues.Title,
         Desc: defaultValues.Desc,
+        PDF: defaultValues.PDF,
         Status: defaultValues.Status
           ? ListStatus.filter((item) => item.Status === defaultValues.Status)[0]
           : null,
@@ -316,6 +320,17 @@ function ModalKTT({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                       onAddEdit={(values) =>
                         UpdateLesson(values, setFieldValue)
                       }
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>File PDF</label>
+                    <UploadFile
+                      name="PDF"
+                      onChange={(file) => setFieldValue("PDF", file, false)}
+                      value={values.PDF}
+                      arrowProps={{
+                        Placeholder: "Chọn file PDF",
+                      }}
                     />
                   </div>
                   <div className="form-group">

@@ -6,6 +6,8 @@ import CurriculumCrud from "./_redux/CurriculumCrud";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import ModalKTT from "./components/Modal/ModalKTT";
+import { toAbsoluteUrl } from "../../helpers/AssetsHelpers";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function Curriculum(props) {
   const [filters, setFilters] = useState({
@@ -297,6 +299,38 @@ function Curriculum(props) {
                     },
                   },
                   {
+                    dataField: "PDF",
+                    text: "File PDF",
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Giáo án" },
+                    formatter: (cell, row) => (
+                      <div className="w-100px">
+                        {row.PDF && (
+                          <OverlayTrigger
+                            key="top"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>{row.PDF}</Tooltip>
+                            }
+                          >
+                            <a
+                              href={toAbsoluteUrl(`/upload/image/${row.PDF}`)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="d-inline-block white-space-pw"
+                            >
+                              <i className="fas fa-file-pdf icon-md"></i>
+                            </a>
+                          </OverlayTrigger>
+                        )}
+                      </div>
+                    ),
+                    headerStyle: () => {
+                      return { minWidth: "100px", width: "100px" };
+                    },
+                  },
+                  {
                     dataField: "LessonList",
                     text: "Bài giảng",
                     //headerAlign: "center",
@@ -310,7 +344,7 @@ function Curriculum(props) {
                       </div>
                     ),
                     headerStyle: () => {
-                      return { minWidth: "250px", width: "250px" };
+                      return { minWidth: "200px", width: "200px" };
                     },
                   },
                   {
