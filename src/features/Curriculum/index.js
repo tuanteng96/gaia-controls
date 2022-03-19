@@ -303,7 +303,7 @@ function Curriculum(props) {
                     text: "File PDF",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "Giáo án" },
+                    attrs: { "data-title": "File PDF" },
                     formatter: (cell, row) => (
                       <div className="w-100px">
                         {row.PDF && (

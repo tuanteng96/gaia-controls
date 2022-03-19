@@ -67,7 +67,7 @@ $color in $theme-text-colors {
 }
 
 .font-size-xs {
-    font-size: $font-size-xs;
+    font-size: $font-size-xs !important;
 }
 
 .font-size-lg {

@@ -4,7 +4,7 @@ import { LayoutSplashScreen } from "../../../layout/_core/EzsSplashScreen";
 import { setToken } from "./AuthSlice";
 
 const tokenFake =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNjAxIiwibmJmIjoxNjQ3NDAxNDIyLCJleHAiOjE2Nzg5Mzc0MjIsImlhdCI6MTY0NzQwMTQyMn0.PeMBLwTAfpl-xuwFda3ziwJhHbtyEd2IFRD25_-xP3g";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNjA5IiwibmJmIjoxNjQ3NjYyOTE0LCJleHAiOjE2NzkxOTg5MTQsImlhdCI6MTY0NzY2MjkxNH0.E14PBAL98NfIxW-S16QFIb3titEXE38naUjfk4JnbF8";
 
 function AuthInit(props) {
   const dispatch = useDispatch();

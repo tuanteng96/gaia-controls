@@ -57,7 +57,10 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         District: defaultValues.DID
           ? { value: defaultValues.DID, label: defaultValues.DTitle }
           : null,
-        Contacts: [],
+        Contacts:
+          defaultValues.Contacts && defaultValues.Contacts.length > 0
+            ? defaultValues.Contacts
+            : [],
         Levels:
           defaultValues.LevelJson && JSON.parse(defaultValues.LevelJson)
             ? JSON.parse(defaultValues.LevelJson).map((item) => ({

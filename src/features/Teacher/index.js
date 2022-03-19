@@ -82,8 +82,8 @@ function Teacher(props) {
   const onAddEdit = (values) => {
     const objPost = {
       ...values,
-      SchoolID: values.SchoolID.ID,
-      SchoolTitle: values.SchoolTitle.Title,
+      SchoolID: values.SchoolID.value,
+      SchoolTitle: values.SchoolTitle.label,
       Status: values.Status.value,
       ClassList: values.ClassList.map((item) => item.value).toString(),
     };

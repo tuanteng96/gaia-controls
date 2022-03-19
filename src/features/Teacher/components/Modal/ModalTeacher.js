@@ -19,7 +19,7 @@ const initialValue = {
   Phone: "",
   Email: "",
   UserName: "",
-  Password: "1234",
+  NewPassword: "1234",
   SchoolID: null,
   SchoolTitle: null,
   Status: null,
@@ -29,7 +29,6 @@ const initialValue = {
 
 const teachSchema = Yup.object().shape({
   FullName: Yup.string().required("Vui lòng nhập tên danh mục."),
-  Password: Yup.string().required("Vui lòng nhập mật khẩu."),
   SchoolID: Yup.object()
     .required("Vui lòng chọn trường.")
     .nullable(),
@@ -41,6 +40,7 @@ const teachSchema = Yup.object().shape({
 function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   const [initialValues, setInitialValues] = useState(initialValue);
   const [loadingUser, setLoadingUser] = useState(false);
+  const [isPwd, setIsPwd] = useState(true);
   const { ListStatus, ListLevels } = useSelector(({ teacher }) => ({
     ListStatus: teacher.Status,
     ListLevels: teacher.listLevels,
@@ -56,6 +56,7 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
 
   useEffect(() => {
     if (defaultValues.ID) {
+      setIsPwd(false);
       setInitialValues((prevState) => ({
         ...prevState,
         ID: defaultValues.ID,
@@ -63,7 +64,7 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         Phone: defaultValues.Phone,
         Email: defaultValues.Email,
         UserName: defaultValues.UserName,
-        Password: defaultValues.Password,
+        NewPassword: "",
         SchoolID: {
           label: defaultValues.SchoolTitle,
           value: defaultValues.SchoolID,
@@ -321,8 +322,18 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     menuPosition="fixed"
                   />
                 </div>
-                <div className="form-group">
-                  <label>Tên đăng nhập</label>
+                <div className={`form-group ${!isPwd && "mb-0"}`}>
+                  <div className="d-flex justify-content-between">
+                    <label>Tên đăng nhập</label>
+                    {values.ID && (
+                      <div
+                        className="bg-primary text-white font-size-xs h-18px rounded px-2 d-flex align-items-center cursor-pointer shadow"
+                        onClick={() => setIsPwd(!isPwd)}
+                      >
+                        {isPwd ? "Đóng" : "Mật khẩu mới"}
+                      </div>
+                    )}
+                  </div>
                   <div
                     className={`${loadingUser &&
                       "spinner spinner-primary spinner-right"} m-0 w-auto h-auto`}
@@ -337,25 +348,28 @@ function ModalTeacher({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     />
                   </div>
                 </div>
-                <div className="form-group mb-0">
-                  <label>
-                    Mật khẩu <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className={`form-control ${
-                      errors.Password && touched.Password
-                        ? "is-invalid solid-invalid"
-                        : ""
-                    }`}
-                    name="Password"
-                    placeholder="Nhập mật khẩu"
-                    autoComplete="off"
-                    value={values.Password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                </div>
+                {isPwd && (
+                  <div className="form-group mb-0">
+                    <label>
+                      Mật khẩu {values.ID ? "mới" : ""}{" "}
+                      <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`form-control ${
+                        errors.NewPassword && touched.NewPassword
+                          ? "is-invalid solid-invalid"
+                          : ""
+                      }`}
+                      name="NewPassword"
+                      placeholder={`Nhập mật khẩu ${values.ID ? "mới" : ""}`}
+                      autoComplete="off"
+                      value={values.NewPassword}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  </div>
+                )}
               </Modal.Body>
               <Modal.Footer>
                 <Button type="button" variant="secondary" onClick={onHide}>
