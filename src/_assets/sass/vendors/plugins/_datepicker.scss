@@ -293,7 +293,7 @@
                 }
             }
             .react-datepicker__time-container {
-                border-left: 1px solid #e4e6ef;
+                //border-left: 1px solid #e4e6ef;
                 width: 85px;
                 float: none;
                 .react-datepicker__header.react-datepicker__header--time {
@@ -335,6 +335,24 @@
                                 &:hover {
                                     background: #F3F6F9;
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.react-datepicker-only-time {
+            .react-datepicker__time-container {
+                width: 100%;
+                .react-datepicker__time {
+                    .react-datepicker__time-box {
+                        width: 100%;
+                        .react-datepicker__time-list {
+                            display: flex;
+                            flex-wrap: wrap;
+                            max-width: 300px;
+                            .react-datepicker__time-list-item {
+                                width: 25%;
                             }
                         }
                     }

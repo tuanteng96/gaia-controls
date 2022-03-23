@@ -7,6 +7,7 @@ import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import SchoolManageCrud from "../../_redux/SchoolManageCrud";
 import MapContainer from "../Maps/MapContainer";
+import ModalLessonTime from "../Modal/ModalLessonTime";
 
 ModalSchool.propTypes = {
   show: PropTypes.bool,
@@ -37,6 +38,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
   const [LoadingDistrict, setLoadingDistrict] = useState(false);
   const [ListLevel, setListLevel] = useState([]);
   const [LoadingLevel, setLoadingLevel] = useState([]);
+  const [VisibleLsTime, setVisibleLsTime] = useState(false);
 
   const typingTimeoutRef = useRef(null);
 
@@ -141,6 +143,13 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
     }, 500);
   };
 
+  const OpenModalLsTime = () => {
+    setVisibleLsTime(true);
+  };
+  const HideModalLsTime = () => {
+    setVisibleLsTime(false);
+  };
+
   return (
     <Modal
       show={show}
@@ -188,6 +197,22 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     value={values.Title}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Tiết học</label>
+                  <div className="border h-40px rounded d-flex align-items-center justify-content-between px-2">
+                    12 tiết học trên ngày
+                    <label
+                      className="btn-primary text-white m-0 rounded cursor-pointer px-2 font-size-xs"
+                      onClick={OpenModalLsTime}
+                    >
+                      Cấu hình
+                    </label>
+                  </div>
+                  <ModalLessonTime
+                    show={VisibleLsTime}
+                    onHide={HideModalLsTime}
                   />
                 </div>
                 <div className="form-group">

@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 import { LayoutSplashScreen } from "../../../layout/_core/EzsSplashScreen";
 import { setToken } from "./AuthSlice";
 
-const tokenFake =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNjA5IiwibmJmIjoxNjQ3NjYyOTE0LCJleHAiOjE2NzkxOTg5MTQsImlhdCI6MTY0NzY2MjkxNH0.E14PBAL98NfIxW-S16QFIb3titEXE38naUjfk4JnbF8";
+window.Token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiNjQ1IiwibmJmIjoxNjQ4MDE5MzA4LCJleHAiOjE2Nzk1NTUzMDgsImlhdCI6MTY0ODAxOTMwOH0.SoCplpl2gWFf1D_F_8UyIbDMVbltr79x7r0omNMMypM";
 
 function AuthInit(props) {
   const dispatch = useDispatch();
@@ -14,11 +14,11 @@ function AuthInit(props) {
 
   useEffect(() => {
     const requestUser = () => {
-      dispatch(setToken(window.Token || tokenFake));
+      dispatch(setToken(window.Token));
       setShowSplashScreen(false);
     };
 
-    if (window.Token || tokenFake) {
+    if (window.Token) {
       // Xử lí
       requestUser();
     } else {
