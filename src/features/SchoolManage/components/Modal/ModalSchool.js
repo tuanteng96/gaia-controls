@@ -150,6 +150,10 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
     setVisibleLsTime(false);
   };
 
+  const onSubmitTime = (values) => {
+    console.log(values);
+  }
+
   return (
     <Modal
       show={show}
@@ -213,6 +217,7 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   <ModalLessonTime
                     show={VisibleLsTime}
                     onHide={HideModalLsTime}
+                    onSubmit={onSubmitTime}
                   />
                 </div>
                 <div className="form-group">

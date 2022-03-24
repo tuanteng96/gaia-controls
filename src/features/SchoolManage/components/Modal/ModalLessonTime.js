@@ -28,16 +28,36 @@ function ModalLessonTime({
 
   useEffect(() => {
     const newInitial = [];
-    console.log(
-      moment(new Date())
-        .add({ minute: 5 })
-        .format("YYYY/MM/DD HH:mm")
-    );
+    var initialTime = moment({ h: 7, m: 10, s: 0 }).format("YYYY/MM/DD HH:mm");
+    var TimeStart,
+      TimeEnd = null;
+    var LessonMinute = 40;
+    var BreakTime = 5;
     for (var i = 1; i <= 12; i++) {
+      
+      if (!TimeEnd) {
+        TimeStart = moment(initialTime)
+          .add({ minute: BreakTime })
+          .format("YYYY/MM/DD HH:mm");
+        TimeEnd = moment(TimeStart)
+          .add({ minute: LessonMinute })
+          .format("YYYY/MM/DD HH:mm");
+      } else {
+        if (i === 7) {
+          TimeEnd = moment({ h: 1, m: 25, s: 0 }).format("YYYY/MM/DD HH:mm");
+        }
+        TimeStart = moment(TimeEnd)
+          .add({ minute: BreakTime })
+          .format("YYYY/MM/DD HH:mm");
+        TimeEnd = moment(TimeStart)
+          .add({ minute: LessonMinute })
+          .format("YYYY/MM/DD HH:mm");
+      }
+      
       newInitial.push({
         Title: `Tiết ${i}`,
-        From: "18:22:22",
-        To: "",
+        From: moment(TimeStart).format("HH:mm"),
+        To: moment(TimeEnd).format("HH:mm"),
       });
     }
     setInitialValues(() => ({
@@ -57,8 +77,6 @@ function ModalLessonTime({
           const {
             values,
             setFieldValue,
-            handleBlur,
-            handleChange,
           } = formikProps;
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
@@ -69,6 +87,7 @@ function ModalLessonTime({
                 <Table bordered responsive className="mb-0 mt-3">
                   <thead>
                     <tr>
+                      <th></th>
                       <th>Tiết học</th>
                       <th className="w-160px">Thời gian bắt đầu</th>
                       <th className="w-160px">Thời gian kết thúc</th>
@@ -81,6 +100,16 @@ function ModalLessonTime({
                         <Fragment>
                           {values.LessonListTime.map((lesson, index) => (
                             <tr key={index}>
+                              {index === 0 && (
+                                <td className="font-weight-bold" rowSpan={6}>
+                                  Sáng
+                                </td>
+                              )}
+                              {index === 6 && (
+                                <td className="font-weight-bold"  rowSpan={6}>
+                                  Chiều
+                                </td>
+                              )}
                               <td>{lesson.Title}</td>
                               <td>
                                 <TimeField
