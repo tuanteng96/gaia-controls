@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import Calendar from '../features/Calendar';
 import Curriculum from '../features/Curriculum';
 import Lesson from "../features/Lesson";
 import SchoolManage from '../features/SchoolManage';
@@ -14,6 +15,7 @@ export default function Page() {
         <Route path="/truong-lop" element={<SchoolManage />} />
         <Route path="/giao-vien" element={<Teacher />} />
         <Route path="/khung-chuong-trinh" element={<Curriculum />} />
+        <Route path="/bang-lich" element={<Calendar />} />
       </Routes>
     );
 }
