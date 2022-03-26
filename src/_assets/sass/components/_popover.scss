@@ -1,0 +1,19 @@
+.popover {
+    border: 0;
+    border-radius: 0.42rem;
+    box-shadow: 0 0 20px 0 rgb(0 0 0 / 15%);
+    min-width: 270px;
+    padding: 0;
+    &.show {
+        opacity: 1;
+    }
+    .popover-arrow {
+        &::before {
+            border-top-color: $white;
+        }
+    }
+    &-header {
+        background: $white;
+        border-bottom: 1px solid #ebebeb;
+    }
+}
