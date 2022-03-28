@@ -49,7 +49,7 @@ function MapContainer({ onChange, initialValues }) {
 
   useEffect(() => {
     if (initialValues.LatLng) {
-      const newObj = {};
+      const newObj = { lng: 21.0277644, lat: 105.8341598 };
       if (initialValues.LatLng?.lng) {
         newObj.lng = initialValues.LatLng?.lng;
       }

@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import Calendar from '../features/Calendar';
 import Curriculum from '../features/Curriculum';
 import Lesson from "../features/Lesson";
+import ScheduleClass from '../features/ScheduleClass';
 import SchoolManage from '../features/SchoolManage';
 import Teacher from '../features/Teacher';
 
@@ -16,6 +17,7 @@ export default function Page() {
         <Route path="/giao-vien" element={<Teacher />} />
         <Route path="/khung-chuong-trinh" element={<Curriculum />} />
         <Route path="/bang-lich" element={<Calendar />} />
+        <Route path="/xep-lich" element={<ScheduleClass />} />
       </Routes>
     );
 }

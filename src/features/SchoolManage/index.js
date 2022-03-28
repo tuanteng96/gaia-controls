@@ -164,6 +164,7 @@ function SchoolManage(props) {
       Contacts: values.Contacts,
       Lat: values.Lat,
       Lng: values.Lng,
+      HourScheduleList: values.HourScheduleList.map(({From, To}) => ({From, To}))
     };
     if (values.ID) {
       objPost.ID = values.ID;

@@ -22,48 +22,16 @@ function ModalLessonTime({
   onHide,
   onSubmit,
   btnLoading,
-  ValuesCurrent,
+  valuess,
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
 
   useEffect(() => {
-    const newInitial = [];
-    var initialTime = moment({ h: 7, m: 10, s: 0 }).format("YYYY/MM/DD HH:mm");
-    var TimeStart,
-      TimeEnd = null;
-    var LessonMinute = 40;
-    var BreakTime = 5;
-    for (var i = 1; i <= 12; i++) {
-      
-      if (!TimeEnd) {
-        TimeStart = moment(initialTime)
-          .add({ minute: BreakTime })
-          .format("YYYY/MM/DD HH:mm");
-        TimeEnd = moment(TimeStart)
-          .add({ minute: LessonMinute })
-          .format("YYYY/MM/DD HH:mm");
-      } else {
-        if (i === 7) {
-          TimeEnd = moment({ h: 1, m: 25, s: 0 }).format("YYYY/MM/DD HH:mm");
-        }
-        TimeStart = moment(TimeEnd)
-          .add({ minute: BreakTime })
-          .format("YYYY/MM/DD HH:mm");
-        TimeEnd = moment(TimeStart)
-          .add({ minute: LessonMinute })
-          .format("YYYY/MM/DD HH:mm");
-      }
-      
-      newInitial.push({
-        Title: `Tiết ${i}`,
-        From: moment(TimeStart).format("HH:mm"),
-        To: moment(TimeEnd).format("HH:mm"),
-      });
-    }
-    setInitialValues(() => ({
-      LessonListTime: newInitial,
+    setInitialValues((prevState) => ({
+      ...prevState,
+      LessonListTime: valuess.HourScheduleList || [],
     }));
-  }, []);
+  }, [valuess]);
 
   return (
     <Modal show={show} onHide={onHide} size="md" scrollable={true}>
@@ -81,7 +49,9 @@ function ModalLessonTime({
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
-                <Modal.Title>Cài đặt tiết học</Modal.Title>
+                <Modal.Title className="text-truncate">
+                  Tiết học {valuess.ID ? valuess.Title : ""}
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Table bordered responsive className="mb-0 mt-3">
@@ -106,13 +76,14 @@ function ModalLessonTime({
                                 </td>
                               )}
                               {index === 6 && (
-                                <td className="font-weight-bold"  rowSpan={6}>
+                                <td className="font-weight-bold" rowSpan={6}>
                                   Chiều
                                 </td>
                               )}
                               <td>{lesson.Title}</td>
                               <td>
                                 <TimeField
+                                  showSeconds
                                   className="form-control w-100"
                                   value={lesson.From}
                                   onChange={(event, value) =>
@@ -152,6 +123,7 @@ function ModalLessonTime({
                               </td>
                               <td>
                                 <TimeField
+                                  showSeconds
                                   className="form-control w-100"
                                   value={lesson.To}
                                   onChange={(event, value) =>

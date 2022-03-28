@@ -8,6 +8,7 @@ import AsyncSelect from "react-select/async";
 import SchoolManageCrud from "../../_redux/SchoolManageCrud";
 import MapContainer from "../Maps/MapContainer";
 import ModalLessonTime from "../Modal/ModalLessonTime";
+import { ArrayTimeSchool } from "../../../../helpers/GeneratorHelpers";
 
 ModalSchool.propTypes = {
   show: PropTypes.bool,
@@ -21,6 +22,7 @@ const initialValue = {
   City: null,
   District: null,
   Contacts: [],
+  HourScheduleList: ArrayTimeSchool(),
   Levels: null,
   Lng: 0,
   Lat: 0,
@@ -71,9 +73,19 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                 value: item?.ID,
               }))[0]
             : null,
+        HourScheduleList:
+          defaultValues.HourScheduleList &&
+          defaultValues.HourScheduleList.length > 0
+            ? defaultValues.HourScheduleList.map((item, index) => ({
+              ...item, Title: `Tiết ${index + 1}`
+            }))
+            : ArrayTimeSchool(),
       }));
     } else {
-      setInitialValues(initialValue);
+      setInitialValues({
+        ...initialValue,
+        HourScheduleList: ArrayTimeSchool(),
+      });
     }
   }, [defaultValues]);
 
@@ -150,9 +162,10 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
     setVisibleLsTime(false);
   };
 
-  const onSubmitTime = (values) => {
-    console.log(values);
-  }
+  const onSubmitTime = (values, setFieldValue) => {
+    setFieldValue("HourScheduleList", values.LessonListTime, false);
+    HideModalLsTime();
+  };
 
   return (
     <Modal
@@ -217,7 +230,8 @@ function ModalSchool({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   <ModalLessonTime
                     show={VisibleLsTime}
                     onHide={HideModalLsTime}
-                    onSubmit={onSubmitTime}
+                    onSubmit={(val) => onSubmitTime(val, setFieldValue)}
+                    valuess={values}
                   />
                 </div>
                 <div className="form-group">

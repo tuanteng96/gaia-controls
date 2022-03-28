@@ -43,6 +43,29 @@ function Calendar(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Filters]);
 
+  const GetCurrentLesson = (item) => {
+    const { StartLesson, EndLesson } = item;
+
+    const TotalMinutes = moment("11:30:00", "HH:mm:ss").diff(
+      moment("07:15:00", "HH:mm:ss"),
+      "minutes"
+    );
+    const TotalStart = moment(StartLesson, "HH:mm:ss").diff(
+      moment("07:15:00", "HH:mm:ss"),
+      "minutes"
+    );
+    const TotalEnd = moment(EndLesson, "HH:mm:ss").diff(
+      moment("07:15:00", "HH:mm:ss"),
+      "minutes"
+    );
+    const LeftStartLesson = (TotalStart / TotalMinutes) * 100;
+    const LeftEndLesson = (TotalEnd / TotalMinutes) * 100;
+    return {
+      left: `${LeftStartLesson}%`,
+      width: `${LeftEndLesson - LeftStartLesson}%`,
+    };
+  };
+
   const getListCalendar = (callback) => {
     !loading && setLoading(true);
     setTimeout(() => {
@@ -149,7 +172,7 @@ function Calendar(props) {
               </Fragment>
             )}
           </div>
-          <div className="border flex-1 ">
+          <div className="border flex-1 overflow-auto">
             {/* Header */}
             <div className="d-flex">
               <div className="flex-1 border-right min-w-225px">
@@ -230,7 +253,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 min-w-225px">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   CN
                 </div>
@@ -256,12 +279,12 @@ function Calendar(props) {
                         .fill()
                         .map((item, index) => (
                           <div
-                            className={`flex-1 border-top ${index !==
+                            className={`flex-1 border-top ${index !== 6 &&
                               "border-right"} min-w-225px`}
                             key={index}
                           >
                             <div className="d-flex">
-                              <div className="flex-1 border-right">
+                              <div className={`flex-1 border-right`}>
                                 {Array(5)
                                   .fill()
                                   .map((item, idx) => (
@@ -282,7 +305,28 @@ function Calendar(props) {
                                             >
                                               <Popover.Header className="text-uppercase font-weight-bold">
                                                 <span className="pt-1 d-block">
-                                                  Tiết 1 (8H00 - 8H45)
+                                                  Tiết 1 (
+                                                  {moment(
+                                                    "07:15:00",
+                                                    "HH:mm:ss"
+                                                  )
+                                                    .add(
+                                                      40 * idx + index * 40,
+                                                      "minute"
+                                                    )
+                                                    .format("HH:mm:ss")}{" "}
+                                                  -{" "}
+                                                  {moment(
+                                                    "07:15:00",
+                                                    "HH:mm:ss"
+                                                  )
+                                                    .add(
+                                                      40 * (idx + 1) +
+                                                        (index + 1) * 40,
+                                                      "minute"
+                                                    )
+                                                    .format("HH:mm:ss")}
+                                                  )
                                                 </span>
                                               </Popover.Header>
                                               <Popover.Body>
@@ -315,9 +359,27 @@ function Calendar(props) {
                                         >
                                           <div
                                             className={`w-15px h-40px border-right bg-primary cursor-pointer position-absolute top-0`}
-                                            style={{
-                                              left: `${(idx + 1) * 9}px`,
-                                            }}
+                                            style={GetCurrentLesson({
+                                              StartLesson: moment(
+                                                "07:15:00",
+                                                "HH:mm:ss"
+                                              )
+                                                .add(
+                                                  40 * idx + index * 40,
+                                                  "minute"
+                                                )
+                                                .format("HH:mm:ss"),
+                                              EndLesson: moment(
+                                                "07:15:00",
+                                                "HH:mm:ss"
+                                              )
+                                                .add(
+                                                  40 * (idx + 1) +
+                                                    (index + 1) * 40,
+                                                  "minute"
+                                                )
+                                                .format("HH:mm:ss"),
+                                            })}
                                           ></div>
                                         </OverlayTrigger>
                                       </div>
@@ -330,10 +392,20 @@ function Calendar(props) {
                                   .map((item, idx) => (
                                     <div
                                       className={`${idx !== 4 &&
-                                        "border-bottom"} border-right h-40px`}
+                                        "border-bottom"} h-40px`}
                                       key={idx}
                                     >
-                                      <div className="d-flex w-100 position-relative h-100">
+                                      {/* {moment("13:30:00", "HH:mm:ss")
+                                        .add(30 * idx + index * 30, "minute")
+                                        .format("HH:mm:ss")}{" "}
+                                      -
+                                      {moment("13:30:00", "HH:mm:ss")
+                                        .add(
+                                          30 * (idx + 1) + (index + 1) * 30,
+                                          "minute"
+                                        )
+                                        .format("HH:mm:ss")} */}
+                                      <div className="d-flex w-100 position-relative h-40px">
                                         <OverlayTrigger
                                           rootClose
                                           trigger="click"
