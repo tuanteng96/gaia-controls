@@ -47,6 +47,7 @@ function ScheduleGenerator({ onSubmit }) {
       },
     };
   };
+  
   return (
     <Formik
       initialValues={initialValues}
@@ -63,7 +64,7 @@ function ScheduleGenerator({ onSubmit }) {
           touched,
         } = formikSubProps;
         return (
-          <div className="d-flex form-group">
+          <div className="d-flex form-group mb-0">
             <div className="w-350px me-3">
               <AsyncPaginate
                 menuPosition="fixed"
