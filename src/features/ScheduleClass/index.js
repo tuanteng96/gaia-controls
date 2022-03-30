@@ -4,6 +4,10 @@ import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
 import FiltersSchedule from "./components/Filters/FiltersSchedule";
 import ModalScheduleClass from "./components/Modal/ModalScheduleClass";
 
+import moment from "moment";
+import "moment/locale/vi";
+moment.locale("vi");
+
 function ScheduleClass(props) {
   const [filters, setFilters] = useState({
     _pi: 1,
@@ -28,6 +32,36 @@ function ScheduleClass(props) {
     setDefaultValues(item);
     setVisibleModal(false);
   };
+
+  const onAddEdit = (values) => {
+    //setBtnLoading(true);
+    const newObj = {
+      ...values,
+      From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
+      To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
+      CalendarList: values.CalendarList.map((item) => ({
+        ...item,
+        Days: item.Days.map((day) => ({
+          ...day,
+          Items: day.Items
+            ? [
+                {
+                  Title: day.Items.Title,
+                  From: day.Items.From,
+                  To: day.Items.To,
+                },
+              ]
+            : [],
+        })),
+      })),
+    };
+
+    delete newObj.HourScheduleList;
+
+    console.log(newObj);
+
+  };
+
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
       <div className="hpanel">
@@ -193,7 +227,8 @@ function ScheduleClass(props) {
       <ModalScheduleClass
         show={VisibleModal}
         onHide={hideModal}
-        onAddEdit={(values) => console.log(values)}
+        onAddEdit={onAddEdit}
+        btnLoading={btnLoading}
       />
     </div>
   );

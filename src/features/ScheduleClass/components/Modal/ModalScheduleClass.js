@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Form, Formik } from "formik";
+import { Form, Formik, FieldArray } from "formik";
 import { Button, Modal } from "react-bootstrap";
 import ScheduleGenerator from "../../ScheduleGenerator";
-import Select from "react-select";
+import Select, { components } from "react-select";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -14,7 +14,11 @@ ModalScheduleClass.propTypes = {
 };
 
 const initialValue = {
-  ClassList: [],
+  SchoolID: null,
+  SchoolTitle: "",
+  From: "",
+  To: "",
+  CalendarList: [],
 };
 
 function ModalScheduleClass({
@@ -25,23 +29,55 @@ function ModalScheduleClass({
   btnLoading,
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
-  const [LessonList, setLessonList] = useState([]);
 
-  const onGeneratorBook = (val) => {
+  const dayGenerator = () => {
+    const ListDay = [];
+    for (var i = 0; i < 7; i++) {
+      const obj = {
+        DayOfWeek: i,
+        Items: null,
+      };
+      ListDay.push(obj);
+    }
+    return ListDay;
+  };
+
+  const onGeneratorBook = ({ School, From, To }) => {
+    const { ClassList, HourScheduleList } = School;
+    if (!ClassList || (Array.isArray(ClassList) && ClassList.length === 0)) {
+      return;
+    }
+    var newCalendarList = [];
+    newCalendarList = ClassList.map((item) => ({
+      ClassTitle: item.Title,
+      ClassID: item.ID,
+      Days: dayGenerator(),
+    }));
+
     setInitialValues((prevState) => ({
       ...prevState,
-      School: val.School,
-      From: val.From,
-      To: val.To,
-      ClassList: val.School.ClassList || [],
-      HourScheduleList: val.School.HourScheduleList
-        ? val.School.HourScheduleList.map((item) => ({
-            ...item,
-            label: item.Title,
-            value: item.Title,
-          }))
-        : [],
+      SchoolID: School.ID,
+      SchoolTitle: School.Title,
+      From: From,
+      To: To,
+      CalendarList: newCalendarList,
+      HourScheduleList:
+        HourScheduleList && HourScheduleList.length > 0
+          ? HourScheduleList.map((item) => ({ ...item, label: item.Title }))
+          : [],
     }));
+  };
+
+  const CustomOption = ({ children, innerRef, data, ...props }) => {
+    return (
+      <components.Option {...props}>
+        {children}
+        <span className="font-size-xs ps-2 text-muted">
+          ( {moment(data.From, "HH:mm:ss").format("HH:mm")} -{" "}
+          {moment(data.To, "HH:mm:ss").format("HH:mm")} )
+        </span>
+      </components.Option>
+    );
   };
 
   return (
@@ -54,27 +90,24 @@ function ModalScheduleClass({
         {(formikProps) => {
           const {
             values,
-            touched,
-            errors,
-            handleChange,
             handleBlur,
             setFieldValue,
           } = formikProps;
+
           return (
             <Form
               className="d-flex flex-column overflow-hidden align-items-stretch"
               onSubmit={formikProps.handleSubmit}
             >
-              {console.log(values)}
               <Modal.Header closeButton>
                 <Modal.Title>Tạo mới lịch học</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <ScheduleGenerator onSubmit={onGeneratorBook} />
-                {values.School && (
+                {values.SchoolID && (
                   <div className="mt-4">
                     <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-50px d-flex justify-content-center align-items-center font-size-md">
-                      {values.School.Title}{" "}
+                      {values.SchoolTitle}{" "}
                       {values.From &&
                         `- Từ ngày ${moment(values.From).format("ll")}`}{" "}
                       {values.To && `đến ${moment(values.To).format("ll")}`}
@@ -85,13 +118,13 @@ function ModalScheduleClass({
                           Lớp
                         </div>
                         <div>
-                          {values.ClassList &&
-                            values.ClassList.map((item, index) => (
+                          {values.CalendarList &&
+                            values.CalendarList.map((item, index) => (
                               <div
                                 className="border-top px-2 h-55px d-flex align-items-center justify-content-center"
                                 key={index}
                               >
-                                {item.Title}
+                                {item.ClassTitle}
                               </div>
                             ))}
                         </div>
@@ -138,34 +171,48 @@ function ModalScheduleClass({
                         </div>
                         {/* End Header */}
 
-                        {values.ClassList &&
-                          values.ClassList.map((item, index) => (
+                        {values.CalendarList &&
+                          values.CalendarList.map((item, index) => (
                             <div className="d-flex" key={index}>
-                              {Array(7)
-                                .fill()
-                                .map((o, idx) => (
-                                  <div
-                                    className={`flex-1 p-2 h-55px border-top ${idx !==
-                                      6 && "border-right"} min-w-200px`}
-                                    key={idx}
-                                  >
-                                    <Select
-                                      menuPosition="fixed"
-                                      className="select-control"
-                                      classNamePrefix="select"
-                                      isClearable={true}
-                                      isSearchable={true}
-                                      name="Status"
-                                      options={values.HourScheduleList}
-                                      placeholder="Chọn tiết học"
-                                      value={values.Status}
-                                      onChange={(option) => {
-                                        setFieldValue("Status", option, false);
-                                      }}
-                                      onBlur={handleBlur}
-                                    />
-                                  </div>
-                                ))}
+                              <FieldArray
+                                name={`CalendarList[${index}].Days`}
+                                render={(arrayHelpers) => (
+                                  <Fragment>
+                                    {values.CalendarList[index].Days.map(
+                                      (o, idx) => (
+                                        <div
+                                          className={`flex-1 p-2 h-55px border-top ${idx !==
+                                            6 && "border-right"} min-w-200px`}
+                                          key={idx}
+                                        >
+                                          <Select
+                                            components={{
+                                              Option: CustomOption,
+                                            }}
+                                            menuPosition="fixed"
+                                            className="select-control"
+                                            classNamePrefix="select"
+                                            isClearable={true}
+                                            isSearchable={true}
+                                            name={`CalendarList[${index}].Days[${idx}].Items`}
+                                            options={values.HourScheduleList}
+                                            placeholder="Chọn tiết học"
+                                            value={o.Items}
+                                            onChange={(option) => {
+                                              setFieldValue(
+                                                `CalendarList[${index}].Days[${idx}].Items`,
+                                                option,
+                                                false
+                                              );
+                                            }}
+                                            onBlur={handleBlur}
+                                          />
+                                        </div>
+                                      )
+                                    )}
+                                  </Fragment>
+                                )}
+                              />
                             </div>
                           ))}
                       </div>
@@ -177,15 +224,17 @@ function ModalScheduleClass({
                 <Button type="button" variant="secondary" onClick={onHide}>
                   Đóng
                 </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className={`btn btn-primary ${btnLoading &&
-                    "spinner spinner-white spinner-right"} w-auto h-auto`}
-                  disabled={btnLoading}
-                >
-                  {values.ID ? "Lưu thay đổi" : "Thêm mới"}
-                </Button>
+                {values.SchoolID && (
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className={`btn btn-primary ${btnLoading &&
+                      "spinner spinner-white spinner-right"} w-auto h-auto`}
+                    disabled={btnLoading}
+                  >
+                    {values.ID ? "Lưu thay đổi" : "Thêm mới"}
+                  </Button>
+                )}
               </Modal.Footer>
             </Form>
           );
