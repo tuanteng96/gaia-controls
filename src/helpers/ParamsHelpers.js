@@ -24,6 +24,12 @@ export const getRequestParams = (filters) => {
     if (filters.DID) {
         params.DID = filters.DID;
     }
+    if (filters.From$date_from) {
+        params.From$date_from = filters.From$date_from;
+    }
+    if (filters.To$date_to) {
+        params.To$date_to = filters.To$date_to;
+    }
     if (filters.LevelJson) {
         params.LevelJson = filters.LevelJson;
     }

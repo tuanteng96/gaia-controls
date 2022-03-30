@@ -12,7 +12,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 
 // Popup
 .swal2-popup {
-    padding: 2rem;
     @include border-radius($border-radius);
     .swal2-icon {
         margin: 2rem auto 0rem auto;
@@ -20,7 +19,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     .swal2-title {
         font-weight: 800;
         font-size: 1.4rem;
-        margin: 2rem 0 0 0;
+        margin: 1rem 0 0 0;
         color: $dark;
     }
     .swal2-content {
@@ -67,10 +66,16 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     .swal2-html-container {
         max-height: 200px;
         overflow: auto;
+        line-height: 24px;
+        font-size: 15px;
+        padding: 0 30px;
     }
     // Header
     .swal2-header {
         padding: 0;
+    }
+    .swal2-title {
+        text-transform: uppercase;
     }
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Form, Formik, FieldArray } from "formik";
 import { Button, Modal } from "react-bootstrap";
@@ -21,6 +21,12 @@ const initialValue = {
   CalendarList: [],
 };
 
+const initialGenerator = {
+  School: null,
+  From: null,
+  To: null,
+};
+
 function ModalScheduleClass({
   show,
   onHide,
@@ -29,6 +35,63 @@ function ModalScheduleClass({
   btnLoading,
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
+  const [initialGenerators, setInitialGenerator] = useState(initialGenerator);
+
+  useEffect(() => {
+    
+    if (!show) {
+      setInitialGenerator(initialGenerator);
+      setInitialValues(initialValue);
+    } else {
+      setInitialGenerator((prevState) => ({
+        ...prevState,
+        School: {
+          SchoolID: defaultValues.SchoolID,
+          label: defaultValues.SchoolTitle,
+          value: defaultValues.SchoolID,
+        },
+        From: defaultValues.From,
+        To: defaultValues.To,
+      }));
+      setInitialValues((prevState) => ({
+        ...prevState,
+        ID: defaultValues.ID,
+        SchoolID: defaultValues.SchoolID,
+        SchoolTitle: defaultValues.SchoolTitle,
+        From: defaultValues.From,
+        To: defaultValues.To,
+        CalendarList:
+          defaultValues.CalendarList && defaultValues.CalendarList.length > 0
+            ? defaultValues.CalendarList.map((calendar) => ({
+                ...calendar,
+                Days:
+                  calendar.Days && calendar.Days.length > 0
+                    ? calendar.Days.map((day) => ({
+                        ...day,
+                        Items:
+                          day.Items &&
+                          Array.isArray(day.Items) &&
+                          day.Items.length > 0
+                            ? {
+                                ...day.Items[0],
+                                label: day.Items[0].Title,
+                                value: day.Items[0].Title,
+                              }
+                            : null,
+                      }))
+                    : [],
+              }))
+            : [],
+        HourScheduleList: defaultValues.School.HourScheduleList
+          ? defaultValues.School.HourScheduleList.map((item) => ({
+              ...item,
+              label: item.Title,
+              value: item.Title,
+            }))
+          : [],
+      }));
+    }
+  }, [show, defaultValues]);
 
   const dayGenerator = () => {
     const ListDay = [];
@@ -100,10 +163,14 @@ function ModalScheduleClass({
               onSubmit={formikProps.handleSubmit}
             >
               <Modal.Header closeButton>
-                <Modal.Title>Tạo mới lịch học</Modal.Title>
+                <Modal.Title>{values.ID ? `Lịch học ${values.SchoolTitle}` : "Tạo mới lịch học"}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <ScheduleGenerator onSubmit={onGeneratorBook} />
+                <ScheduleGenerator
+                  onSubmit={onGeneratorBook}
+                  initialValues={initialGenerators}
+                  ID={values.ID}
+                />
                 {values.SchoolID && (
                   <div className="mt-4">
                     <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-50px d-flex justify-content-center align-items-center font-size-md">
@@ -170,7 +237,6 @@ function ModalScheduleClass({
                           </div>
                         </div>
                         {/* End Header */}
-
                         {values.CalendarList &&
                           values.CalendarList.map((item, index) => (
                             <div className="d-flex" key={index}>

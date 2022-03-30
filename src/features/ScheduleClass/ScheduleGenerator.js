@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import SchoolManageCrud from "../SchoolManage/_redux/SchoolManageCrud";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -10,20 +10,14 @@ ScheduleGenerator.propTypes = {
   onSubmit: PropTypes.func,
 };
 
-const initialValue = {
-  School: null,
-  From: null,
-  To: null,
-};
-
 const GeneratorSchema = Yup.object().shape({
   School: Yup.object()
     .required("Vui lòng nhập trường.")
     .nullable(),
 });
 
-function ScheduleGenerator({ onSubmit }) {
-  const [initialValues, setInitialValues] = useState(initialValue);
+function ScheduleGenerator({ onSubmit, initialValues, ID }) {
+
   const getAllSchool = async (search, loadedOptions, { page }) => {
     const newPost = {
       _key: search,
@@ -47,7 +41,7 @@ function ScheduleGenerator({ onSubmit }) {
       },
     };
   };
-  
+
   return (
     <Formik
       initialValues={initialValues}
@@ -123,7 +117,7 @@ function ScheduleGenerator({ onSubmit }) {
                 onClick={() => formikSubProps.handleSubmit()}
                 //disabled={loading}
               >
-                Tạo bảng lịch
+                {ID ? "Tạo mới bảng lịch" : "Tạo bảng lịch"}
               </button>
             </div>
           </div>

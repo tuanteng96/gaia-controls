@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { isDevelopment } from "../../helpers/DevelopmentHelpers";
 import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
 import FiltersSchedule from "./components/Filters/FiltersSchedule";
 import ModalScheduleClass from "./components/Modal/ModalScheduleClass";
+import { toast } from "react-toastify";
+import ScheduleClassCrud from "./_redux/ScheduleClassCrud";
+import { getRequestParams } from "../../helpers/ParamsHelpers";
+import Swal from "sweetalert2";
 
 import moment from "moment";
 import "moment/locale/vi";
+import { AlertError } from "../../helpers/AlertHelpers";
+
 moment.locale("vi");
 
 function ScheduleClass(props) {
@@ -13,16 +19,55 @@ function ScheduleClass(props) {
     _pi: 1,
     _ps: 10,
     _key: "",
-    Status: 1,
-    _orders: {},
-    _ignoredf: ["Status"],
+    From$date_from: "",
+    To$date_to: "",
   });
+  const [ListSchedule, setListSchedule] = useState([]);
   const [PageTotal, setPageTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [ListShedule, setListShedule] = useState([]);
   const [VisibleModal, setVisibleModal] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
+
+  const retrieveSchedule = (callback) => {
+    !loading && setLoading(true);
+    const params = getRequestParams(filters);
+    ScheduleClassCrud.getAll(params)
+      .then(({ list, total, error, right }) => {
+        if (error && right) {
+          Swal.fire({
+            icon: "error",
+            title: "Bạn không có quyền.",
+            text: "Vui lòng xin cấp quyền để truy cập !",
+            confirmButtonColor: "#3699FF",
+            allowOutsideClick: false,
+          }).then(() => {
+            window.location.href = "/";
+          });
+        } else {
+          setListSchedule(list);
+          setPageTotal(total);
+          setLoading(false);
+          callback && callback();
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    retrieveSchedule();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
+
+  const onFilters = ({ From, To, SchoolID }) => {
+    setLoading(true);
+    setFilters((prevState) => ({
+      ...prevState,
+      From$date_from: From ? moment(From).format("MM-DD-YYYY") : "",
+      To$date_to: To ? moment(To).format("MM-DD-YYYY") : "",
+      SchoolID: SchoolID ? SchoolID.ID : "",
+    }));
+  };
 
   const openModal = (item = {}) => {
     setDefaultValues(item);
@@ -34,11 +79,11 @@ function ScheduleClass(props) {
   };
 
   const onAddEdit = (values) => {
-    //setBtnLoading(true);
+    setBtnLoading(true);
     const newObj = {
       ...values,
-      From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
-      To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
+      From: values.From ? moment(values.From).format("MM-DD-YYYY HH:mm") : "",
+      To: values.To ? moment(values.To).format("MM-DD-YYYY HH:mm") : "",
       CalendarList: values.CalendarList.map((item) => ({
         ...item,
         Days: item.Days.map((day) => ({
@@ -58,8 +103,78 @@ function ScheduleClass(props) {
 
     delete newObj.HourScheduleList;
 
-    console.log(newObj);
+    ScheduleClassCrud.addEdit(newObj)
+      .then((response) => {
+        if (response.error) {
+          setBtnLoading(false);
+          AlertError({
+            title: "Xảy ra lỗi",
+            errorTitle:
+              "Không thể thêm mới xếp lịch cho trường. Vui lòng kiểm tra lại.",
+            error: response.error,
+          });
+        } else {
+          retrieveSchedule(() => {
+            hideModal();
+            setBtnLoading(false);
+            toast.success(
+              values.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
+              {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 1500,
+              }
+            );
+          });
+        }
+      })
+      .catch(({ response }) => {
+        setBtnLoading(false);
+        AlertError({
+          title: "Xảy ra lỗi",
+          errorTitle:
+            "Không thể thêm mới xếp lịch cho trường. Vui lòng kiểm tra lại.",
+          error: response.data.error,
+        });
+      });
+  };
 
+  const onDelete = (item) => {
+    if (!item.ID) return;
+    const dataPost = {
+      deleteId: item.ID,
+    };
+    Swal.fire({
+      title: "Bạn muốn xóa xếp lịch này ?",
+      text: "Bạn có chắc chắn muốn xóa xếp lịc trường này không ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6e7881",
+      confirmButtonText: "Tôi muốn xóa!",
+      cancelButtonText: "Đóng",
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      preConfirm: () => {
+        return new Promise((resolve, reject) => {
+          ScheduleClassCrud.Delete(dataPost)
+            .then(() => {
+              retrieveSchedule(() => {
+                setTimeout(() => {
+                  resolve();
+                }, 300);
+              });
+            })
+            .catch((error) => console.log(error));
+        });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        toast.success("Xóa giáo viên thành công !", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+        });
+      }
+    });
   };
 
   return (
@@ -87,9 +202,9 @@ function ScheduleClass(props) {
               </button>
             </div>
             <div className="panel-body overflow-visible">
-              <FiltersSchedule />
+              <FiltersSchedule onSubmit={onFilters} loading={loading}/>
               <BaseTablesCustom
-                data={ListShedule}
+                data={ListSchedule}
                 textDataNull="Không có dữ liệu."
                 options={{
                   custom: true,
@@ -98,12 +213,12 @@ function ScheduleClass(props) {
                   sizePerPage: filters._ps,
                   alwaysShowAllBtns: true,
                   onSizePerPageChange: (sizePerPage) => {
-                    setListShedule([]);
+                    setListSchedule([]);
                     const Ps = sizePerPage;
                     setFilters({ ...filters, _ps: Ps });
                   },
                   onPageChange: (page) => {
-                    setListShedule([]);
+                    setListSchedule([]);
                     const Pi = page;
                     setFilters({ ...filters, _pi: Pi });
                   },
@@ -125,7 +240,7 @@ function ScheduleClass(props) {
                     attrs: { "data-title": "STT" },
                   },
                   {
-                    dataField: "Title",
+                    dataField: "SchoolTitle",
                     text: "Tên Trường",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
@@ -135,48 +250,37 @@ function ScheduleClass(props) {
                     },
                   },
                   {
-                    dataField: "Cấp",
-                    text: "Cấp",
+                    dataField: "From",
+                    text: "Thời gian bắt đầu",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "Số điện thoại" },
+                    attrs: { "data-title": "Thời gian bắt đầu" },
                     formatter: (cell, row) => (
                       <div>
-                        {row.Levels ? `Cấp ${row.Levels}` : "Chưa chọn cấp"}
+                        {row.From
+                          ? moment(row.From).format("DD-MM-YYYY")
+                          : "Không giới hạn"}
                       </div>
                     ),
                     headerStyle: () => {
-                      return { minWidth: "100px", width: "100px" };
+                      return { minWidth: "150px", width: "150px" };
                     },
                   },
                   {
-                    dataField: "SchoolList",
-                    text: "Trường",
+                    dataField: "To",
+                    text: "Thời gian kết thúc",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "Trường" },
+                    attrs: { "data-title": "Thời gian kết thúc" },
                     formatter: (cell, row) => (
                       <div>
-                        {row.SchoolList && row.SchoolList.length > 0
-                          ? row.SchoolList.map((item) => item.Title).join(", ")
-                          : "Chưa có trường"}
+                        {row.From
+                          ? moment(row.From).format("DD-MM-YYYY")
+                          : "Không giới hạn"}
                       </div>
                     ),
                     headerStyle: () => {
-                      return { minWidth: "250px", width: "250px" };
-                    },
-                  },
-                  {
-                    dataField: "Desc",
-                    text: "Mô tả",
-                    //headerAlign: "center",
-                    //style: { textAlign: "center" },
-                    attrs: { "data-title": "Mô tả" },
-                    formatter: (cell, row) => (
-                      <div>{row.Desc ? row.Desc : "Chưa có mô tả"}</div>
-                    ),
-                    headerStyle: () => {
-                      return { minWidth: "200px", width: "200px" };
+                      return { minWidth: "150px", width: "150px" };
                     },
                   },
                   {
@@ -198,7 +302,7 @@ function ScheduleClass(props) {
                           <button
                             type="button"
                             className="btn btn-sm btn-danger ms-2 w-24px h-24px"
-                            //onClick={() => onDelete(row)}
+                            onClick={() => onDelete(row)}
                           >
                             <i
                               className="fas fa-trash icon-sm pe-0"
@@ -229,6 +333,7 @@ function ScheduleClass(props) {
         onHide={hideModal}
         onAddEdit={onAddEdit}
         btnLoading={btnLoading}
+        defaultValues={defaultValues}
       />
     </div>
   );

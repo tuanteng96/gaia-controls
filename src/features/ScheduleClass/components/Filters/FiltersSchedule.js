@@ -11,12 +11,13 @@ FiltersSchedule.propTypes = {
 
 const initialValue = {
   _key: "",
-  Status: null,
   SchoolID: null,
+  From: null,
+  To: null,
 };
 
 function FiltersSchedule({ onSubmit, loading, filters }) {
-  const [initialValues, setInitialValues] = useState(initialValue);
+  const [initialValues] = useState(initialValue);
 
   useEffect(() => {}, []);
 
@@ -51,7 +52,7 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
       enableReinitialize={true}
     >
       {(formikProps) => {
-        const { values, handleChange, handleBlur, setFieldValue } = formikProps;
+        const { values, handleBlur, setFieldValue } = formikProps;
         return (
           <Form>
             <div className="mb-4 d-flex">
@@ -78,9 +79,10 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
                   popperProps={{
                     positionFixed: true,
                   }}
+                  name="From"
                   className="form-control"
-                  //selected={new Date()}
-                  onChange={(date) => console.log(date)}
+                  selected={values.From ? new Date(values.From) : values.From}
+                  onChange={(date) => setFieldValue("From", date, false)}
                   popperPlacement="bottom-end"
                   shouldCloseOnSelect={false}
                   dateFormat="dd/MM/yyyy"
@@ -92,9 +94,10 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
                   popperProps={{
                     positionFixed: true,
                   }}
+                  name="To"
                   className="form-control"
-                  //selected={new Date()}
-                  onChange={(date) => console.log(date)}
+                  selected={values.To ? new Date(values.To) : values.To}
+                  onChange={(date) => setFieldValue("To", date, false)}
                   popperPlacement="bottom-end"
                   shouldCloseOnSelect={false}
                   dateFormat="dd/MM/yyyy"
