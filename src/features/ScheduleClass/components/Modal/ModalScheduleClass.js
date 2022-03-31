@@ -39,7 +39,7 @@ function ModalScheduleClass({
 
   useEffect(() => {
     
-    if (!show) {
+    if (!defaultValues.ID) {
       setInitialGenerator(initialGenerator);
       setInitialValues(initialValue);
     } else {

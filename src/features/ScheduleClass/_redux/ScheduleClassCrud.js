@@ -1,7 +1,7 @@
 import axiosClient from "../../../redux/axioClient";
 
 const GET_ALL_URL = "/api/v3/content?cmd=pgs&type=WowCalendarEnt";
-const ADD_EDIT_URL = "/api/v3/content3?cmd=setcalendars";
+const ADD_EDIT_URL = "/api/v3/content?cmd=edit&type=WowCalendarEnt";
 const DELETE_URL = "/api/v3/content?cmd=delete&type=WowCalendarEnt";
 
 const getAll = (data) => {

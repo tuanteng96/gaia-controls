@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { AsyncPaginate } from "react-select-async-paginate";
-import { Form, Formik } from "formik";
-import DatePicker from "react-datepicker";
+import { Form, Formik, useFormikContext } from "formik";
+// import DatePicker from "react-datepicker";
 import SchoolManageCrud from "../../../SchoolManage/_redux/SchoolManageCrud";
 
 FiltersSchedule.propTypes = {
@@ -74,7 +74,7 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
                   }}
                 />
               </div>
-              <div className="w-250px me-3">
+              {/* <div className="w-250px me-3">
                 <DatePicker
                   popperProps={{
                     positionFixed: true,
@@ -103,8 +103,8 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Ngày kết thúc"
                 />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <button
                   type="submit"
                   className={`btn btn-primary m-0 ${loading &&
@@ -113,8 +113,9 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
                 >
                   Lọc
                 </button>
-              </div>
+              </div> */}
             </div>
+            <MyAutoSavingComponent />
           </Form>
         );
       }}
@@ -123,3 +124,17 @@ function FiltersSchedule({ onSubmit, loading, filters }) {
 }
 
 export default FiltersSchedule;
+
+const MyAutoSavingComponent = () => {
+  const formik = useFormikContext();
+
+  useEffect(() => {
+    // use your own equality test or react-fast-compare because they are probably different objects
+    if (formik.values !== formik.initialValues) {
+      formik.submitForm(); // or onSubmit if you want to do validations before submitting
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values]);
+  // not listening for initialValues, because even if they are updated you probably don't want to autosave.
+  return null;
+};
