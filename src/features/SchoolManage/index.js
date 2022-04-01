@@ -137,10 +137,15 @@ function SchoolManage(props) {
       .catch((error) => console.log(error));
   };
 
-  const onSubmitClass = ({ Class }) => {
+  const onSubmitClass = (values) => {
+    console.log(values);
     setBtnLoading((prevState) => ({ ...prevState, Class: true }));
-    const objSubmit =
-      Class && Class.filter((item) => typeof item === "object" && item.Title);
+    const objSubmit = {
+      SchoolID: values.ID,
+      ClassList: values.ClassList.filter(
+        (item) => typeof item === "object" && item.Title
+      ),
+    };
     SchoolManageCrud.addEditClass(objSubmit)
       .then((response) => {
         retrieveSchool(() => {

@@ -6,7 +6,7 @@ const GET_LEVEL_URL = "/api/v3/content?cmd=all&type=WowLevelEnt";
 const GET_ALL_SCHOOL_URL = "/api/v3/content?cmd=pgs&type=WowSchoolEnt";
 const ADD_EDIT_SCHOOL_URL = "/api/v3/content?cmd=edit&type=WowSchoolEnt";
 const DELETE_SCHOOL_URL = "/api/v3/content?cmd=delete&type=WowSchoolEnt";
-const ADD_EDIT_CLASS_URL = "/api/v3/content?cmd=edits&type=WowClassEnt";
+const ADD_EDIT_CLASS_URL = "/api/v3/content?cmd=modify&type=WowClassModify";
 
 const getAllCity = (data) => {
     return axiosClient.post(GET_ALL_CITY_URL, JSON.stringify(data));

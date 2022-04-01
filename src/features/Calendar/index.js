@@ -17,6 +17,8 @@ import Swal from "sweetalert2";
 import moment from "moment";
 import "moment/locale/vi";
 import CalendarCrud from "./_redux/CalendarCrud";
+import { AlertError } from "../../helpers/AlertHelpers";
+import SpinnerMessage from "../../components/spinners/SpinnerMessage";
 moment.locale("vi");
 
 function Calendar(props) {
@@ -29,9 +31,10 @@ function Calendar(props) {
     _pi: 1,
     _ps: 10,
   });
-  const [PageTotal, setPageTotal] = useState(0);
+  const [PageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [ListCalendar, setListCalendar] = useState([]);
+  const [SpinnerShow, setSpinnerShow] = useState(false);
 
   const typingTimeoutRef = useRef(null);
 
@@ -52,33 +55,77 @@ function Calendar(props) {
   }, [filters]);
 
   const GetCurrentLesson = (item) => {
-    const { StartLesson, EndLesson } = item;
+    var TimeDayStart = "06:30:00";
+    var TimeDayEnd = "18:30:00";
+    const { StartLesson, EndLesson, HourScheduleList, Session } = item;
+    var TotalMinutes, TotalPeriod, TotalStart;
+    if (!HourScheduleList || !HourScheduleList.length === 0) return;
+    if (Session === "SANG") {
+      const HourScheduleS = HourScheduleList.filter((o) => {
+        const TimeS = moment(o.To, "HH:mm:ss");
+        const TimeStop = moment("12:00:00", "HH:mm:ss");
+        return TimeS.isBefore(TimeStop);
+      });
+      if (!HourScheduleS || HourScheduleS.length === 0) return;
 
-    const TotalMinutes = moment("11:30:00", "HH:mm:ss").diff(
-      moment("07:00:00", "HH:mm:ss"),
-      "minutes"
-    );
-    const TotalStart = moment(StartLesson, "HH:mm:ss").diff(
-      moment("07:00:00", "HH:mm:ss"),
-      "minutes"
-    );
-    const TotalEnd = moment(EndLesson, "HH:mm:ss").diff(
-      moment("07:00:00", "HH:mm:ss"),
-      "minutes"
-    );
+      // Tổng Phút Sáng
+      TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
+        moment(TimeDayStart, "HH:mm:ss"),
+        "minutes"
+      );
+
+      // Tổng Thời gian tiết
+      TotalPeriod = moment(EndLesson, "HH:mm:ss").diff(
+        moment(StartLesson, "HH:mm:ss"),
+        "minutes"
+      );
+
+      // Bắt Đầu
+      TotalStart = moment(StartLesson, "HH:mm:ss").diff(
+        moment(TimeDayStart, "HH:mm:ss"),
+        "minutes"
+      );
+    }
+    if (Session === "CHIEU") {
+      const HourScheduleC = HourScheduleList.filter((o) => {
+        const TimeS = moment(o.To, "HH:mm:ss");
+        const TimeStop = moment("12:00:00", "HH:mm:ss");
+        return !TimeS.isBefore(TimeStop);
+      });
+
+      if (!HourScheduleC || HourScheduleC.length === 0) return;
+
+      // Tổng Phút Chiều
+      TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
+        moment(TimeDayStart, "HH:mm:ss"),
+        "minutes"
+      );
+
+      // Tổng Thời gian tiết
+      TotalPeriod = moment(EndLesson, "HH:mm:ss").diff(
+        moment(StartLesson, "HH:mm:ss"),
+        "minutes"
+      );
+
+      // Bắt Đầu
+      TotalStart = moment(StartLesson, "HH:mm:ss").diff(
+        moment(TimeDayStart, "HH:mm:ss"),
+        "minutes"
+      );
+    }
+    const widthLesson = (TotalPeriod / TotalMinutes) * 100;
     const LeftStartLesson = (TotalStart / TotalMinutes) * 100;
-    const LeftEndLesson = (TotalEnd / TotalMinutes) * 100;
     return {
       left: `${LeftStartLesson}%`,
-      width: `${LeftEndLesson - LeftStartLesson}%`,
+      width: `${widthLesson}%`,
     };
   };
 
-  const getListCalendar = (callback) => {
-    !loading && setLoading(true);
+  const getListCalendar = (newLoading = false, callback) => {
+    !newLoading && !loading && setLoading(true);
     const params = getRequestParams(filters);
     CalendarCrud.getAll(params)
-      .then(({ list, total, error, right }) => {
+      .then(({ list, pcount, error, right }) => {
         if (error && right) {
           Swal.fire({
             icon: "error",
@@ -91,7 +138,7 @@ function Calendar(props) {
           });
         } else {
           setListCalendar(list);
-          setPageTotal(total);
+          setPageCount(pcount);
           setLoading(false);
           callback && callback();
         }
@@ -107,6 +154,38 @@ function Calendar(props) {
     typingTimeoutRef.current = setTimeout(() => {
       setFilters((prevState) => ({ ...prevState, _key: value }));
     }, 500);
+  };
+
+  const onSubmitTeacher = ({ ID, FullName }, period) => {
+    setSpinnerShow(true);
+
+    const objSubmit = {
+      ID: period.ID,
+      UserID: ID,
+      UserTitle: FullName,
+    };
+
+    CalendarCrud.addTeacher(objSubmit)
+      .then((response) => {
+        if (response.error) {
+          AlertError({
+            title: "Xảy ra lỗi",
+            errorTitle: "Không thể xếp lịch cho giáo viên này.",
+            error: response.error,
+          });
+        } else {
+          getListCalendar(true, () =>
+            setTimeout(() => setSpinnerShow(false), 300)
+          );
+        }
+      })
+      .catch(({ response }) => {
+        AlertError({
+          title: "Xảy ra lỗi",
+          errorTitle: "Không thể xếp lịch cho giáo viên này.",
+          error: response.error,
+        });
+      });
   };
 
   const getAllTeacher = async (search, loadedOptions, { page }) => {
@@ -128,10 +207,10 @@ function Calendar(props) {
     const newData =
       list && list.length > 0
         ? list.map((item) => ({
-          ...item,
-          label: item.FullName,
-          value: item.ID,
-        }))
+            ...item,
+            label: item.FullName,
+            value: item.ID,
+          }))
         : [];
     return {
       options: newData,
@@ -142,7 +221,26 @@ function Calendar(props) {
     };
   };
 
-  console.log(ListCalendar);
+  const getCalenderSession = (items, Session) => {
+    if (Session === "SANG") {
+      return items.filter((item) => {
+        const TimeEnd = moment(item.To).format("HH:mm");
+        const TimeS = moment(TimeEnd, "HH:mm");
+        const TimeStop = moment("12:00", "HH:mm");
+        return TimeS.isBefore(TimeStop);
+      });
+    }
+    if (Session === "CHIEU") {
+      return items.filter((item) => {
+        const TimeEnd = moment(item.To).format("HH:mm");
+        const TimeS = moment(TimeEnd, "HH:mm");
+        const TimeStop = moment("12:00", "HH:mm");
+        return !TimeS.isBefore(TimeStop);
+      });
+    }
+  };
+
+  //console.log(ListCalendar);
 
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -154,35 +252,51 @@ function Calendar(props) {
         </div>
       </div>
 
-      <div className="bg-white">
-        <div className="p-3 d-flex">
-          <div className="w-400px position-relative me-3">
-            <input
-              name="_key"
-              type="text"
-              className="form-control pr-50px"
-              placeholder="Nhập tên trường ..."
-              autoComplete="off"
-              onChange={(e) => onChangeSearch(e.target.value)}
-            //value={Filters.Key}
-            />
-            <div className="position-absolute top-12px right-15px pointer-events-none">
-              <i className="far fa-search"></i>
+      <div className="bg-white px-3">
+        <div className="py-3 d-flex justify-content-between">
+          <div className="d-flex">
+            <div className="w-400px position-relative me-3">
+              <input
+                name="_key"
+                type="text"
+                className="form-control pr-50px"
+                placeholder="Nhập tên trường ..."
+                autoComplete="off"
+                onChange={(e) => onChangeSearch(e.target.value)}
+                //value={Filters.Key}
+              />
+              <div className="position-absolute top-12px right-15px pointer-events-none">
+                <i className="far fa-search"></i>
+              </div>
+            </div>
+            <div className="w-300px">
+              <DatePicker
+                popperProps={{
+                  positionFixed: true,
+                }}
+                className="form-control"
+                selected={new Date(CurrentDate)}
+                onChange={(date) => setCurrentDate(date)}
+                popperPlacement="bottom-end"
+                //shouldCloseOnSelect={false}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Chọn ngày"
+              />
             </div>
           </div>
-          <div className="w-300px">
-            <DatePicker
-              popperProps={{
-                positionFixed: true,
-              }}
-              className="form-control"
-              selected={new Date(CurrentDate)}
-              onChange={(date) => setCurrentDate(date)}
-              popperPlacement="bottom-end"
-              //shouldCloseOnSelect={false}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="Chọn ngày"
-            />
+          <div className="d-flex">
+            <div className="d-flex align-items-center">
+              <div className="w-15px h-15px bg-success rounded-circle"></div>
+              <div className="pl-5px font-size-sm font-weight-bold">
+                Đã chọn giáo viên
+              </div>
+            </div>
+            <div className="d-flex align-items-center ms-4">
+              <div className="w-15px h-15px bg-primary rounded-circle"></div>
+              <div className="pl-5px font-size-sm font-weight-bold">
+                Chưa chọn giáo viên
+              </div>
+            </div>
           </div>
         </div>
         <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-40px d-flex justify-content-center align-items-center font-size-md">
@@ -191,7 +305,7 @@ function Calendar(props) {
             moment(filters.From$date_from).format("ll")}{" "}
           - {filters.To$date_to && moment(filters.To$date_to).format("ll")}
         </div>
-        <div className="d-flex position-relative">
+        <div className="d-flex position-relative align-items-start">
           <div className="border border-end-0 w-300px">
             {/* Header Sidebar */}
 
@@ -205,10 +319,10 @@ function Calendar(props) {
                 {/* Body Header Sidebar */}
                 {ListCalendar.map((item, index) => (
                   <div className="d-flex border-top" key={index}>
-                    <div className="flex-1 border-right d-flex align-items-center justify-content-center text-uppercase font-weight-bold p-3 py-0 text-center min-h-40px">
+                    <div className="flex-1 d-flex align-items-center justify-content-center text-uppercase font-weight-bold p-3 py-0 text-center min-h-40px">
                       {item.SchoolTitle}
                     </div>
-                    <div className="w-80px">
+                    <div className="w-100px border-left">
                       {item.CalendarList &&
                         item.CalendarList.map((classs, idx) => (
                           <div
@@ -230,7 +344,7 @@ function Calendar(props) {
           <div className="border flex-1 overflow-auto">
             {/* Header */}
             <div className="d-flex">
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 border-right min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 2
                 </div>
@@ -243,7 +357,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 border-right min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 3
                 </div>
@@ -256,7 +370,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 border-right min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 4
                 </div>
@@ -269,7 +383,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 border-right min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 5
                 </div>
@@ -282,7 +396,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 border-right min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 6
                 </div>
@@ -295,7 +409,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px">
+              <div className="flex-1 border-right min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 7
                 </div>
@@ -308,7 +422,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 min-w-225px">
+              <div className="flex-1 min-w-225px w-225px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   CN
                 </div>
@@ -327,80 +441,123 @@ function Calendar(props) {
               <Fragment>
                 {/* Body */}
                 {ListCalendar.map((calendar, x) => (
-                  <div className="d-flex flex-column border-top" style={{ width: "1575px" }} key={x}>
+                  <div
+                    className="border-top"
+                    style={{ minWidth: "1575px" }}
+                    key={x}
+                  >
                     {calendar.CalendarList &&
                       calendar.CalendarList.map((classs, idx) => (
                         <div key={idx} className={`d-flex`}>
                           {classs.Days &&
                             classs.Days.map((item, o) => (
-                              <div className={`d-flex min-w-225px border-right`} key={o}>
-                                <div className={`flex-1 ${classs.Days !== o && "border-right"}`}>
-                                  <div className="h-40px">
+                              <div
+                                className={`d-flex min-w-225px w-225px w-100 ${classs
+                                  .Days.length -
+                                  1 !==
+                                  o && "border-right"} flex-1`}
+                                key={o}
+                              >
+                                <div className={`flex-1`}>
+                                  <div
+                                    className={`h-40px ${classs.Days !== o &&
+                                      "border-right"}`}
+                                  >
                                     <div
                                       className={`d-flex w-100 position-relative h-40px ${calendar
                                         .CalendarList.length -
                                         1 !==
                                         idx && "border-bottom"}`}
                                     >
-                                      {item.Items && item.Items.length > 0 && item.Items.map((period, ix) => (
-                                        <Fragment key={ix}>
-                                          <OverlayTrigger
-                                            rootClose
-                                            trigger="click"
-                                            key="top"
-                                            placement="top"
-                                            overlay={
-                                              <Popover
-                                                id={`popover-positioned-top}`}
-                                              >
-                                                <Popover.Header className="text-uppercase font-weight-bold">
-                                                  <span className="pt-1 d-block">
-                                                    {period.Title} ( {moment(period.From).format("HH:mm")} - {moment(period.To).format("HH:mm")} )
-                                                  </span>
-                                                </Popover.Header>
-                                                <Popover.Body>
-                                                  <label>Giáo viên</label>
-                                                  <div>
-                                                    <AsyncPaginate
-                                                      className="select-control"
-                                                      classNamePrefix="select"
-                                                      isClearable={true}
-                                                      name="SchoolID"
-                                                      loadOptions={getAllTeacher}
-                                                      placeholder="Chọn trường"
-                                                      value={{
-                                                        label: "Tuấn Nguyễn DZ",
-                                                        value: 3779,
-                                                      }}
-                                                      onChange={(option) => {
-                                                        console.log(option);
-                                                        // setFieldValue(
-                                                        //   "SchoolID",
-                                                        //   option,
-                                                        //   false
-                                                        // );
-                                                      }}
-                                                      //onBlur={handleBlur}
-                                                      additional={{
-                                                        page: 1,
-                                                      }}
-                                                    />
-                                                  </div>
-                                                </Popover.Body>
-                                              </Popover>
-                                            }
-                                          >
-                                            <div
-                                              className={`h-38px border-right bg-primary cursor-pointer position-absolute top-1px zindex-5`}
-                                              style={GetCurrentLesson({
-                                                StartLesson: moment(period.From).format("HH:mm:ss"),
-                                                EndLesson: moment(period.To).format("HH:mm:ss"),
-                                              })}
-                                            ></div>
-                                          </OverlayTrigger>
-                                        </Fragment>
-                                      ))}
-
+                                      {item.Items &&
+                                        item.Items.length > 0 &&
+                                        getCalenderSession(
+                                          item.Items,
+                                          "SANG"
+                                        ).map((period, ix) => (
+                                          <Fragment key={ix}>
+                                            <OverlayTrigger
+                                              rootClose
+                                              trigger="click"
+                                              key="top"
+                                              placement="top"
+                                              //onToggle={(a) => console.log(a)}
+                                              overlay={
+                                                <Popover
+                                                  id={`popover-positioned-top}`}
+                                                >
+                                                  <Popover.Header className="text-uppercase font-weight-bold">
+                                                    <span className="pt-1 d-block">
+                                                      {period.Title} ({" "}
+                                                      {moment(
+                                                        period.From
+                                                      ).format("HH:mm")}{" "}
+                                                      -{" "}
+                                                      {moment(period.To).format(
+                                                        "HH:mm"
+                                                      )}{" "}
+                                                      )
+                                                    </span>
+                                                  </Popover.Header>
+                                                  <Popover.Body>
+                                                    <label>Giáo viên</label>
+                                                    <div>
+                                                      <AsyncPaginate
+                                                        className="select-control"
+                                                        classNamePrefix="select"
+                                                        isClearable={true}
+                                                        name="SchoolID"
+                                                        loadOptions={
+                                                          getAllTeacher
+                                                        }
+                                                        placeholder="Chọn giáo viên"
+                                                        value={
+                                                          period.UserID
+                                                            ? {
+                                                                value:
+                                                                  period.UserID,
+                                                                label:
+                                                                  period.UserTitle,
+                                                              }
+                                                            : null
+                                                        }
+                                                        onChange={(option) =>
+                                                          onSubmitTeacher(
+                                                            option,
+                                                            period
+                                                          )
+                                                        }
+                                                        additional={{
+                                                          page: 1,
+                                                        }}
+                                                      />
+                                                    </div>
+                                                  </Popover.Body>
+                                                </Popover>
+                                              }
+                                            >
+                                              <div
+                                                className={`h-38px bg-${
+                                                  period.UserID
+                                                    ? "success"
+                                                    : "primary"
+                                                } cursor-pointer position-absolute top-1px zindex-5`}
+                                                style={GetCurrentLesson({
+                                                  StartLesson: moment(
+                                                    period.From
+                                                  ).format("HH:mm:ss"),
+                                                  EndLesson: moment(
+                                                    period.To
+                                                  ).format("HH:mm:ss"),
+                                                  HourScheduleList:
+                                                    calendar.School
+                                                      .HourScheduleList,
+                                                  Session: "SANG",
+                                                })}
+                                              ></div>
+                                            </OverlayTrigger>
+                                          </Fragment>
+                                        ))}
                                     </div>
                                   </div>
                                 </div>
@@ -412,64 +569,95 @@ function Calendar(props) {
                                         1 !==
                                         idx && "border-bottom"}`}
                                     >
-                                      {item.Items && item.Items.length > 0 && item.Items.map((period, ix) => (
-                                        <Fragment key={ix}>
-                                          <OverlayTrigger
-                                            rootClose
-                                            trigger="click"
-                                            key="top"
-                                            placement="top"
-                                            overlay={
-                                              <Popover
-                                                id={`popover-positioned-top}`}
-                                              >
-                                                <Popover.Header className="text-uppercase font-weight-bold">
-                                                  <span className="pt-1 d-block">
-                                                  {period.Title} ( {moment(period.From).format("HH:mm")} - {moment(period.To).format("HH:mm")} )
-                                                  </span>
-                                                </Popover.Header>
-                                                <Popover.Body>
-                                                  <label>Giáo viên</label>
-                                                  <div>
-                                                    <AsyncPaginate
-                                                      className="select-control"
-                                                      classNamePrefix="select"
-                                                      isClearable={true}
-                                                      name="SchoolID"
-                                                      loadOptions={getAllTeacher}
-                                                      placeholder="Chọn trường"
-                                                      value={{
-                                                        label: "Tuấn Nguyễn DZ",
-                                                        value: 3779,
-                                                      }}
-                                                      onChange={(option) => {
-                                                        console.log(option);
-                                                        // setFieldValue(
-                                                        //   "SchoolID",
-                                                        //   option,
-                                                        //   false
-                                                        // );
-                                                      }}
-                                                      //onBlur={handleBlur}
-                                                      additional={{
-                                                        page: 1,
-                                                      }}
-                                                    />
-                                                  </div>
-                                                </Popover.Body>
-                                              </Popover>
-                                            }
-                                          >
-                                            <div
-                                              className={`h-38px border-right bg-primary cursor-pointer position-absolute top-1px zindex-5`}
-                                              style={GetCurrentLesson({
-                                                StartLesson: moment(period.From).format("HH:mm:ss"),
-                                                EndLesson: moment(period.To).format("HH:mm:ss"),
-                                              })}
-                                            ></div>
-                                          </OverlayTrigger>
-                                        </Fragment>
-                                      ))}
+                                      {item.Items &&
+                                        item.Items.length > 0 &&
+                                        getCalenderSession(
+                                          item.Items,
+                                          "CHIEU"
+                                        ).map((period, ix) => (
+                                          <Fragment key={ix}>
+                                            <OverlayTrigger
+                                              rootClose
+                                              trigger="click"
+                                              key="top"
+                                              placement="top"
+                                              overlay={
+                                                <Popover
+                                                  id={`popover-positioned-top}`}
+                                                >
+                                                  <Popover.Header className="text-uppercase font-weight-bold">
+                                                    <span className="pt-1 d-block">
+                                                      {period.Title} ({" "}
+                                                      {moment(
+                                                        period.From
+                                                      ).format("HH:mm")}{" "}
+                                                      -{" "}
+                                                      {moment(period.To).format(
+                                                        "HH:mm"
+                                                      )}{" "}
+                                                      )
+                                                    </span>
+                                                  </Popover.Header>
+                                                  <Popover.Body>
+                                                    <label>Giáo viên</label>
+                                                    <div>
+                                                      <AsyncPaginate
+                                                        className="select-control"
+                                                        classNamePrefix="select"
+                                                        isClearable={true}
+                                                        name="SchoolID"
+                                                        loadOptions={
+                                                          getAllTeacher
+                                                        }
+                                                        placeholder="Chọn giáo viên"
+                                                        value={
+                                                          period.UserID
+                                                            ? {
+                                                                value:
+                                                                  period.UserID,
+                                                                label:
+                                                                  period.UserTitle,
+                                                              }
+                                                            : null
+                                                        }
+                                                        onChange={(option) =>
+                                                          onSubmitTeacher(
+                                                            option,
+                                                            period
+                                                          )
+                                                        }
+                                                        //onBlur={handleBlur}
+                                                        additional={{
+                                                          page: 1,
+                                                        }}
+                                                      />
+                                                    </div>
+                                                  </Popover.Body>
+                                                </Popover>
+                                              }
+                                            >
+                                              <div
+                                                className={`h-38px bg-${
+                                                  period.UserID
+                                                    ? "success"
+                                                    : "primary"
+                                                } cursor-pointer position-absolute top-1px zindex-5`}
+                                                style={GetCurrentLesson({
+                                                  StartLesson: moment(
+                                                    period.From
+                                                  ).format("HH:mm:ss"),
+                                                  EndLesson: moment(
+                                                    period.To
+                                                  ).format("HH:mm:ss"),
+                                                  HourScheduleList:
+                                                    calendar.School
+                                                      .HourScheduleList,
+                                                  Session: "CHIEU",
+                                                })}
+                                              ></div>
+                                            </OverlayTrigger>
+                                          </Fragment>
+                                        ))}
                                     </div>
                                   </div>
                                 </div>
@@ -498,17 +686,21 @@ function Calendar(props) {
           )
         )}
 
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between px-2">
           <Pagination
             className="my-3"
-            count={PageTotal}
-            page={1}
+            count={PageCount}
+            page={filters._pi}
             siblingCount={1}
             boundaryCount={1}
             variant="outlined"
             shape="rounded"
             onChange={(event, value) => {
-              console.log(value);
+              setLoading(true);
+              setFilters((prevState) => ({
+                ...prevState,
+                _pi: value,
+              }));
             }}
           />
           <div className="d-flex align-items-center">
@@ -518,7 +710,7 @@ function Calendar(props) {
               key="secondary"
               id={`dropdown-variants-Secondary`}
               variant=" font-weight-boldest"
-              title={5}
+              title={filters._ps}
             >
               {Array(5)
                 .fill()
@@ -526,10 +718,15 @@ function Calendar(props) {
                   <Dropdown.Item
                     key={index}
                     eventKey={index}
-                    //active={}
-                    onClick={() => console.log("Click")}
+                    active={filters._ps === (index + 1) * 10}
+                    onClick={() =>
+                      setFilters((prevState) => ({
+                        ...prevState,
+                        _ps: (index + 1) * 10,
+                      }))
+                    }
                   >
-                    {index}
+                    {(index + 1) * 10}
                   </Dropdown.Item>
                 ))}
             </DropdownButton>
@@ -537,6 +734,7 @@ function Calendar(props) {
           </div>
         </div>
       </div>
+      <SpinnerMessage isShow={SpinnerShow} text="Đang cập nhập ..." />
     </div>
   );
 }

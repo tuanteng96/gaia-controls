@@ -8,7 +8,7 @@ ModalClass.propTypes = {
 };
 
 const initialValue = {
-  Class: [
+  ClassList: [
     {
       Order: 1,
       Title: "",
@@ -22,18 +22,20 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
 
   useEffect(() => {
     if (defaultValues.ID) {
+      
       setInitialValues((prevState) => ({
         ...prevState,
         ID: defaultValues.ID,
         Title: defaultValues.Title,
-        Class:
+        ClassList:
           defaultValues.ClassList && defaultValues.ClassList.length > 0
             ? defaultValues.ClassList
-            : prevState.Class.map((item) => ({
+            : initialValue.ClassList.map((item) => ({
                 ...item,
                 SchoolID: defaultValues.ID,
               })),
       }));
+
     }
   }, [defaultValues]);
 
@@ -62,17 +64,17 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     </tr>
                   </thead>
                   <FieldArray
-                    name="Class"
+                    name="ClassList"
                     render={(arrayHelpers) => (
                       <tbody>
-                        {values.Class &&
-                          values.Class.map((item, index) => (
+                        {values.ClassList &&
+                          values.ClassList.map((item, index) => (
                             <tr key={index}>
                               <td>
                                 <input
                                   type="text"
                                   className="form-control text-center"
-                                  name={`Class.${index}.Order`}
+                                  name={`ClassList.${index}.Order`}
                                   placeholder="STT"
                                   autoComplete="off"
                                   value={item.Order}
@@ -84,7 +86,7 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                                 <input
                                   type="text"
                                   className="form-control"
-                                  name={`Class.${index}.Title`}
+                                  name={`ClassList.${index}.Title`}
                                   placeholder="Nhập tên"
                                   autoComplete="off"
                                   value={item.Title}
@@ -103,7 +105,7 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                                 />
                               </td>
                               <td className="text-center">
-                                {values.Class.length - 1 === index && (
+                                {values.ClassList.length - 1 === index && (
                                   <button
                                     type="button"
                                     className="btn btn-success btn-sm"
@@ -111,14 +113,14 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                                       arrayHelpers.push({
                                         Title: "",
                                         SchoolID: values.ID,
-                                        Order: values.Class.length + 1,
+                                        Order: values.ClassList.length + 1,
                                       })
                                     }
                                   >
                                     <i className="far fa-plus pe-0 icon-1x"></i>
                                   </button>
                                 )}
-                                {values.Class.length - 1 !== index && (
+                                {values.ClassList.length - 1 !== index && (
                                   <button
                                     type="button"
                                     className="btn btn-danger btn-sm"

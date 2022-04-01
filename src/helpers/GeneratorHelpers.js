@@ -20,7 +20,7 @@ export const ArrayTimeSchool = () => {
                 .format("YYYY/MM/DD HH:mm");
         } else {
             if (i === 7) {
-                TimeEnd = moment({ h: 1, m: 25, s: 0 }).format("YYYY/MM/DD HH:mm");
+                TimeEnd = moment({ h: 13, m: 25, s: 0 }).format("YYYY/MM/DD HH:mm");
             }
             TimeStart = moment(TimeEnd)
                 .add({ minute: BreakTime })

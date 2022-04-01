@@ -179,7 +179,7 @@ function ModalScheduleClass({
                         `- Từ ngày ${moment(values.From).format("ll")}`}{" "}
                       {values.To && `đến ${moment(values.To).format("ll")}`}
                     </div>
-                    <div className="d-flex position-relative">
+                    <div className="d-flex position-relative align-items-start">
                       <div className="border border-end-0 w-150px">
                         <div className="p-2 h-55px d-flex align-items-center justify-content-center min-w-150px border-right text-uppercase font-weight-bold">
                           Lớp
