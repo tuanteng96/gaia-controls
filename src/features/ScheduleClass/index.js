@@ -274,8 +274,8 @@ function ScheduleClass(props) {
                     attrs: { "data-title": "Thời gian kết thúc" },
                     formatter: (cell, row) => (
                       <div>
-                        {row.From
-                          ? moment(row.From).format("DD-MM-YYYY")
+                        {row.To
+                          ? moment(row.To).format("DD-MM-YYYY")
                           : "Không giới hạn"}
                       </div>
                     ),

@@ -35,6 +35,7 @@ function Calendar(props) {
   const [loading, setLoading] = useState(true);
   const [ListCalendar, setListCalendar] = useState([]);
   const [SpinnerShow, setSpinnerShow] = useState(false);
+  const [StartEndHour, setStartEndHour] = useState(null);
 
   const typingTimeoutRef = useRef(null);
 
@@ -55,8 +56,9 @@ function Calendar(props) {
   }, [filters]);
 
   const GetCurrentLesson = (item) => {
-    var TimeDayStart = "06:30:00";
-    var TimeDayEnd = "18:30:00";
+    if (!StartEndHour) return;
+    var TimeDayStart = StartEndHour.HourMin;
+    var TimeDayEnd = StartEndHour.HourMax;
     const { StartLesson, EndLesson, HourScheduleList, Session } = item;
     var TotalMinutes, TotalPeriod, TotalStart;
     if (!HourScheduleList || !HourScheduleList.length === 0) return;
@@ -125,7 +127,7 @@ function Calendar(props) {
     !newLoading && !loading && setLoading(true);
     const params = getRequestParams(filters);
     CalendarCrud.getAll(params)
-      .then(({ list, pcount, error, right }) => {
+      .then(({ list, pcount, error, right, more }) => {
         if (error && right) {
           Swal.fire({
             icon: "error",
@@ -138,6 +140,7 @@ function Calendar(props) {
           });
         } else {
           setListCalendar(list);
+          setStartEndHour(more);
           setPageCount(pcount);
           setLoading(false);
           callback && callback();
@@ -156,13 +159,12 @@ function Calendar(props) {
     }, 500);
   };
 
-  const onSubmitTeacher = ({ ID, FullName }, period) => {
+  const onSubmitTeacher = (option, period) => {
     setSpinnerShow(true);
-
     const objSubmit = {
       ID: period.ID,
-      UserID: ID,
-      UserTitle: FullName,
+      UserID: option ? option.ID : 0,
+      UserTitle: option ? option.FullName : "",
     };
 
     CalendarCrud.addTeacher(objSubmit)
@@ -306,10 +308,10 @@ function Calendar(props) {
           - {filters.To$date_to && moment(filters.To$date_to).format("ll")}
         </div>
         <div className="d-flex position-relative align-items-start">
-          <div className="border border-end-0 w-300px">
+          <div className="border border-end-0 w-200px">
             {/* Header Sidebar */}
 
-            <div className="p-2 h-80px d-flex align-items-center justify-content-center min-w-300px border-right text-uppercase font-weight-bold">
+            <div className="p-2 h-80px d-flex align-items-center justify-content-center min-w-200px border-right text-uppercase font-weight-bold">
               Trường / Lớp
             </div>
             {/* End Header Sidebar */}
@@ -320,9 +322,19 @@ function Calendar(props) {
                 {ListCalendar.map((item, index) => (
                   <div className="d-flex border-top" key={index}>
                     <div className="flex-1 d-flex align-items-center justify-content-center text-uppercase font-weight-bold p-3 py-0 text-center min-h-40px">
-                      {item.SchoolTitle}
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          WebkitLineClamp: item.CalendarList.length,
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
+                        {item.SchoolTitle}
+                      </div>
                     </div>
-                    <div className="w-100px border-left">
+                    <div className="w-70px border-left">
                       {item.CalendarList &&
                         item.CalendarList.map((classs, idx) => (
                           <div
@@ -331,7 +343,9 @@ function Calendar(props) {
                               idx &&
                               "border-bottom"} px-2 h-40px d-flex align-items-center justify-content-center`}
                           >
-                            {classs.ClassTitle}
+                            <div className="text-truncate">
+                              {classs.ClassTitle}
+                            </div>
                           </div>
                         ))}
                     </div>
@@ -344,7 +358,7 @@ function Calendar(props) {
           <div className="border flex-1 overflow-auto">
             {/* Header */}
             <div className="d-flex">
-              <div className="flex-1 border-right min-w-225px w-225px w-100">
+              <div className="flex-1 border-right min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 2
                 </div>
@@ -357,7 +371,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px w-225px w-100">
+              <div className="flex-1 border-right min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 3
                 </div>
@@ -370,7 +384,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px w-225px w-100">
+              <div className="flex-1 border-right min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 4
                 </div>
@@ -383,7 +397,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px w-225px w-100">
+              <div className="flex-1 border-right min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 5
                 </div>
@@ -396,7 +410,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px w-225px w-100">
+              <div className="flex-1 border-right min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 6
                 </div>
@@ -409,7 +423,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 border-right min-w-225px w-225px w-100">
+              <div className="flex-1 border-right min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   Thứ 7
                 </div>
@@ -422,7 +436,7 @@ function Calendar(props) {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 min-w-225px w-225px w-100">
+              <div className="flex-1 min-w-200px w-200px w-100">
                 <div className="h-40px border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
                   CN
                 </div>
@@ -443,7 +457,7 @@ function Calendar(props) {
                 {ListCalendar.map((calendar, x) => (
                   <div
                     className="border-top"
-                    style={{ minWidth: "1575px" }}
+                    style={{ minWidth: "1400px" }}
                     key={x}
                   >
                     {calendar.CalendarList &&
@@ -452,7 +466,7 @@ function Calendar(props) {
                           {classs.Days &&
                             classs.Days.map((item, o) => (
                               <div
-                                className={`d-flex min-w-225px w-225px w-100 ${classs
+                                className={`d-flex min-w-200px w-200px w-100 ${classs
                                   .Days.length -
                                   1 !==
                                   o && "border-right"} flex-1`}
