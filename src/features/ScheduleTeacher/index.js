@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { isDevelopment } from "../../helpers/DevelopmentHelpers";
 import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
-import FiltersSchedule from "./components/Filters/FiltersSchedule";
-import ModalScheduleClass from "./components/Modal/ModalScheduleClass";
-import { toast } from "react-toastify";
-import ScheduleClassCrud from "./_redux/ScheduleClassCrud";
 import { getRequestParams } from "../../helpers/ParamsHelpers";
 import Swal from "sweetalert2";
 import { AlertError } from "../../helpers/AlertHelpers";
+import FiltersSchedule from "../ScheduleClass/components/Filters/FiltersSchedule";
 
 import moment from "moment";
 import "moment/locale/vi";
+import ModalClassDays from "./components/Modal/ModalClassDays";
+import ScheduleClassCrud from "../ScheduleClass/_redux/ScheduleClassCrud";
+
 moment.locale("vi");
 
-function ScheduleClass(props) {
+function ScheduleTeacher(props) {
   const [filters, setFilters] = useState({
     _pi: 1,
     _ps: 10,
@@ -26,11 +26,13 @@ function ScheduleClass(props) {
   const [loading, setLoading] = useState(false);
   const [VisibleModal, setVisibleModal] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
-  const [btnLoading, setBtnLoading] = useState(false);
 
-  const retrieveSchedule = (callback) => {
-    !loading && setLoading(true);
-    const params = getRequestParams(filters);
+  const retrieveSchedule = (newLoading = false, callback) => {
+    !newLoading && !loading && setLoading(true);
+    const params = getRequestParams({
+      ...filters,
+      query: "&xep-lich-giao-vien=1",
+    });
     ScheduleClassCrud.getAll(params)
       .then(({ list, total, error, right }) => {
         if (error && right) {
@@ -50,13 +52,31 @@ function ScheduleClass(props) {
           callback && callback();
         }
       })
-      .catch((error) => console.log(error));
+      .catch(({ response }) => {
+        AlertError({
+          title: "Xảy ra lỗi",
+          errorTitle: "Không thể xếp lịch cho giáo viên này.",
+          error: response.error,
+        });
+      });
   };
 
   useEffect(() => {
     retrieveSchedule();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
+
+  useEffect(() => {
+    if (defaultValues && defaultValues.ID) {
+      const index =
+        ListSchedule &&
+        ListSchedule.findIndex((item) => item.ID === defaultValues.ID);
+      if (index > -1) {
+        setDefaultValues(ListSchedule[index]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ListSchedule]);
 
   const onFilters = ({ From, To, SchoolID }) => {
     setLoading(true);
@@ -77,112 +97,13 @@ function ScheduleClass(props) {
     setVisibleModal(false);
   };
 
-  const onAddEdit = (values) => {
-    setBtnLoading(true);
-    const newObj = {
-      ...values,
-      From: values.From ? moment(values.From).format("MM-DD-YYYY HH:mm") : "",
-      To: values.To ? moment(values.To).format("MM-DD-YYYY HH:mm") : "",
-      CalendarList: values.CalendarList.map((item) => ({
-        ...item,
-        Days: item.Days.map((day) => ({
-          ...day,
-          Items: day.Items
-            ? [
-                {
-                  Title: day.Items.Title,
-                  From: day.Items.From,
-                  To: day.Items.To,
-                },
-              ]
-            : [],
-        })),
-      })),
-    };
-
-    delete newObj.HourScheduleList;
-
-    ScheduleClassCrud.addEdit(newObj)
-      .then((response) => {
-        if (response.error) {
-          setBtnLoading(false);
-          AlertError({
-            title: "Xảy ra lỗi",
-            errorTitle:
-              "Không thể thêm mới xếp lịch cho trường. Vui lòng kiểm tra lại.",
-            error: response.error,
-          });
-        } else {
-          retrieveSchedule(() => {
-            hideModal();
-            setBtnLoading(false);
-            toast.success(
-              values.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
-              {
-                position: toast.POSITION.TOP_RIGHT,
-                autoClose: 1500,
-              }
-            );
-          });
-        }
-      })
-      .catch(({ response }) => {
-        setBtnLoading(false);
-        AlertError({
-          title: "Xảy ra lỗi",
-          errorTitle:
-            "Không thể thêm mới xếp lịch cho trường. Vui lòng kiểm tra lại.",
-          error: response.data.error,
-        });
-      });
-  };
-
-  const onDelete = (item) => {
-    if (!item.ID) return;
-    const dataPost = {
-      deleteId: item.ID,
-    };
-    Swal.fire({
-      title: "Bạn muốn xóa xếp lịch này ?",
-      text: "Bạn có chắc chắn muốn xóa xếp lịc trường này không ?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#6e7881",
-      confirmButtonText: "Tôi muốn xóa!",
-      cancelButtonText: "Đóng",
-      showLoaderOnConfirm: true,
-      allowOutsideClick: () => !Swal.isLoading(),
-      preConfirm: () => {
-        return new Promise((resolve, reject) => {
-          ScheduleClassCrud.Delete(dataPost)
-            .then(() => {
-              retrieveSchedule(() => {
-                setTimeout(() => {
-                  resolve();
-                }, 300);
-              });
-            })
-            .catch((error) => console.log(error));
-        });
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        toast.success("Xóa giáo viên thành công !", {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 1500,
-        });
-      }
-    });
-  };
-
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
       <div className="hpanel">
         <div className="panel-body">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-uppercase font-size-h3 mb-0">
-              Xếp lịch trường
+              Xếp lịch giáo viên
             </h2>
           </div>
         </div>
@@ -190,16 +111,7 @@ function ScheduleClass(props) {
       <div className="row">
         <div className="col-lg-12">
           <div className="hpanel hgreen">
-            <div className="panel-heading hbuilt">
-              Danh sách lịch học theo trường
-              <button
-                type="button"
-                className="btn btn-sm btn-fix btn-success position-absolute top-9px right-9px"
-                onClick={openModal}
-              >
-                Thêm mới
-              </button>
-            </div>
+            <div className="panel-heading hbuilt">Danh sách trường</div>
             <div className="panel-body overflow-visible">
               <FiltersSchedule onSubmit={onFilters} loading={loading} />
               <BaseTablesCustom
@@ -301,16 +213,6 @@ function ScheduleClass(props) {
                               aria-hidden="true"
                             ></i>
                           </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-danger ms-2 w-24px h-24px"
-                            onClick={() => onDelete(row)}
-                          >
-                            <i
-                              className="fas fa-trash icon-sm pe-0"
-                              aria-hidden="true"
-                            ></i>
-                          </button>
                         </div>
                       );
                     },
@@ -330,15 +232,14 @@ function ScheduleClass(props) {
           </div>
         </div>
       </div>
-      <ModalScheduleClass
+      <ModalClassDays
         show={VisibleModal}
         onHide={hideModal}
-        onAddEdit={onAddEdit}
-        btnLoading={btnLoading}
         defaultValues={defaultValues}
+        retrieveSchedule={retrieveSchedule}
       />
     </div>
   );
 }
 
-export default ScheduleClass;
+export default ScheduleTeacher;

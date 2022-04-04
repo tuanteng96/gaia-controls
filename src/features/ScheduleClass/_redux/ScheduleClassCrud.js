@@ -5,7 +5,9 @@ const ADD_EDIT_URL = "/api/v3/content?cmd=edit&type=WowCalendarEnt";
 const DELETE_URL = "/api/v3/content?cmd=delete&type=WowCalendarEnt";
 
 const getAll = (data) => {
-    return axiosClient.post(GET_ALL_URL, JSON.stringify(data));
+    const newData = {...data };
+    delete newData.query;
+    return axiosClient.post(`${GET_ALL_URL}${data.query ? data.query : ""}`, JSON.stringify(newData));
 };
 const addEdit = (data) => {
     return axiosClient.post(ADD_EDIT_URL, JSON.stringify(data));

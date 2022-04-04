@@ -1,5 +1,8 @@
 export const getRequestParams = (filters) => {
     let params = {};
+    if (filters.query) {
+        params.query = filters.query;
+    }
     if (filters.Type) {
         params.Type = Number(filters.Type);
     }
