@@ -51,6 +51,7 @@ function ModalAddEdit({ show, onAddEdit, onHide, btnLoading, defaultValues }) {
               }
             : null,
           TeacherTitle: defaultValues.TeacherTitle,
+          Qty: defaultValues.Qty,
           IsOut: defaultValues.IsOut,
           Items:
             defaultValues.Items && defaultValues.Items.length > 0

@@ -190,7 +190,7 @@ function ToolsEmEx(props) {
                 <input
                   type="text"
                   className="form-control pr-50px"
-                  placeholder="Nhập tên giáo cụ ..."
+                  placeholder="Nhập tên ..."
                   onChange={(e) => onChangeSearch(e.target.value)}
                 />
                 <div className="position-absolute top-12px right-15px pointer-events-none">

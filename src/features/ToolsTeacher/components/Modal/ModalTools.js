@@ -6,6 +6,7 @@ import { Form, Formik } from "formik";
 import Select from "react-select";
 import { useSelector } from "react-redux";
 import UploadFile from "../../../../_shared/files/UploadFile";
+import NumberFormat from "react-number-format";
 
 ModalTools.propTypes = {
   show: PropTypes.bool,
@@ -15,6 +16,7 @@ ModalTools.propTypes = {
 const initialValue = {
   Title: "",
   Type: null,
+  Qty: "",
   Thumbnail: "",
 };
 
@@ -110,6 +112,29 @@ function ModalTools({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   />
                 </div>
                 <div className="form-group">
+                  <label>
+                    Số lượng <span className="text-danger">*</span>
+                  </label>
+                  <NumberFormat
+                    type="text"
+                    autoComplete="off"
+                    allowNegative={false}
+                    name={`Qty`}
+                    placeholder="Nhập số lượng"
+                    className="form-control"
+                    isNumericString={true}
+                    //thousandSeparator={true}
+                    value={values.Qty}
+                    onValueChange={(val) => {
+                      setFieldValue(
+                        `Qty`,
+                        val.floatValue ? val.floatValue : val.value
+                      );
+                    }}
+                    onBlur={handleBlur}
+                  />
+                </div>
+                <div className="form-group">
                   <label>Danh mục</label>
                   <Select
                     className={`select-control ${
@@ -132,7 +157,7 @@ function ModalTools({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     onBlur={handleBlur}
                   />
                 </div>
-                <div className="form-group">
+                <div className="form-group mb-0">
                   <label>Hình ảnh</label>
                   <UploadFile
                     name="Thumbnail"

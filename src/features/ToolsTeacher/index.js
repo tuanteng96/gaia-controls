@@ -231,7 +231,7 @@ function ToolsTeacher(props) {
                   },
                   {
                     dataField: "Title",
-                    text: "Tên bài giảng",
+                    text: "Tên giáo cụ",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Tên" },
