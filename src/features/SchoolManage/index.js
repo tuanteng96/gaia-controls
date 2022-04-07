@@ -138,7 +138,6 @@ function SchoolManage(props) {
   };
 
   const onSubmitClass = (values) => {
-    console.log(values);
     setBtnLoading((prevState) => ({ ...prevState, Class: true }));
     const objSubmit = {
       SchoolID: values.ID,

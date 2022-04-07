@@ -7,6 +7,8 @@ import ScheduleClass from '../features/ScheduleClass';
 import ScheduleTeacher from '../features/ScheduleTeacher';
 import SchoolManage from '../features/SchoolManage';
 import Teacher from '../features/Teacher';
+import ToolsEmEx from '../features/ToolsEmEx';
+import ToolsTeacher from "../features/ToolsTeacher";
 
 export default function Page() {
     return (
@@ -20,7 +22,9 @@ export default function Page() {
         <Route path="/bang-lich" element={<Calendar />} />
         <Route path="/xep-lich" element={<ScheduleClass />} />
         <Route path="/xep-lich-giao-vien" element={<ScheduleTeacher />} />
-
+        <Route path="/giao-cu" element={<ToolsTeacher />} />
+        <Route path="/giao-cu/:id" element={<ToolsTeacher />} />
+        <Route path="/nhap-xuat-giao-cu" element={<ToolsEmEx />} />
       </Routes>
     );
 }
