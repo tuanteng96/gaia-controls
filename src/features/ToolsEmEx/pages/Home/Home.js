@@ -1,39 +1,31 @@
-import React, { useEffect, useRef, useState } from "react";
-import { isDevelopment } from "../../helpers/DevelopmentHelpers";
-import BaseTablesCustom from "../../_shared/tables/BaseTablesCustom";
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import BaseTablesCustom from "../../../../_shared/tables/BaseTablesCustom";
+import ModalAddEdit from "../../components/Modal/ModalAddEdit";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { useParams } from "react-router-dom";
-import { getRequestParams } from "../../helpers/ParamsHelpers";
-import ToolsTeacherCrud from "./_redux/ToolsTeacherCrud";
-import { toAbsoluteUrl } from "../../helpers/AssetsHelpers";
-import Sidebar from "./components/Sidebar/Sidebar";
-import ModalTools from "./components/Modal/ModalTools";
-import { AlertError } from "../../helpers/AlertHelpers";
+import { getRequestParams } from "../../../../helpers/ParamsHelpers";
+import ToolsEmExCrud from "../../_redux/ToolsEmExCrud";
+import { AlertError } from "../../../../helpers/AlertHelpers";
 
-ToolsTeacher.propTypes = {};
-
-function ToolsTeacher(props) {
-  const { id } = useParams();
+function Home() {
   const [filters, setFilters] = useState({
-    Type: 0,
     _pi: 1,
     _ps: 10,
     _key: "",
   });
-  const [ListTools, setListTools] = useState([]);
+  const [ListToolsEx, setListToolsEx] = useState([]);
   const [PageTotal, setPageTotal] = useState(0);
-  const [ModalAdd, setModalAdd] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [btnLoading, setBtnLoading] = useState(false);
+  const [ModalAdd, setModalAdd] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const typingTimeoutRef = useRef(null);
-
-  const retrieveTools = (callback) => {
+  const retrieveToolsEmEx = (callback) => {
     !loading && setLoading(true);
     const params = getRequestParams(filters);
-    ToolsTeacherCrud.getAllTools(params)
+    ToolsEmExCrud.getAll(params)
       .then(({ list, total, error, right }) => {
         if (error && right) {
           AlertError(
@@ -43,12 +35,10 @@ function ToolsTeacher(props) {
               error: error,
               allowOutsideClick: false,
             },
-            () => {
-              window.location.href = "/";
-            }
+            () => {window.location.href = "/";}
           );
         } else {
-          setListTools(list);
+          setListToolsEx(list);
           setPageTotal(total);
           setLoading(false);
           callback && callback();
@@ -64,13 +54,7 @@ function ToolsTeacher(props) {
   };
 
   useEffect(() => {
-    if (id) {
-      setFilters((prevState) => ({ ...prevState, Type: id }));
-    }
-  }, [id]);
-
-  useEffect(() => {
-    retrieveTools();
+    retrieveToolsEmEx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
@@ -88,12 +72,21 @@ function ToolsTeacher(props) {
     setBtnLoading(true);
     const objPost = {
       ...values,
-      Type: values.Type ? values.Type.value : "",
-      TypeName: values.Type ? values.Type.label : "",
+      TeacherID: values.TeacherID ? values.TeacherID.value : "",
+      TeacherTitle: values.TeacherID ? values.TeacherID.label : "",
+      Items:
+        values.Items && values.Items.length > 0
+          ? values.Items.filter((item) => item.TeachingItemID && item.Qty).map(
+              (item) => ({
+                ...item,
+                TeachingItemID: item.TeachingItemID.value || "",
+              })
+            )
+          : [],
     };
-    ToolsTeacherCrud.addEditTools(objPost)
+    ToolsEmExCrud.addEdit(objPost)
       .then(() => {
-        retrieveTools(() => {
+        retrieveToolsEmEx(() => {
           onHideModal();
           setBtnLoading(false);
           toast.success(
@@ -114,8 +107,8 @@ function ToolsTeacher(props) {
       deleteId: item.ID,
     };
     Swal.fire({
-      title: "Bạn muốn xóa bài giảng ?",
-      text: "Bạn có chắc chắn muốn xóa bài giảng này không ?",
+      title: "Bạn muốn xóa ?",
+      text: "Bạn có chắc chắn muốn đơn này này không ?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -126,9 +119,9 @@ function ToolsTeacher(props) {
       allowOutsideClick: () => !Swal.isLoading(),
       preConfirm: () => {
         return new Promise((resolve, reject) => {
-          ToolsTeacherCrud.deleteTools(dataPost)
+          ToolsEmExCrud.onDelete(dataPost)
             .then(() => {
-              retrieveTools(() => {
+              retrieveToolsEmEx(() => {
                 setTimeout(() => {
                   resolve();
                 }, 300);
@@ -139,7 +132,7 @@ function ToolsTeacher(props) {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        toast.success("Xóa giáo cụ thành công !", {
+        toast.success("Xóa thành công !", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 1500,
         });
@@ -149,50 +142,66 @@ function ToolsTeacher(props) {
 
   const onChangeSearch = (value) => {
     setLoading(true);
-    setListTools([]);
+    setListToolsEx([]);
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
     typingTimeoutRef.current = setTimeout(() => {
       if (value) {
-        setFilters({ ...filters, _Pi: 1, _key: value, Type: 0 });
+        setFilters({ ...filters, _Pi: 1, _key: value });
       } else {
-        setFilters({ ...filters, _Pi: 1, _key: value, Type: id });
+        setFilters({ ...filters, _Pi: 1, _key: value });
       }
     }, 500);
   };
-
   return (
-    <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
+    <Fragment>
       <div className="hpanel">
         <div className="panel-body">
           <div className="d-flex justify-content-between align-items-center">
-            <h2 className="text-uppercase font-size-h3 mb-0">Quản lý giáo cụ</h2>
+            <h2 className="text-uppercase font-size-h3 mb-0">
+              Nhập xuất giáo cụ
+            </h2>
+            <div>
+              <Link
+                to="/nhap-xuat-giao-cu/ton-kho"
+                className="btn btn-outline-secondary"
+              >
+                Hàng tồn kho
+              </Link>
+              <button
+                type="button"
+                className="btn btn-outline-primary ml-10px"
+                onClick={() => onOpenModal({ IsOut: false })}
+              >
+                <i className="fal fa-arrow-from-right"></i>
+                Nhập giáo cụ
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-danger ml-10px"
+                onClick={() => onOpenModal({ IsOut: true })}
+              >
+                <i className="fal fa-arrow-from-left"></i>
+                Xuất giáo cụ
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
       <div className="row">
-        <div className="col-lg-4">
-          <Sidebar openModal={onOpenModal} />
-        </div>
-        <div className="col-lg-8">
+        <div className="col-lg-12">
           <div className="hpanel hgreen">
             <div className="panel-heading hbuilt">
-              Danh sách giáo cụ
-              <button
-                type="button"
-                className="btn btn-sm btn-fix btn-success position-absolute top-9px right-9px"
-                onClick={() => onOpenModal()}
-              >
-                Thêm mới
-              </button>
+              Danh sách nhập xuất giáo cụ
             </div>
             <div className="panel-body overflow-visible">
               <div className="max-w-450px mb-4 position-relative">
                 <input
                   type="text"
                   className="form-control pr-50px"
-                  placeholder="Nhập tên giáo cụ ..."
+                  placeholder="Nhập tên ..."
                   onChange={(e) => onChangeSearch(e.target.value)}
                 />
                 <div className="position-absolute top-12px right-15px pointer-events-none">
@@ -200,7 +209,7 @@ function ToolsTeacher(props) {
                 </div>
               </div>
               <BaseTablesCustom
-                data={ListTools}
+                data={ListToolsEx}
                 textDataNull="Không có dữ liệu."
                 options={{
                   custom: true,
@@ -209,12 +218,12 @@ function ToolsTeacher(props) {
                   sizePerPage: filters._ps,
                   alwaysShowAllBtns: true,
                   onSizePerPageChange: (sizePerPage) => {
-                    setListTools([]);
+                    setListToolsEx([]);
                     const Ps = sizePerPage;
                     setFilters({ ...filters, _ps: Ps });
                   },
                   onPageChange: (page) => {
-                    setListTools([]);
+                    setListToolsEx([]);
                     const Pi = page;
                     setFilters({ ...filters, _pi: Pi });
                   },
@@ -237,49 +246,71 @@ function ToolsTeacher(props) {
                   },
                   {
                     dataField: "Title",
-                    text: "Tên giáo cụ",
+                    text: "Tên",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Tên" },
                     headerStyle: () => {
-                      return { minWidth: "350px", width: "350px" };
+                      return { minWidth: "350px" };
                     },
                   },
                   {
-                    dataField: "Type",
-                    text: "Danh mục",
+                    dataField: "Code",
+                    text: "Mã",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "Danh mục" },
-                    formatter: (cell, row) => <div>{row.TypeName}</div>,
+                    attrs: { "data-title": "Mã" },
+                    formatter: (cell, row) => <div>{row.Code}</div>,
+                    headerStyle: () => {
+                      return { minWidth: "200px", width: "200px" };
+                    },
                   },
                   {
-                    dataField: "Thumbnail",
-                    text: "Hình ảnh",
+                    dataField: "TeacherTitle",
+                    text: "Giáo viên",
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
-                    attrs: { "data-title": "Hình ảnh" },
+                    attrs: { "data-title": "Giáo viên" },
+                    headerStyle: () => {
+                      return { minWidth: "300px", width: "300px" };
+                    },
+                  },
+                  {
+                    dataField: "Items",
+                    text: "Giáo cụ",
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Giáo cụ" },
                     formatter: (cell, row) => (
-                      <div className="w-100px">
-                        <a
-                          href={toAbsoluteUrl(`/upload/image/${row.Thumbnail}`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="d-block text-center"
-                        >
-                          <img
-                            className="max-w-100"
-                            src={toAbsoluteUrl(
-                              `/upload/image/${row.Thumbnail}`
-                            )}
-                            alt={row.Thumbnail}
-                          />
-                        </a>
+                      <div>
+                        {row.Items && row.Items.length > 0
+                          ? row.Items.map((item, index) => (
+                              <span>
+                                {item.TeachingItemTitle} ({item.Qty})
+                                {row.Items.length - 1 !== index && " , "}
+                              </span>
+                            ))
+                          : "Không có giáo cụ"}
                       </div>
                     ),
-                    headerStyle: () => {
-                      return { minWidth: "100%", width: "115px" };
-                    },
+                  },
+                  {
+                    dataField: "IsOut",
+                    text: "Loại",
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Mã" },
+                    formatter: (cell, row) => (
+                      <div>
+                        <label
+                          className={`label label-${
+                            row.IsOut ? "danger" : "success"
+                          }`}
+                        >
+                          Đơn {row.IsOut ? "xuất" : "nhập"}
+                        </label>
+                      </div>
+                    ),
                   },
                   {
                     dataField: "#",
@@ -326,15 +357,15 @@ function ToolsTeacher(props) {
           </div>
         </div>
       </div>
-      <ModalTools
+      <ModalAddEdit
         show={ModalAdd}
         onHide={onHideModal}
         defaultValues={defaultValues}
         onAddEdit={onAddEdit}
         btnLoading={btnLoading}
       />
-    </div>
+    </Fragment>
   );
 }
 
-export default ToolsTeacher;
+export default Home;

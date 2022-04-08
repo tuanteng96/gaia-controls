@@ -25,6 +25,7 @@ export default function Page() {
         <Route path="/giao-cu" element={<ToolsTeacher />} />
         <Route path="/giao-cu/:id" element={<ToolsTeacher />} />
         <Route path="/nhap-xuat-giao-cu" element={<ToolsEmEx />} />
+        <Route path="/nhap-xuat-giao-cu/*" element={<ToolsEmEx />} />
       </Routes>
     );
 }

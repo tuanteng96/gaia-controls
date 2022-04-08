@@ -26,10 +26,7 @@ const initialValue = {
 
 const ToolsSchema = Yup.object().shape({
   Title: Yup.string().required("Vui lòng nhập tên."),
-  Code: Yup.string().required("Vui lòng nhập Code."),
-  TeacherID: Yup.object()
-    .nullable()
-    .required("Vui lòng chọn danh mục giáo cụ."),
+  Code: Yup.string().required("Vui lòng nhập Code.")
 });
 
 function ModalAddEdit({ show, onAddEdit, onHide, btnLoading, defaultValues }) {

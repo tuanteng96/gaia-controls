@@ -21,6 +21,9 @@ export const getRequestParams = (filters) => {
     if (filters._key) {
         params._key = filters._key;
     }
+    if (filters._teacherid) {
+        params._teacherid = filters._teacherid;
+    }
     if (filters.PID) {
         params.PID = filters.PID;
     }
