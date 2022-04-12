@@ -143,7 +143,10 @@ function SchoolManage(props) {
       SchoolID: values.ID,
       ClassList: values.ClassList.filter(
         (item) => typeof item === "object" && item.Title
-      ),
+      ).map((item) => ({
+        ...item,
+        Level: item?.Level?.value ? item.Level.value : "",
+      })),
     };
     SchoolManageCrud.addEditClass(objSubmit)
       .then((response) => {

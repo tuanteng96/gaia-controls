@@ -2,10 +2,62 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, Table } from "react-bootstrap";
 import { Form, Formik, FieldArray } from "formik";
+import Select from "react-select";
 
 ModalClass.propTypes = {
   show: PropTypes.bool,
 };
+
+const Khoi = [
+  {
+    label: "Khối 1",
+    value: 1,
+  },
+  {
+    label: "Khối 2",
+    value: 2,
+  },
+  {
+    label: "Khối 3",
+    value: 3,
+  },
+  {
+    label: "Khối 4",
+    value: 4,
+  },
+  {
+    label: "Khối 5",
+    value: 5,
+  },
+  {
+    label: "Khối 6",
+    value: 6,
+  },
+  {
+    label: "Khối 7",
+    value: 7,
+  },
+  {
+    label: "Khối 8",
+    value: 8,
+  },
+  {
+    label: "Khối 9",
+    value: 9,
+  },
+  {
+    label: "Khối 10",
+    value: 10,
+  },
+  {
+    label: "Khối 11",
+    value: 11,
+  },
+  {
+    label: "Khối 12",
+    value: 12,
+  },
+];
 
 const initialValue = {
   ClassList: [
@@ -13,6 +65,7 @@ const initialValue = {
       Order: 1,
       Title: "",
       SchoolID: null,
+      Level: null,
     },
   ],
 };
@@ -22,20 +75,26 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
 
   useEffect(() => {
     if (defaultValues.ID) {
-      
       setInitialValues((prevState) => ({
         ...prevState,
         ID: defaultValues.ID,
         Title: defaultValues.Title,
         ClassList:
           defaultValues.ClassList && defaultValues.ClassList.length > 0
-            ? defaultValues.ClassList
+            ? defaultValues.ClassList.map((item) => ({
+                ...item,
+                Level: item.Level
+                  ? {
+                      label: `Khối ${item.Level}`,
+                      value: item.Level,
+                    }
+                  : null,
+              }))
             : initialValue.ClassList.map((item) => ({
                 ...item,
                 SchoolID: defaultValues.ID,
               })),
       }));
-
     }
   }, [defaultValues]);
 
@@ -47,9 +106,15 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
         enableReinitialize={true}
       >
         {(formikProps) => {
-          const { values, handleChange, handleBlur } = formikProps;
+          const {
+            values,
+            setFieldValue,
+            handleChange,
+            handleBlur,
+          } = formikProps;
           return (
             <Form>
+              {console.log(values)}
               <Modal.Header closeButton>
                 <Modal.Title>Danh sách lớp - {defaultValues.Title}</Modal.Title>
               </Modal.Header>
@@ -59,6 +124,7 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     <tr>
                       <th className="w-70px text-center">STT</th>
                       <th>Tên lớp</th>
+                      <th className="w-180px">Khối</th>
                       <th className="w-300px">Trường</th>
                       <th className="text-center w-60px">#</th>
                     </tr>
@@ -86,12 +152,31 @@ function ModalClass({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                                 <input
                                   type="text"
                                   className="form-control"
-                                  name={`ClassList.${index}.Title`}
+                                  name={`ClassList[${index}].Title`}
                                   placeholder="Nhập tên"
                                   autoComplete="off"
                                   value={item.Title}
                                   onChange={handleChange}
                                   onBlur={handleBlur}
+                                />
+                              </td>
+                              <td>
+                                <Select
+                                  isClearable
+                                  className="select-control"
+                                  classNamePrefix="select"
+                                  name={`ClassList[${index}].Level`}
+                                  options={Khoi}
+                                  placeholder="Chọn khối"
+                                  value={item.Level}
+                                  onChange={(option) => {
+                                    setFieldValue(
+                                      `ClassList[${index}].Level`,
+                                      option,
+                                      false
+                                    );
+                                  }}
+                                  menuPosition="fixed"
                                 />
                               </td>
                               <td>
