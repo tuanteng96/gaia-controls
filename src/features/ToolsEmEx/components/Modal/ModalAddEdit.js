@@ -107,7 +107,7 @@ function ModalAddEdit({ show, onAddEdit, onHide, btnLoading, defaultValues }) {
       Type: 0,
       _pi: 1,
       _ps: 10,
-      _key: "",
+      _key: search,
     };
 
     const { list, pcount } = await ToolsTeacherCrud.getAllTools(newPost);

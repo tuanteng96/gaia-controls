@@ -95,7 +95,7 @@ function ModalClassDays({ show, onHide, defaultValues, retrieveSchedule }) {
   if (!initialValues) return "";
 
   return (
-    <Modal show={show} onHide={onHide} scrollable={true} size="xl">
+    <Modal show={show} onHide={onHide} scrollable={true} size="xxl">
       <Modal.Header closeButton>
         <Modal.Title>
           <span className="pe-1">Lịch học {initialValues.SchoolTitle} </span>
@@ -175,6 +175,7 @@ function ModalClassDays({ show, onHide, defaultValues, retrieveSchedule }) {
                 </div>
               </div>
               {/* End Header */}
+
               {initialValues.CalendarList &&
                 initialValues.CalendarList.map((item, index) => (
                   <div className="d-flex" key={index}>
@@ -245,9 +246,14 @@ function ModalClassDays({ show, onHide, defaultValues, retrieveSchedule }) {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" variant="secondary" onClick={onHide}>
-          Đóng
-        </Button>
+        <div className="w-100 d-flex justify-content-between">
+          <Button type="button" variant="primary">
+            Xếp lịch tự động
+          </Button>
+          <Button type="button" variant="secondary" onClick={onHide}>
+            Đóng
+          </Button>
+        </div>
       </Modal.Footer>
       <SpinnerMessage isShow={SpinnerShow} text="Đang cập nhập ..." />
     </Modal>

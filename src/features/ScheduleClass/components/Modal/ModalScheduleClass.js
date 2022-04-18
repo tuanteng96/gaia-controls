@@ -102,6 +102,7 @@ function ModalScheduleClass({
       };
       ListDay.push(obj);
     }
+    ListDay.push(ListDay.shift());
     return ListDay;
   };
 
@@ -144,7 +145,7 @@ function ModalScheduleClass({
   };
 
   return (
-    <Modal show={show} onHide={onHide} scrollable={true} size="xl">
+    <Modal show={show} onHide={onHide} scrollable={true} size="xxl">
       <Formik
         initialValues={initialValues}
         onSubmit={onAddEdit}
@@ -163,7 +164,11 @@ function ModalScheduleClass({
               onSubmit={formikProps.handleSubmit}
             >
               <Modal.Header closeButton>
-                <Modal.Title>{values.ID ? `Lịch học ${values.SchoolTitle}` : "Tạo mới lịch học"}</Modal.Title>
+                <Modal.Title>
+                  {values.ID
+                    ? `Lịch học ${values.SchoolTitle}`
+                    : "Tạo mới lịch học"}
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <ScheduleGenerator

@@ -69,8 +69,8 @@ function Calendar(props) {
         return TimeS.isBefore(TimeStop);
       });
       if (!HourScheduleS || HourScheduleS.length === 0) return;
-
       // Tổng Phút Sáng
+      TimeDayEnd = HourScheduleS[HourScheduleS.length - 1].To;
       TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
         moment(TimeDayStart, "HH:mm:ss"),
         "minutes"
@@ -98,6 +98,7 @@ function Calendar(props) {
       if (!HourScheduleC || HourScheduleC.length === 0) return;
 
       // Tổng Phút Chiều
+      TimeDayStart = HourScheduleC[0].To;
       TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
         moment(TimeDayStart, "HH:mm:ss"),
         "minutes"
@@ -511,6 +512,13 @@ function Calendar(props) {
                                                         "HH:mm"
                                                       )}{" "}
                                                       )
+                                                      <div>
+                                                        {moment(
+                                                          item.Day
+                                                        ).format(
+                                                          "DD-MM-YYYY HH:mm"
+                                                        )}
+                                                      </div>
                                                     </span>
                                                   </Popover.Header>
                                                   <Popover.Body>
@@ -551,11 +559,11 @@ function Calendar(props) {
                                               }
                                             >
                                               <div
-                                                className={`h-38px bg-${
+                                                className={`bg-${
                                                   period.UserID
-                                                    ? "success"
-                                                    : "primary"
-                                                } cursor-pointer position-absolute top-1px zindex-5`}
+                                                    ? "success h-20px"
+                                                    : "primary h-38px"
+                                                } cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From
@@ -568,8 +576,21 @@ function Calendar(props) {
                                                       .HourScheduleList,
                                                   Session: "SANG",
                                                 })}
-                                              ></div>
+                                              >
+                                                <span className="text-white font-size-xs font-weight-border">
+                                                  {period.Title.match(
+                                                    /\d/g
+                                                  ).join("")}
+                                                </span>
+                                              </div>
                                             </OverlayTrigger>
+                                            {period.UserID ? (
+                                              <div className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3">
+                                                {period.UserTitle}
+                                              </div>
+                                            ) : (
+                                              ""
+                                            )}
                                           </Fragment>
                                         ))}
                                     </div>
@@ -610,6 +631,13 @@ function Calendar(props) {
                                                         "HH:mm"
                                                       )}{" "}
                                                       )
+                                                      <div>
+                                                        {moment(
+                                                          item.Day
+                                                        ).format(
+                                                          "DD-MM-YYYY HH:mm"
+                                                        )}
+                                                      </div>
                                                     </span>
                                                   </Popover.Header>
                                                   <Popover.Body>
@@ -651,11 +679,11 @@ function Calendar(props) {
                                               }
                                             >
                                               <div
-                                                className={`h-38px bg-${
+                                                className={`bg-${
                                                   period.UserID
-                                                    ? "success"
-                                                    : "primary"
-                                                } cursor-pointer position-absolute top-1px zindex-5`}
+                                                    ? "success h-20px"
+                                                    : "primary h-38px"
+                                                } cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From
@@ -668,8 +696,21 @@ function Calendar(props) {
                                                       .HourScheduleList,
                                                   Session: "CHIEU",
                                                 })}
-                                              ></div>
+                                              >
+                                                <span className="text-white font-size-xs font-weight-border">
+                                                  {period.Title.match(
+                                                    /\d/g
+                                                  ).join("")}
+                                                </span>
+                                              </div>
                                             </OverlayTrigger>
+                                            {period.UserID ? (
+                                              <div className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3">
+                                                {period.UserTitle}
+                                              </div>
+                                            ) : (
+                                              ""
+                                            )}
                                           </Fragment>
                                         ))}
                                     </div>
