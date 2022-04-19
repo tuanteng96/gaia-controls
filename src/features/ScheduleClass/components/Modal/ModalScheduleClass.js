@@ -92,7 +92,7 @@ function ModalScheduleClass({
       }));
     }
   }, [show, defaultValues]);
-
+  console.log(defaultValues);
   const dayGenerator = () => {
     const ListDay = [];
     for (var i = 0; i < 7; i++) {
@@ -112,9 +112,11 @@ function ModalScheduleClass({
       return;
     }
     var newCalendarList = [];
+    
     newCalendarList = ClassList.map((item) => ({
       ClassTitle: item.Title,
       ClassID: item.ID,
+      ClassLevel: item.Level,
       Days: dayGenerator(),
     }));
 
