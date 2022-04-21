@@ -1,6 +1,6 @@
 import axiosClient from "../../../redux/axioClient";
 
-const GET_ALL_URL = "/api/v3/content?cmd=pgs&type=WowCalendarEnt&IReaderType=1";
+const GET_ALL_URL = "/api/v3/content?cmd=pgs&type=WowCalendarEnt&bll=Calendar1";
 const ADD_TEACHER_URL = "/api/v3/content?cmd=edit&type=CalendarItem";
 
 const getAll = (data) => {

@@ -243,7 +243,14 @@ function Calendar(props) {
     }
   };
 
-  //console.log(ListCalendar);
+  const isClassStatus = (item) => {
+    if (!item.UserID) return "bg-primary h-38px";
+    if (item.Teaching.Status === "") return "bg-warning h-20px";
+    if (item.Teaching.Status === "NHAN_TIET") return "bg-success h-20px";
+    if (item.Teaching.Status === "TU_CHOI") return "bg-danger h-20px";
+  }
+
+  console.log(ListCalendar);
 
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -291,13 +298,25 @@ function Calendar(props) {
             <div className="d-flex align-items-center">
               <div className="w-15px h-15px bg-success rounded-circle"></div>
               <div className="pl-5px font-size-sm font-weight-bold">
-                Đã chọn giáo viên
+                Hoàn thành
+              </div>
+            </div>
+            <div className="d-flex align-items-center ms-4">
+              <div className="w-15px h-15px bg-warning rounded-circle"></div>
+              <div className="pl-5px font-size-sm font-weight-bold">
+                Đã chọn GV
+              </div>
+            </div>
+            <div className="d-flex align-items-center ms-4">
+              <div className="w-15px h-15px bg-danger rounded-circle"></div>
+              <div className="pl-5px font-size-sm font-weight-bold">
+                GV thay thế
               </div>
             </div>
             <div className="d-flex align-items-center ms-4">
               <div className="w-15px h-15px bg-primary rounded-circle"></div>
               <div className="pl-5px font-size-sm font-weight-bold">
-                Chưa chọn giáo viên
+                Chưa chọn GV
               </div>
             </div>
           </div>
@@ -559,11 +578,9 @@ function Calendar(props) {
                                               }
                                             >
                                               <div
-                                                className={`bg-${
-                                                  period.UserID
-                                                    ? "success h-20px"
-                                                    : "primary h-38px"
-                                                } cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
+                                                className={`${isClassStatus(
+                                                  period
+                                                )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From
