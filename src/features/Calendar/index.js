@@ -89,16 +89,17 @@ function Calendar(props) {
       );
     }
     if (Session === "CHIEU") {
+      
       const HourScheduleC = HourScheduleList.filter((o) => {
         const TimeS = moment(o.To, "HH:mm:ss");
         const TimeStop = moment("12:00:00", "HH:mm:ss");
         return !TimeS.isBefore(TimeStop);
       });
-
+      
       if (!HourScheduleC || HourScheduleC.length === 0) return;
 
       // Tổng Phút Chiều
-      TimeDayStart = HourScheduleC[0].To;
+      TimeDayStart = HourScheduleC[0].From;
       TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
         moment(TimeDayStart, "HH:mm:ss"),
         "minutes"
@@ -196,12 +197,12 @@ function Calendar(props) {
       _pi: page,
       _ps: 10,
       _key: search,
-      Status: 1,
+      Status: 0,
       _orders: {
         Id: true,
       },
       _appends: {
-        IsSchoolTeacher: 1,
+        IsSchoolTeacher: 0,
       },
       _ignoredf: ["Status"],
     };
@@ -244,13 +245,19 @@ function Calendar(props) {
   };
 
   const isClassStatus = (item) => {
-    if (!item.UserID) return "bg-primary h-38px";
-    if (item.Teaching.Status === "") return "bg-warning h-20px";
-    if (item.Teaching.Status === "NHAN_TIET") return "bg-success h-20px";
-    if (item.Teaching.Status === "TU_CHOI") return "bg-danger h-20px";
-  }
-
-  console.log(ListCalendar);
+    if (!item.UserID) {
+      return "bg-primary h-38px";
+    }
+    if (item.Rejects && item.Rejects.length > 0) {
+      return "bg-danger h-20px";
+    }
+    if (item.Teaching.Status === "") {
+      return "bg-warning h-20px";
+    }
+    if (item.Teaching.Status === "NHAN_TIET") {
+      return "bg-success h-20px";
+    }
+  };
 
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -696,11 +703,9 @@ function Calendar(props) {
                                               }
                                             >
                                               <div
-                                                className={`bg-${
-                                                  period.UserID
-                                                    ? "success h-20px"
-                                                    : "primary h-38px"
-                                                } cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
+                                                className={`${isClassStatus(
+                                                  period
+                                                )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From

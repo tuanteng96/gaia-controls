@@ -73,12 +73,12 @@ function Inventory(props) {
       _pi: page,
       _ps: 10,
       _key: search,
-      Status: 1,
+      Status: 0,
       _orders: {
         Id: true,
       },
       _appends: {
-        IsSchoolTeacher: 1,
+        IsSchoolTeacher: 0,
       },
       _ignoredf: ["Status"],
     };
