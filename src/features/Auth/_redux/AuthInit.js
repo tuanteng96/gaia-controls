@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 import { LayoutSplashScreen } from "../../../layout/_core/EzsSplashScreen";
 import { setToken } from "./AuthSlice";
 
-window.Token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiODEzIiwibmJmIjoxNjUwNDUzMDEyLCJleHAiOjE2ODE5ODkwMTIsImlhdCI6MTY1MDQ1MzAxMn0.0Rsgx8ResGoZdZri29UeO877kLLLWJGDFRPKTa_Ob1s";
+// window.Token =
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUb2tlbklEIjoiODEzIiwibmJmIjoxNjUwNDUzMDEyLCJleHAiOjE2ODE5ODkwMTIsImlhdCI6MTY1MDQ1MzAxMn0.0Rsgx8ResGoZdZri29UeO877kLLLWJGDFRPKTa_Ob1s";
 
 function AuthInit(props) {
   const dispatch = useDispatch();

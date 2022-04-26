@@ -7,6 +7,7 @@ import ScheduleClass from '../features/ScheduleClass';
 import ScheduleTeacher from '../features/ScheduleTeacher';
 import SchoolManage from '../features/SchoolManage';
 import Teacher from '../features/Teacher';
+import TeacherResigns from '../features/TeacherResigns';
 import ToolsEmEx from '../features/ToolsEmEx';
 import ToolsTeacher from "../features/ToolsTeacher";
 
@@ -18,6 +19,7 @@ export default function Page() {
         <Route path="/bai-giang/:id" element={<Lesson />} />
         <Route path="/truong-lop" element={<SchoolManage />} />
         <Route path="/giao-vien" element={<Teacher />} />
+        <Route path="/giao-vien-xin-nghi" element={<TeacherResigns />} />
         <Route path="/khung-chuong-trinh" element={<Curriculum />} />
         <Route path="/bang-lich" element={<Calendar />} />
         <Route path="/xep-lich" element={<ScheduleClass />} />
