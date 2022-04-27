@@ -187,6 +187,8 @@ function TeacherResigns(props) {
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Ghi chú" },
+                    formatter: (cell, row) =>
+                      row.Desc || "Không có ghi chú.",
                     headerStyle: () => {
                       return { minWidth: "200px", width: "200px" };
                     },
@@ -222,18 +224,19 @@ function TeacherResigns(props) {
                             Ngày {moment(row.From).format("DD-MM-YYYY")}
                           </span>
                         )}
-                        {row.TimeType === "NGHI_NHIEU_NGAY" && (
-                          <span>
-                            Từ
-                            <span className="text-capitalize px-1">
-                              {moment(row.From).format("HH:mm DD-MM-YYYY")}
+                        {row.TimeType === "NGHI_NHIEU_NGAY" ||
+                          (row.TimeType === "NGHI_THEO_THOI_GIAN" && (
+                            <span>
+                              Từ
+                              <span className="text-capitalize px-1">
+                                {moment(row.From).format("HH:mm DD-MM-YYYY")}
+                              </span>
+                              đến
+                              <span className="text-capitalize pl-1">
+                                {moment(row.To).format("HH:mm DD-MM-YYYY")}
+                              </span>
                             </span>
-                            đến
-                            <span className="text-capitalize pl-1">
-                              {moment(row.To).format("HH:mm DD-MM-YYYY")}
-                            </span>
-                          </span>
-                        )}
+                          ))}
                       </div>
                     ),
                     headerStyle: () => {
