@@ -13,12 +13,12 @@ function Teacher(props) {
     _pi: 1,
     _ps: 10,
     _key: "",
-    Status: 0,
+    Status: 1,
     _orders: {
       Id: true,
     },
     _appends: {
-      IsSchoolTeacher: 0,
+      IsSchoolTeacher: 1,
     },
     _ignoredf: ["Status"],
   });
