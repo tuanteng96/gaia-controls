@@ -1,14 +1,14 @@
 import React, { useEffect, useState, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, OverlayTrigger, Popover } from "react-bootstrap";
 import { AsyncPaginate } from "react-select-async-paginate";
 import TeacherCrud from "../../../Teacher/_redux/TeacherCrud";
 import CalendarCrud from "../../../Calendar/_redux/CalendarCrud";
 import { AlertError } from "../../../../helpers/AlertHelpers";
+import SpinnerMessage from "../../../../components/spinners/SpinnerMessage";
 
 import moment from "moment";
 import "moment/locale/vi";
-import SpinnerMessage from "../../../../components/spinners/SpinnerMessage";
 moment.locale("vi");
 
 ModalClassDays.propTypes = {
@@ -188,23 +188,63 @@ function ModalClassDays({ show, onHide, defaultValues, retrieveSchedule }) {
                                 className={`flex-1 p-2 h-80px border-top ${idx !==
                                   6 && "border-right"} min-w-200px`}
                               >
-                                <div className="font-size-sm font-weight-bold mb-1">
-                                  {period.Items[0].Title} ({" "}
-                                  {period.Items[0].From &&
-                                    moment(period.Items[0].From).format(
-                                      "HH:mm"
-                                    )}
-                                  {period.Items[0].To &&
-                                    `- ${moment(period.Items[0].To).format(
-                                      "HH:mm"
-                                    )}`}{" "}
-                                  )
+                                <div className="d-flex justify-content-between">
+                                  <div className="font-size-sm font-weight-bold mb-1">
+                                    {period.Items[0].Title} ({" "}
+                                    {period.Items[0].From &&
+                                      moment(period.Items[0].From).format(
+                                        "HH:mm"
+                                      )}
+                                    {period.Items[0].To &&
+                                      `- ${moment(period.Items[0].To).format(
+                                        "HH:mm"
+                                      )}`}{" "}
+                                    )
+                                  </div>
+                                  {/* Element Test */}
+                                  <OverlayTrigger
+                                    rootClose
+                                    trigger="click"
+                                    key="top"
+                                    placement="auto"
+                                    //onToggle={(a) => console.log(a)}
+                                    overlay={
+                                      <Popover id={`popover-positioned-top}`}>
+                                        <Popover.Body className="p-0">
+                                          {period.Items[0].AutoList &&
+                                          period.Items[0].AutoList.length >
+                                            0 ? (
+                                            period.Items[0].AutoList.map(
+                                              (isAuto) => (
+                                                <div
+                                                  className={`border-bottom border-bottom py-2 px-3`}
+                                                >
+                                                  {isAuto.Text}
+                                                </div>
+                                              )
+                                            )
+                                          ) : (
+                                            <div className="border-bottom border-bottom py-2 px-3">
+                                              Không có
+                                            </div>
+                                          )}
+                                        </Popover.Body>
+                                      </Popover>
+                                    }
+                                  >
+                                    <i
+                                      className={`fas fa-engine-warning pt-1 cursor-pointer ${period
+                                        .Items[0].IsAutoSet && "opacity-60"}`}
+                                    ></i>
+                                  </OverlayTrigger>
+                                  {/* Element Test */}
                                 </div>
                                 {period.Items.map((user, ix) => (
                                   <AsyncPaginate
                                     key={ix}
                                     menuPosition="fixed"
-                                    className="select-control"
+                                    className={`select-control ${user.AutoList &&
+                                      "border-primary"}`}
                                     classNamePrefix="select"
                                     isClearable={true}
                                     name="SchoolID"

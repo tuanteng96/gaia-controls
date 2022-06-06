@@ -380,6 +380,11 @@
             }
         }
     }
+    &.border-primary {
+        .select__control {
+            border-color: #3699FF !important;
+        }
+    }
     .select__control {
         border-color: #eaeaea;
         min-height: 40px;

@@ -13,12 +13,12 @@ import TeacherCrud from "../Teacher/_redux/TeacherCrud";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { getRequestParams } from "../../helpers/ParamsHelpers";
 import Swal from "sweetalert2";
-
-import moment from "moment";
-import "moment/locale/vi";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { AlertError } from "../../helpers/AlertHelpers";
 import SpinnerMessage from "../../components/spinners/SpinnerMessage";
+
+import moment from "moment";
+import "moment/locale/vi";
 moment.locale("vi");
 
 function Calendar(props) {
@@ -89,13 +89,12 @@ function Calendar(props) {
       );
     }
     if (Session === "CHIEU") {
-      
       const HourScheduleC = HourScheduleList.filter((o) => {
         const TimeS = moment(o.To, "HH:mm:ss");
         const TimeStop = moment("12:00:00", "HH:mm:ss");
         return !TimeS.isBefore(TimeStop);
       });
-      
+
       if (!HourScheduleC || HourScheduleC.length === 0) return;
 
       // Tổng Phút Chiều
@@ -251,7 +250,7 @@ function Calendar(props) {
     if (item.Rejects && item.Rejects.length > 0) {
       return "bg-danger h-20px";
     }
-    if (item.Teaching.Status === "") {
+    if (!item.Teaching || item.Teaching.Status === "") {
       return "bg-warning h-20px";
     }
     if (item.Teaching.Status === "NHAN_TIET") {
@@ -527,7 +526,7 @@ function Calendar(props) {
                                                 <Popover
                                                   id={`popover-positioned-top}`}
                                                 >
-                                                  <Popover.Header className="text-uppercase font-weight-bold">
+                                                  <Popover.Header className="text-uppercase font-weight-bold d-flex justify-content-between">
                                                     <span className="pt-1 d-block">
                                                       {period.Title} ({" "}
                                                       {moment(
@@ -546,12 +545,55 @@ function Calendar(props) {
                                                         )}
                                                       </div>
                                                     </span>
+
+                                                    {/* Element Test */}
+                                                    {
+                                                      <OverlayTrigger
+                                                        rootClose
+                                                        trigger="click"
+                                                        key="top"
+                                                        placement="auto"
+                                                        //onToggle={(a) => console.log(a)}
+                                                        overlay={
+                                                          <Popover
+                                                            id={`popover-positioned-top}`}
+                                                          >
+                                                            <Popover.Body className="p-0">
+                                                              {period.AutoList &&
+                                                              period.AutoList
+                                                                .length > 0 ? (
+                                                                period.AutoList.map(
+                                                                  (isAuto) => (
+                                                                    <div className="border-bottom border-bottom py-2 px-3">
+                                                                      {
+                                                                        isAuto.Text
+                                                                      }
+                                                                    </div>
+                                                                  )
+                                                                )
+                                                              ) : (
+                                                                <div className="border-bottom border-bottom py-2 px-3">
+                                                                  Không có
+                                                                </div>
+                                                              )}
+                                                            </Popover.Body>
+                                                          </Popover>
+                                                        }
+                                                      >
+                                                        <i
+                                                          className={`fas fa-engine-warning pt-2 cursor-pointer icon-md ${period.IsAutoSet &&
+                                                            "opacity-60"}`}
+                                                        ></i>
+                                                      </OverlayTrigger>
+                                                    }
+                                                    {/* Element Test */}
                                                   </Popover.Header>
                                                   <Popover.Body>
                                                     <label>Giáo viên</label>
                                                     <div>
                                                       <AsyncPaginate
-                                                        className="select-control"
+                                                        className={`select-control ${period.AutoList &&
+                                                          "border-primary"}`}
                                                         classNamePrefix="select"
                                                         isClearable={true}
                                                         name="SchoolID"
@@ -644,7 +686,7 @@ function Calendar(props) {
                                                 <Popover
                                                   id={`popover-positioned-top}`}
                                                 >
-                                                  <Popover.Header className="text-uppercase font-weight-bold">
+                                                  <Popover.Header className="text-uppercase font-weight-bold d-flex justify-content-between">
                                                     <span className="pt-1 d-block">
                                                       {period.Title} ({" "}
                                                       {moment(
@@ -663,6 +705,47 @@ function Calendar(props) {
                                                         )}
                                                       </div>
                                                     </span>
+                                                    {/* Element Test */}
+                                                    {
+                                                      <OverlayTrigger
+                                                        rootClose
+                                                        trigger="click"
+                                                        key="top"
+                                                        placement="auto"
+                                                        //onToggle={(a) => console.log(a)}
+                                                        overlay={
+                                                          <Popover
+                                                            id={`popover-positioned-top}`}
+                                                          >
+                                                            <Popover.Body className="p-0">
+                                                              {period.AutoList &&
+                                                              period.AutoList
+                                                                .length > 0 ? (
+                                                                period.AutoList.map(
+                                                                  (isAuto) => (
+                                                                    <div className="border-bottom border-bottom py-2 px-3">
+                                                                      {
+                                                                        isAuto.Text
+                                                                      }
+                                                                    </div>
+                                                                  )
+                                                                )
+                                                              ) : (
+                                                                <div className="border-bottom border-bottom py-2 px-3">
+                                                                  Không có
+                                                                </div>
+                                                              )}
+                                                            </Popover.Body>
+                                                          </Popover>
+                                                        }
+                                                      >
+                                                        <i
+                                                          className={`fas fa-engine-warning pt-2 cursor-pointer icon-md ${period.IsAutoSet &&
+                                                            "opacity-60"}`}
+                                                        ></i>
+                                                      </OverlayTrigger>
+                                                    }
+                                                    {/* Element Test */}
                                                   </Popover.Header>
                                                   <Popover.Body>
                                                     <label>Giáo viên</label>

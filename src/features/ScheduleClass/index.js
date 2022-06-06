@@ -184,6 +184,13 @@ function ScheduleClass(props) {
             <h2 className="text-uppercase font-size-h3 mb-0">
               Xếp lịch trường
             </h2>
+            <button
+              type="button"
+              className="btn btn-md btn-primary"
+              id="t_dong_xep_lich"
+            >
+              Tự động xếp lịch
+            </button>
           </div>
         </div>
       </div>
