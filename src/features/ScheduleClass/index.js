@@ -298,7 +298,7 @@ function ScheduleClass(props) {
                       return (
                         <div className="text-center d-flex justify-content-center">
                           <div
-                            className="btn-info text-white me-2 px-2 h-24px d-inline-block rounded cursor-pointer font-size-sm line-height-xxl"
+                            className="btn-info text-white me-2 px-2 h-24px d-inline-block rounded cursor-pointer font-size-sm line-height-xxl t_dong_xep_lich"
                             id={row.ID}
                           >
                             Tự động xếp lịch
