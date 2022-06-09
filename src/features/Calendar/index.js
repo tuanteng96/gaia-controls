@@ -244,18 +244,19 @@ function Calendar(props) {
   };
 
   const isClassStatus = (item) => {
-    if (!item.UserID) {
-      return "bg-primary h-38px";
-    }
+    // if (!item.UserID) {
+    //   return "bg-primary h-38px";
+    // }
     if (item.Rejects && item.Rejects.length > 0) {
       return "bg-danger h-20px";
     }
-    if (!item.Teaching || item.Teaching.Status === "") {
+    if (!item.Teaching || item.Teaching.Status === "" || item.UserID > 0) {
       return "bg-warning h-20px";
     }
     if (item.Teaching.Status === "NHAN_TIET") {
       return "bg-success h-20px";
     }
+    return "bg-primary h-38px";
   };
 
   return (
@@ -563,8 +564,16 @@ function Calendar(props) {
                                                               period.AutoList
                                                                 .length > 0 ? (
                                                                 period.AutoList.map(
-                                                                  (isAuto) => (
-                                                                    <div className="border-bottom border-bottom py-2 px-3">
+                                                                  (
+                                                                    isAuto,
+                                                                    autoIx
+                                                                  ) => (
+                                                                    <div
+                                                                      className="border-bottom border-bottom py-2 px-3"
+                                                                      key={
+                                                                        autoIx
+                                                                      }
+                                                                    >
                                                                       {
                                                                         isAuto.Text
                                                                       }
@@ -629,7 +638,8 @@ function Calendar(props) {
                                               <div
                                                 className={`${isClassStatus(
                                                   period
-                                                )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
+                                                )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${period.IsAutoSet &&
+                                                  "opacity-70"}`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From
@@ -722,8 +732,16 @@ function Calendar(props) {
                                                               period.AutoList
                                                                 .length > 0 ? (
                                                                 period.AutoList.map(
-                                                                  (isAuto) => (
-                                                                    <div className="border-bottom border-bottom py-2 px-3">
+                                                                  (
+                                                                    isAuto,
+                                                                    autoIx
+                                                                  ) => (
+                                                                    <div
+                                                                      className="border-bottom border-bottom py-2 px-3"
+                                                                      key={
+                                                                        autoIx
+                                                                      }
+                                                                    >
                                                                       {
                                                                         isAuto.Text
                                                                       }
@@ -788,7 +806,8 @@ function Calendar(props) {
                                               <div
                                                 className={`${isClassStatus(
                                                   period
-                                                )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center`}
+                                                )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${period.IsAutoSet &&
+                                                  "opacity-70"}`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From

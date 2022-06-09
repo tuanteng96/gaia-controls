@@ -184,13 +184,12 @@ function ScheduleClass(props) {
             <h2 className="text-uppercase font-size-h3 mb-0">
               Xếp lịch trường
             </h2>
-            <button
-              type="button"
-              className="btn btn-md btn-primary"
-              id="t_dong_xep_lich"
+            <div
+              className="btn btn-md btn-primary t_dong_xep_lich"
+              id="0"
             >
               Tự động xếp lịch
-            </button>
+            </div>
           </div>
         </div>
       </div>
@@ -297,7 +296,13 @@ function ScheduleClass(props) {
                     text: "#",
                     formatter: (cell, row) => {
                       return (
-                        <div className="text-center">
+                        <div className="text-center d-flex justify-content-center">
+                          <div
+                            className="btn-info text-white me-2 px-2 h-24px d-inline-block rounded cursor-pointer font-size-sm line-height-xxl"
+                            id={row.ID}
+                          >
+                            Tự động xếp lịch
+                          </div>
                           <button
                             type="button"
                             className="btn btn-sm btn-primary w-24px h-24px"
