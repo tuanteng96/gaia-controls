@@ -6,7 +6,6 @@ import BodyCalendar from "./BodyCalendar";
 
 function CalendarTeacher(props) {
     return (
-      
         <div className="calendar-teacher">
           <div
             className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}

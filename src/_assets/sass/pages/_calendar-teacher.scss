@@ -1,5 +1,6 @@
 @import "../init";
 $width-content-user: 250px;
+$width-col-day: 250px;
 $height-title: 80px;
 .calendar-teacher {
     &__user {
@@ -22,10 +23,23 @@ $height-title: 80px;
         .top--weeks {
             height: $height-title;
             overflow: auto;
+            display: flex;
+            &_gird {
+                flex: 1;
+                min-width: $width-col-day;
+                display: flex;
+                flex-direction: column;
+            }
         }
         .list--weeks {
             height: calc(100% - #{$height-title});
             overflow: scroll;
+            &_gird {
+                flex: 1;
+                min-width: $width-col-day;
+                display: flex;
+                flex-direction: column;
+            }
         }
     }
 }
