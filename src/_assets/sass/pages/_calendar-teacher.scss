@@ -1,0 +1,39 @@
+@import "../init";
+$width-content-user: 250px;
+$height-title: 80px;
+.calendar-teacher {
+    &__user {
+        width: $width-content-user;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        .top--user {
+            height: $height-title;
+        }
+        .list--user {
+            height: calc(100% - #{$height-title});
+            overflow: scroll;
+        }
+    }
+    &__weeks {
+        width: calc(100% - #{$width-content-user});
+        display: flex;
+        flex-direction: column;
+        .top--weeks {
+            height: $height-title;
+            overflow: auto;
+        }
+        .list--weeks {
+            height: calc(100% - #{$height-title});
+            overflow: scroll;
+        }
+    }
+}
+
+.h-1000px {
+    height: 1000px;
+}
+
+.w-2000px {
+    width: 2000px;
+}

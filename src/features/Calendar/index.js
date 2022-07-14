@@ -56,6 +56,7 @@ function Calendar(props) {
   }, [filters]);
 
   const GetCurrentLesson = (item) => {
+    
     if (!StartEndHour) return;
     var TimeDayStart = StartEndHour.HourMin;
     var TimeDayEnd = StartEndHour.HourMax;
@@ -71,6 +72,7 @@ function Calendar(props) {
       if (!HourScheduleS || HourScheduleS.length === 0) return;
       // Tổng Phút Sáng
       TimeDayEnd = HourScheduleS[HourScheduleS.length - 1].To;
+      
       TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
         moment(TimeDayStart, "HH:mm:ss"),
         "minutes"
@@ -269,7 +271,7 @@ function Calendar(props) {
         </div>
       </div>
 
-      <div className="bg-white px-3">
+      <div className="bg-white px-3 mb-30px">
         <div className="py-3 d-flex justify-content-between">
           <div className="d-flex">
             <div className="w-400px position-relative me-3">
