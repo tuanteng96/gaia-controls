@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { AlertError } from "../../helpers/AlertHelpers";
 import SpinnerMessage from "../../components/spinners/SpinnerMessage";
+import ModalAddTeacher from "./components/Modal/ModalAddTeacher";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -36,7 +37,8 @@ function Calendar(props) {
   const [ListCalendar, setListCalendar] = useState([]);
   const [SpinnerShow, setSpinnerShow] = useState(false);
   const [StartEndHour, setStartEndHour] = useState(null);
-
+  const [isModalAdd, setIsModalAdd] = useState(false);
+  const [ItemModalCurrent, setItemModalCurrent] = useState(null);
   const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ function Calendar(props) {
   }, [filters]);
 
   const GetCurrentLesson = (item) => {
-    
+
     if (!StartEndHour) return;
     var TimeDayStart = StartEndHour.HourMin;
     var TimeDayEnd = StartEndHour.HourMax;
@@ -72,7 +74,7 @@ function Calendar(props) {
       if (!HourScheduleS || HourScheduleS.length === 0) return;
       // Tổng Phút Sáng
       TimeDayEnd = HourScheduleS[HourScheduleS.length - 1].To;
-      
+
       TotalMinutes = moment(TimeDayEnd, "HH:mm:ss").diff(
         moment(TimeDayStart, "HH:mm:ss"),
         "minutes"
@@ -212,10 +214,10 @@ function Calendar(props) {
     const newData =
       list && list.length > 0
         ? list.map((item) => ({
-            ...item,
-            label: item.FullName,
-            value: item.ID,
-          }))
+          ...item,
+          label: item.FullName,
+          value: item.ID,
+        }))
         : [];
     return {
       options: newData,
@@ -261,6 +263,16 @@ function Calendar(props) {
     return "bg-primary h-38px";
   };
 
+  const onOpenModalAdd = (item) => {
+    setIsModalAdd(true)
+    setItemModalCurrent(item)
+  }
+
+  const onHideModalAdd = () => {
+    setIsModalAdd(false)
+    setItemModalCurrent(null)
+  }
+
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
       <div className="hpanel">
@@ -282,7 +294,7 @@ function Calendar(props) {
                 placeholder="Nhập tên trường ..."
                 autoComplete="off"
                 onChange={(e) => onChangeSearch(e.target.value)}
-                //value={Filters.Key}
+              //value={Filters.Key}
               />
               <div className="position-absolute top-12px right-15px pointer-events-none">
                 <i className="far fa-search"></i>
@@ -563,8 +575,8 @@ function Calendar(props) {
                                                           >
                                                             <Popover.Body className="p-0">
                                                               {period.AutoList &&
-                                                              period.AutoList
-                                                                .length > 0 ? (
+                                                                period.AutoList
+                                                                  .length > 0 ? (
                                                                 period.AutoList.map(
                                                                   (
                                                                     isAuto,
@@ -600,38 +612,46 @@ function Calendar(props) {
                                                     {/* Element Test */}
                                                   </Popover.Header>
                                                   <Popover.Body>
-                                                    <label>Giáo viên</label>
-                                                    <div>
-                                                      <AsyncPaginate
-                                                        className={`select-control ${period.AutoList &&
-                                                          "border-primary"}`}
-                                                        classNamePrefix="select"
-                                                        isClearable={true}
-                                                        name="SchoolID"
-                                                        loadOptions={
-                                                          getAllTeacher
-                                                        }
-                                                        placeholder="Chọn giáo viên"
-                                                        value={
-                                                          period.UserID
-                                                            ? {
+                                                    <div className="mb-10px">
+                                                      <label>Giáo viên</label>
+                                                      <div>
+                                                        <AsyncPaginate
+                                                          className={`select-control ${period.AutoList &&
+                                                            "border-primary"}`}
+                                                          classNamePrefix="select"
+                                                          isClearable={true}
+                                                          name="SchoolID"
+                                                          loadOptions={
+                                                            getAllTeacher
+                                                          }
+                                                          placeholder="Chọn giáo viên"
+                                                          value={
+                                                            period.UserID
+                                                              ? {
                                                                 value:
                                                                   period.UserID,
                                                                 label:
                                                                   period.UserTitle,
                                                               }
-                                                            : null
-                                                        }
-                                                        onChange={(option) =>
-                                                          onSubmitTeacher(
-                                                            option,
-                                                            period
-                                                          )
-                                                        }
-                                                        additional={{
-                                                          page: 1,
-                                                        }}
-                                                      />
+                                                              : null
+                                                          }
+                                                          onChange={(option) =>
+                                                            onSubmitTeacher(
+                                                              option,
+                                                              period
+                                                            )
+                                                          }
+                                                          additional={{
+                                                            page: 1,
+                                                          }}
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                    <div>
+                                                      <label className="w-100 d-flex justify-content-between align-items-end"><span>Trợ giảng</span> <button type="button" onClick={() => onOpenModalAdd(period)} className="btn btn-success btn-xss">Thêm</button></label>
+                                                      <div className="text-muted">
+                                                        Chưa có trợ giảng
+                                                      </div>
                                                     </div>
                                                   </Popover.Body>
                                                 </Popover>
@@ -641,7 +661,7 @@ function Calendar(props) {
                                                 className={`${isClassStatus(
                                                   period
                                                 )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${period.IsAutoSet &&
-                                                  "opacity-70"}`}
+                                                "opacity-70"}`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From
@@ -731,8 +751,8 @@ function Calendar(props) {
                                                           >
                                                             <Popover.Body className="p-0">
                                                               {period.AutoList &&
-                                                              period.AutoList
-                                                                .length > 0 ? (
+                                                                period.AutoList
+                                                                  .length > 0 ? (
                                                                 period.AutoList.map(
                                                                   (
                                                                     isAuto,
@@ -782,11 +802,11 @@ function Calendar(props) {
                                                         value={
                                                           period.UserID
                                                             ? {
-                                                                value:
-                                                                  period.UserID,
-                                                                label:
-                                                                  period.UserTitle,
-                                                              }
+                                                              value:
+                                                                period.UserID,
+                                                              label:
+                                                                period.UserTitle,
+                                                            }
                                                             : null
                                                         }
                                                         onChange={(option) =>
@@ -801,6 +821,12 @@ function Calendar(props) {
                                                         }}
                                                       />
                                                     </div>
+                                                    <div>
+                                                      <label className="w-100 d-flex justify-content-between align-items-end"><span>Trợ giảng</span> <button type="button" onClick={() => onOpenModalAdd(period)} className="btn btn-success btn-xss">Thêm</button></label>
+                                                      <div className="text-muted">
+                                                        Chưa có trợ giảng
+                                                      </div>
+                                                    </div>
                                                   </Popover.Body>
                                                 </Popover>
                                               }
@@ -809,7 +835,7 @@ function Calendar(props) {
                                                 className={`${isClassStatus(
                                                   period
                                                 )} cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${period.IsAutoSet &&
-                                                  "opacity-70"}`}
+                                                "opacity-70"}`}
                                                 style={GetCurrentLesson({
                                                   StartLesson: moment(
                                                     period.From
@@ -916,6 +942,12 @@ function Calendar(props) {
         </div>
       </div>
       <SpinnerMessage isShow={SpinnerShow} text="Đang cập nhập ..." />
+      <ModalAddTeacher 
+        show={isModalAdd}
+        onHide={onHideModalAdd}
+        defaultValues={ItemModalCurrent}
+        onSubmit={(value) => console.log(value)}
+      />
     </div>
   );
 }

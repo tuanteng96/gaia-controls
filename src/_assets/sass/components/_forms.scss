@@ -3,3 +3,98 @@
 //
 // Include Form Components
 @import "./forms/base";
+
+.switchs {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    font-size: 1rem;
+    label {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #3F4254;
+        margin: 0;
+        input {
+            margin-left: -999px;
+            height: 0;
+            width: 0;
+            overflow: hidden;
+            position: absolute;
+            opacity: 0;
+            &:checked ~ span {
+                &:after {
+                    margin-left: 16px;
+                    opacity: 1;
+                    color: #ffffff;
+                    background-color: #3699FF;
+                    font-family: Ki;
+                    font-style: normal;
+                    font-weight: normal;
+                    font-variant: normal;
+                    line-height: 1;
+                    text-decoration: inherit;
+                    text-rendering: optimizeLegibility;
+                    text-transform: none;
+                    -moz-osx-font-smoothing: grayscale;
+                    -webkit-font-smoothing: antialiased;
+                    font-smoothing: antialiased;
+                    content: "";
+                    line-height: 0;
+                }
+            }
+        }
+        span {
+            display: inline-block;
+            position: relative;
+            float: left;
+            text-indent: 0;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            height: 24px;
+            width: 40px;
+            border-radius: 12px;
+            &:before , &:after {
+                position: absolute;
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                content: " ";
+                -webkit-transition: all 100ms ease-in;
+                transition: all 100ms ease-in;
+            }
+            &:before {
+                width: 38px;
+                border-radius: 12px;
+                background-color: #EBEDF3;
+            }
+            &:after {
+                height: 20px;
+                width: 20px;
+                top: 2px;
+                bottom: 2px;
+                margin-left: 2px;
+                font-size: 0.55em;
+                text-align: center;
+                vertical-align: middle;
+                border-radius: 12px;
+                background-color: #ffffff;
+                opacity: 0.7;
+            }
+        }
+    }
+}

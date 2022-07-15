@@ -622,3 +622,10 @@ $value in $theme-text-colors {
         @include button-custom-variant( $btn-background, $btn-border, $btn-color, $btn-icon, $btn-box-shadow, $btn-hover-background, $btn-hover-border, $btn-hover-color, $btn-hover-icon, $btn-hover-box-shadow, $btn-active-background, $btn-active-border, $btn-active-color, $btn-active-icon, $btn-active-box-shadow);
     }
 }
+
+.btn-xss {
+    font-size: 11px;
+    line-height: 1.5;
+    height: auto;
+    padding: 1px 5px;
+}
