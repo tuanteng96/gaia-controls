@@ -6,11 +6,40 @@ import { setToken } from "./AuthSlice";
 window.Token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjciLCJuYmYiOjE2NTc3ODQ3MzgsImV4cCI6MTY1ODM4OTUzOCwiaWF0IjoxNjU3Nzg0NzM4fQ.tNeLZmNcZsYcS3-5Bi-6hKp-rEX9S7Y1UOaQkrwvtsg";
 
+  function getScrollbarWidth() {
+    // Creating invisible container
+    const outer = document.createElement("div");
+    outer.style.visibility = "hidden";
+    outer.style.overflow = "scroll"; // forcing scrollbar to appear
+    outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+    document.body.appendChild(outer);
+
+    // Creating inner element and placing it in the container
+    const inner = document.createElement("div");
+    outer.appendChild(inner);
+
+    // Calculating difference between container's full width and the child width
+    const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
+
+    // Removing temporary elements from the DOM
+    outer.parentNode.removeChild(outer);
+
+    return scrollbarWidth;
+  }
+
 function AuthInit(props) {
   const dispatch = useDispatch();
   const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   // We should request user by authToken before rendering the application
+
+  useEffect(() => {
+    const widthScroll = getScrollbarWidth();
+    document.documentElement.style.setProperty(
+      "--width-scrollbar",
+      `${widthScroll}px`
+    );
+  },[])
 
   useEffect(() => {
     const requestUser = () => {

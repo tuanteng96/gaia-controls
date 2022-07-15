@@ -12,8 +12,14 @@ $height-title: 80px;
             height: $height-title;
         }
         .list--user {
-            height: calc(100% - #{$height-title});
+            height: calc(100% - #{$height-title} - var(--width-scrollbar));
             overflow: scroll;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            &::-webkit-scrollbar {
+                display: none;
+            }
         }
     }
     &__weeks {
@@ -22,8 +28,14 @@ $height-title: 80px;
         flex-direction: column;
         .top--weeks {
             height: $height-title;
-            overflow: auto;
+            overflow: hidden scroll;
             display: flex;
+            // &::-webkit-scrollbar {
+            //     display: none;
+            // }
+            // &::-webkit-scrollbar {
+            //     display: none;
+            // }
             &_gird {
                 flex: 1;
                 min-width: $width-col-day;
@@ -44,10 +56,76 @@ $height-title: 80px;
     }
 }
 
-.h-1000px {
-    height: 1000px;
+.element-loader {
+    position: absolute;
+    top: $height-title;
+    left: 0;
+    width: 100%;
+    height: calc(100% - #{$height-title});
+    background: rgb(255 255 255 / 70%);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: not-allowed;
+    .blockui {
+        background: #ffffff;
+        -webkit-box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+        box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        border-radius: 0.42rem;
+        >span {
+            color: #3F4254;
+            padding: 0.75rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+        }
+        .spinner {
+            margin: 0 1.25rem 0 0;
+            width: auto;
+            height: auto;
+        }
+    }
 }
 
-.w-2000px {
-    width: 2000px;
+.btn-calendar-teacher {
+    height: 40px;
+    padding: 0 15px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    color: #b5b5c3;
+    font-size: 14px;
+    font-weight: 400;
+    position: relative;
+    min-width: 40px;
+    transition: all .2s;
+    &:not(:disabled):hover {
+        background-color: #3699FF;
+        border: 1px solid #3699FF;
+        color: #fff;
+    }
+    &:disabled {
+        opacity: 0.5;
+    }
+    i {
+        font-size: 22px;
+        position: absolute;
+        top: 10px;
+        left: 15px;
+    }
 }
