@@ -8,6 +8,7 @@ import CalendarSchoolCrud from "./_redux/CalendarSchoolCrud";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { setHourSchool } from "./_redux/CalendarSchoolSlice";
+import { AlertError } from "../../helpers/AlertHelpers";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -19,7 +20,7 @@ function CalendarSchool(props) {
     from: getCurrentDate().From,
     to: getCurrentDate().To,
     pi: 1,
-    ps: 10,
+    ps: 5,
   });
   const [loading, setLoading] = useState(false);
   const [Lists, setLists] = useState([]);
@@ -46,7 +47,7 @@ function CalendarSchool(props) {
       to: moment(filtersCurrent.to).format("MM-DD-YYYY"),
     };
     CalendarSchoolCrud.getAll(newFilters)
-      .then(({ SchoolList, HourMin, HourMax, Total, error, right }) => {
+      .then(({ SchoolList, HourMin, HourMax, Total, Pi, error, right }) => {
         if (error && right) {
           Swal.fire({
             icon: "error",
@@ -58,7 +59,7 @@ function CalendarSchool(props) {
             window.location.href = "/";
           });
         } else {
-          setLists((prevState) => prevState.concat(SchoolList));
+          setLists((prevState) => Pi > 1 ? prevState.concat(SchoolList) : SchoolList);
           setPageTotal(Total);
           setLoading(false);
           dispatch(setHourSchool({ HourMin, HourMax }));
@@ -67,6 +68,35 @@ function CalendarSchool(props) {
       })
       .catch((error) => console.log(error));
   };
+
+  const onChangeTeacher = (value, item) => {
+    setLoading(true);
+    const objSubmit = {
+      ID: item.ID,
+      UserID: value ? value.ID : 0,
+      UserTitle: value ? value.FullName : "",
+    };
+
+    CalendarSchoolCrud.addTeacher(objSubmit)
+      .then((response) => {
+        if (response.error) {
+          AlertError({
+            title: "Xảy ra lỗi",
+            errorTitle: "Không thể xếp lịch cho giáo viên này.",
+            error: response.error,
+          });
+        } else {
+          getListCalendar(false, { ...filters, pi: 1 });
+        }
+      })
+      .catch(({ response }) => {
+        AlertError({
+          title: "Xảy ra lỗi",
+          errorTitle: "Không thể xếp lịch cho giáo viên này.",
+          error: response.error,
+        });
+      });
+  }
 
   const fetchMoreData = () => {
     if (Lists.length < PageTotal) {
@@ -115,6 +145,7 @@ function CalendarSchool(props) {
   };
 
   const onChangeKey = (value) => {
+    setLoading(true);
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
@@ -154,6 +185,9 @@ function CalendarSchool(props) {
               hasMore: hasMore,
               loadMoreData: fetchMoreData,
               loading: loading,
+            }}
+            onChange={{
+              onChangeTeacher: onChangeTeacher
             }}
           />
         </div>

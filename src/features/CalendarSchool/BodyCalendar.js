@@ -4,20 +4,24 @@ import { ScrollSync, ScrollSyncPane } from "react-scroll-sync";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { clsx } from "clsx";
 import useWindowSize from "../../hooks/useWindowSize";
+import ScheduleMorning from "./ScheduleMorning";
+import ScheduleAfternoon from "./ScheduleAfternoon";
+import ModalAddTeacher from "./components/Modal/ModalAddTeacher";
 
 import moment from "moment";
 import "moment/locale/vi";
-import ScheduleMorning from "./ScheduleMorning";
-import ScheduleAfternoon from "./ScheduleAfternoon";
 moment.locale("vi");
 
 BodyCalendar.propTypes = {
   filters: PropTypes.object,
 };
 
-function BodyCalendar({ filters, options, Lists }) {
+function BodyCalendar({ filters, options, onChange, Lists }) {
   const [HeightScroll, setHeightScroll] = useState(0);
   const [HeightBodyScroll, setHeightBodyScroll] = useState(0);
+  const [IsModalAdd, setIsModalAdd] = useState(false);
+  const [ItemModalCurrent, setItemModalCurrent] = useState(null);
+
   const refScroll = useRef("");
   const refBodyScroll = useRef("");
   const { width } = useWindowSize();
@@ -42,6 +46,16 @@ function BodyCalendar({ filters, options, Lists }) {
     }
     return ScheduleLists;
   };
+
+  const onOpenModalAdd = (item) => {
+    setIsModalAdd(true)
+    setItemModalCurrent(item)
+  }
+
+  const onHideModalAdd = () => {
+    setIsModalAdd(false)
+    setItemModalCurrent(null)
+  }
 
   return (
     <ScrollSync>
@@ -120,9 +134,8 @@ function BodyCalendar({ filters, options, Lists }) {
                   .fill()
                   .map((item, index) => (
                     <div
-                      className={`top--weeks_gird ${
-                        index !== 6 ? "border-right" : ""
-                      }`}
+                      className={`top--weeks_gird ${index !== 6 ? "border-right" : ""
+                        }`}
                       key={index}
                     >
                       <div className="flex-grow-1 border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
@@ -200,6 +213,8 @@ function BodyCalendar({ filters, options, Lists }) {
                                             .format("DD-MM-YYYY"),
                                           Dates
                                         )}
+                                        onChangeTeacher={onChange.onChangeTeacher}
+                                        onOpenModalAdd={onOpenModalAdd}
                                       />
                                     </div>
                                     <div className="position-relative flex-1">
@@ -210,6 +225,8 @@ function BodyCalendar({ filters, options, Lists }) {
                                             .format("DD-MM-YYYY"),
                                           Dates
                                         )}
+                                        onChangeTeacher={onChange.onChangeTeacher}
+                                        onOpenModalAdd={onOpenModalAdd}
                                       />
                                     </div>
                                   </div>
@@ -233,6 +250,12 @@ function BodyCalendar({ filters, options, Lists }) {
             )}
           </div>
         </div>
+        <ModalAddTeacher
+          show={IsModalAdd}
+          onHide={onHideModalAdd}
+          defaultValues={ItemModalCurrent}
+          onSubmit={(value) => console.log(value)}
+        />
       </div>
     </ScrollSync>
   );

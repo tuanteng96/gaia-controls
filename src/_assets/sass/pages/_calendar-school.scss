@@ -64,3 +64,83 @@ $height-title: 80px;
         }
     }
 }
+
+.element-loader {
+    position: absolute;
+    top: $height-title;
+    left: 0;
+    width: 100%;
+    height: calc(100% - #{$height-title});
+    background: rgb(255 255 255 / 70%);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: not-allowed;
+    .blockui {
+        background: #ffffff;
+        -webkit-box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+        box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        border-radius: 0.42rem;
+        >span {
+            color: #3F4254;
+            padding: 0.75rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+        }
+        .spinner {
+            margin: 0 1.25rem 0 0;
+            width: auto;
+            height: auto;
+        }
+    }
+}
+
+.btn-calendar-teacher {
+    height: 40px;
+    padding: 0 15px;
+    background-color: #fff !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 3px;
+    color: #b5b5c3 !important;
+    font-size: 14px;
+    font-weight: 400;
+    position: relative;
+    min-width: 40px;
+    transition: all .2s;
+    &:not(:disabled):hover {
+        background-color: #3699FF !important;
+        border: 1px solid #3699FF !important;
+        color: #fff !important;
+    }
+    &:disabled {
+        opacity: 0.5;
+    }
+    i.fa-angle-down {
+        margin: 0 0 0 0.5rem;
+        vertical-align: bottom;
+        color: #b5b5c3 !important;
+    }
+    i.fa-angle-left,
+    i.fa-angle-right {
+        font-size: 22px;
+        position: absolute;
+        top: 10px;
+        left: 15px;
+    }
+}
