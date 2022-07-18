@@ -1,0 +1,66 @@
+@import "../init";
+$width-content-user: 200px;
+$width-col-day: 235px;
+$height-title: 80px;
+.calendar-school {
+    &__name {
+        width: $width-content-user;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        .top--name {
+            height: $height-title;
+        }
+        .list--school {
+            height: calc(100% - #{$height-title} - var(--width-scrollbar));
+            overflow: scroll;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            .school-item {
+                .school-class {
+                    width: 60px;
+                    .class-title {
+                        font-weight: 600;
+                        font-size: 13px;
+                    }
+                }
+            }
+        }
+    }
+    &__weeks {
+        width: calc(100% - #{$width-content-user});
+        display: flex;
+        flex-direction: column;
+        .top--weeks {
+            height: $height-title;
+            overflow: hidden scroll;
+            display: flex;
+            // &::-webkit-scrollbar {
+            //     display: none;
+            // }
+            // &::-webkit-scrollbar {
+            //     display: none;
+            // }
+            &_gird {
+                flex: 1;
+                min-width: $width-col-day;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+        .list--weeks {
+            height: calc(100% - #{$height-title});
+            overflow: scroll;
+            &_gird {
+                flex: 1;
+                min-width: $width-col-day;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    }
+}

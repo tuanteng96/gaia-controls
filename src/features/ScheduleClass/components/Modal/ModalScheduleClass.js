@@ -7,6 +7,7 @@ import Select, { components } from "react-select";
 
 import moment from "moment";
 import "moment/locale/vi";
+import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
 moment.locale("vi");
 
 ModalScheduleClass.propTypes = {
@@ -36,9 +37,9 @@ function ModalScheduleClass({
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
   const [initialGenerators, setInitialGenerator] = useState(initialGenerator);
+  const [isCTModal, setIsCTModal] = useState(true);
 
   useEffect(() => {
-    
     if (!defaultValues.ID) {
       setInitialGenerator(initialGenerator);
       setInitialValues(initialValue);
@@ -92,7 +93,7 @@ function ModalScheduleClass({
       }));
     }
   }, [show, defaultValues]);
-  console.log(defaultValues);
+
   const dayGenerator = () => {
     const ListDay = [];
     for (var i = 0; i < 7; i++) {
@@ -112,7 +113,7 @@ function ModalScheduleClass({
       return;
     }
     var newCalendarList = [];
-    
+
     newCalendarList = ClassList.map((item) => ({
       ClassTitle: item.Title,
       ClassID: item.ID,
@@ -147,18 +148,21 @@ function ModalScheduleClass({
   };
 
   return (
-    <Modal show={show} onHide={onHide} scrollable={true} size="xxl">
+    <Modal
+      show={show}
+      onHide={onHide}
+      scrollable={true}
+      size="xxl"
+      onEntered={() => setIsCTModal(false)}
+      onExit={() => setIsCTModal(true)}
+    >
       <Formik
         initialValues={initialValues}
         onSubmit={onAddEdit}
         enableReinitialize={true}
       >
         {(formikProps) => {
-          const {
-            values,
-            handleBlur,
-            setFieldValue,
-          } = formikProps;
+          const { values, handleBlur, setFieldValue } = formikProps;
 
           return (
             <Form
@@ -178,7 +182,9 @@ function ModalScheduleClass({
                   initialValues={initialGenerators}
                   ID={values.ID}
                 />
-                {values.SchoolID && (
+                {isCTModal && <LoaderTable />}
+
+                {!isCTModal && values.SchoolID && (
                   <div className="mt-4">
                     <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-50px d-flex justify-content-center align-items-center font-size-md">
                       {values.SchoolTitle}{" "}
@@ -205,7 +211,6 @@ function ModalScheduleClass({
                       </div>
 
                       <div className="border flex-1 overflow-auto">
-                        {/* Header */}
                         <div className="d-flex">
                           <div className="flex-1 border-right min-w-200px">
                             <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
@@ -243,7 +248,6 @@ function ModalScheduleClass({
                             </div>
                           </div>
                         </div>
-                        {/* End Header */}
                         {values.CalendarList &&
                           values.CalendarList.map((item, index) => (
                             <div className="d-flex" key={index}>

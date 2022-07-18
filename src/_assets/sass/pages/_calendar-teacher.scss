@@ -105,10 +105,10 @@ $height-title: 80px;
 .btn-calendar-teacher {
     height: 40px;
     padding: 0 15px;
-    background-color: #fff;
-    border: 1px solid #dee2e6;
+    background-color: #fff !important;
+    border: 1px solid #dee2e6 !important;
     border-radius: 3px;
-    color: #b5b5c3;
+    color: #b5b5c3 !important;
     font-size: 14px;
     font-weight: 400;
     position: relative;
@@ -122,7 +122,13 @@ $height-title: 80px;
     &:disabled {
         opacity: 0.5;
     }
-    i {
+    i.fa-angle-down {
+        margin: 0 0 0 0.5rem;
+        vertical-align: bottom;
+        color: #b5b5c3 !important;
+    }
+    i.fa-angle-left,
+    i.fa-angle-right {
         font-size: 22px;
         position: absolute;
         top: 10px;

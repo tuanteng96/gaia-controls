@@ -2,6 +2,29 @@
     // Dropdown
     //
     // Base
+    .dropdown {
+        .dropdown-toggle {
+            i {
+                margin: 0 0 0 0.5rem;
+                vertical-align: bottom;
+            }
+        }
+        .dropdown-menu {
+            border: 0 solid rgba(0, 0, 0, .15);
+            border-radius: 0.42rem;
+            box-shadow: 0 0 50px 0 rgb(82 63 105 / 15%);
+            font-size: 1rem;
+            color: #3f4254;
+            padding: 0.5rem 0;
+            .dropdown-item {
+                padding: 0.6rem 1.25rem;
+                clear: both;
+                font-weight: 400;
+                color: #181c32;
+            }
+        }
+    }
+    
     .dropdown-menu {
         &:before,
         &:after {

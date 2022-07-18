@@ -4,26 +4,11 @@ import { isDevelopment } from "../../helpers/DevelopmentHelpers";
 import "../../_assets/sass/pages/_calendar-teacher.scss";
 import BodyCalendar from "./BodyCalendar";
 import HeaderCalendar from "./HeaderCalendar";
+import { getCurrentDate } from "../../helpers/DateTimeHelpers";
 
 import moment from "moment";
 import "moment/locale/vi";
 moment.locale("vi");
-
-const getCurrentDate = (date) => {
-  const now = date ? moment(date) : moment();
-  var From = now
-    .clone()
-    .weekday(0)
-    .toDate();
-  var To = now
-    .clone()
-    .weekday(6)
-    .toDate();
-  return {
-    From,
-    To,
-  };
-};
 
 function CalendarTeacher(props) {
   const [filters, setFilters] = useState({
