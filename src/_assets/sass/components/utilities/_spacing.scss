@@ -15,6 +15,14 @@ $value in $heights-and-widths {
     .pt-#{$name} {
         padding-top: $value !important;
     }
+    .px-#{$name} {
+        padding-left: $value !important;
+        padding-right: $value !important;
+    }
+    .py-#{$name} {
+        padding-top: $value !important;
+        padding-bottom: $value !important;
+    }
     .m-#{$name} {
         margin: $value !important;
     }
@@ -29,5 +37,13 @@ $value in $heights-and-widths {
     }
     .mt-#{$name} {
         margin-top: $value !important;
+    }
+    .mx-#{$name} {
+        margin-left: $value !important;
+        margin-right: $value !important;
+    }
+    .my-#{$name} {
+        margin-top: $value !important;
+        margin-bottom: $value !important;
     }
 }

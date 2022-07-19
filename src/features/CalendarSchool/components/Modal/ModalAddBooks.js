@@ -1,16 +1,16 @@
 import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
-import { Form, Formik } from "formik";
+import { FieldArray, Form, Formik } from "formik";
 import { Button, Modal } from "react-bootstrap";
 import AsyncSelectTeachers from "../../../../components/Selects/AsyncSelectTeachers";
 import AsyncSelectSchool from "../../../../components/Selects/AsyncSelectSchool";
 import Select from "react-select";
 import { OverlayTrigger, Popover } from "react-bootstrap";
-import AsyncSelectSkills from "../../../../components/Selects/AsyncSelectSkills";
+import PopoverAddTeacher from "../Popover/PopoverAddTeacher";
 
 const initialValue = {
-  major: null,
+  major: { Title: "", IsThematic: false },
   dayItem: {
     ID: 0, //id buoi
     SchoolID: "", //id truong
@@ -27,13 +27,25 @@ const initialValue = {
 };
 
 const AddSchema = Yup.object().shape({
-  // TeacherId: Yup.object()
-  //     .shape({
-  //         value: Yup.string(),
-  //         label: Yup.string(),
-  //     })
-  //     .nullable()
-  //     .required('Vui lòng chọn giáo viên')
+  major: Yup.object().shape({
+    IsThematic: Yup.bool().notRequired(),
+    Title: Yup.string()
+      .when('IsThematic', {
+        is: (IsThematic) => IsThematic,
+        then: Yup.string()
+          .required('Vui lòng nhập chuyên đề')
+      })
+  }).nullable()
+    .required('Thiếu thông tin'),
+  dayItem: Yup.object()
+    .shape({
+      SchoolID: Yup.object().nullable().required('Vui lòng chọn trường'),
+      ClassID: Yup.object().nullable().required('Vui lòng chọn lớp'),
+      Index: Yup.object().nullable().required('Vui lòng chọn lớp'),
+      TeacherID: Yup.object().nullable().required('Vui lòng chọn lớp'),
+    })
+    .nullable()
+    .required('Thiếu thông tin'),
 });
 
 function ModalAddBooks({
@@ -70,6 +82,21 @@ function ModalAddBooks({
     }
   }, [SchoolCurrent]);
 
+  useEffect(() => {
+    if(InitialValueAdd) {
+      setInitialValues((prevState) => ({
+        ...prevState,
+        major: {
+          ...prevState.major,
+          IsThematic: InitialValueAdd.IsThematic
+        }
+      }))
+    }
+    else {
+      setInitialValues(initialValue)
+    }
+  },[InitialValueAdd])
+
   if (!InitialValueAdd) return <Fragment></Fragment>;
   return (
     <Modal
@@ -94,34 +121,63 @@ function ModalAddBooks({
             handleBlur,
             setFieldValue,
           } = formikProps;
-
+          
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
                 <Modal.Title>
-                  {InitialValueAdd?.IsThematic
-                    ? "Tạo mới tiết chuyên đề"
-                    : "Tạo mới tiết thông thường"}
+                  Tạo mới tiết
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body className="p-0">
                 <div className="p-15px border-bottom">
+                  <div className="form-group d-flex justify-content-between align-items-center">
+                    <label className="mb-0">Tiết có chuyên đề</label>
+                    <span className="switchs">
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="major.IsThematic"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          checked={values?.major?.IsThematic}
+                        />
+                        <span></span>
+                      </label>
+                    </span>
+                  </div>
+                  {values?.major?.IsThematic && (
+                    <div className="form-group">
+                      <label>Tên chuyên đề</label>
+                      <input
+                        className={`form-control ${errors?.major?.Title &&
+                          touched?.major?.Title
+                          ? "is-invalid solid-invalid"
+                          : ""
+                          }`}
+                        name="major.Title"
+                        value={values?.major?.Title}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder="Nhập tên chuyên đề"
+                      />
+                    </div>
+                  )}
                   <div className="form-group">
                     <label>Trường</label>
                     <AsyncSelectSchool
-                      className={`select-control ${
-                        errors?.dayItem?.SchoolID && touched?.dayItem?.SchoolID
-                          ? "is-invalid solid-invalid"
-                          : ""
-                      }`}
+                      className={`select-control ${errors?.dayItem?.SchoolID && touched?.dayItem?.SchoolID
+                        ? "is-invalid solid-invalid"
+                        : ""
+                        }`}
                       placeholder="Chọn trường"
                       name="dayItem.SchoolID"
                       menuPosition="fixed"
                       value={values.dayItem.SchoolID}
                       onChange={(option) => {
                         setFieldValue("dayItem.SchoolID", option, false);
-                        setFieldValue("dayItem.Index", null, false);
-                        setFieldValue("dayItem.ClassID", null, false);
+                        setFieldValue("dayItem.Index", "", false);
+                        setFieldValue("dayItem.ClassID", "", false);
                         setSchoolCurrent(option);
                       }}
                       onBlur={handleBlur}
@@ -133,6 +189,7 @@ function ModalAddBooks({
                     />
                   </div>
                   <div className="form-group">
+                    {console.log(values)}
                     <label>Lớp</label>
                     <Select
                       className="select-control"
@@ -170,16 +227,15 @@ function ModalAddBooks({
                   <div className="form-group mb-0">
                     <label>Giáo viên</label>
                     <AsyncSelectTeachers
-                      className={`select-control ${
-                        errors?.dayItem?.TeacherID &&
+                      className={`select-control ${errors?.dayItem?.TeacherID &&
                         touched?.dayItem?.TeacherID
-                          ? "is-invalid solid-invalid"
-                          : ""
-                      }`}
+                        ? "is-invalid solid-invalid"
+                        : ""
+                        }`}
                       placeholder="Chọn giáo viên"
                       name="TeacherID"
                       menuPosition="fixed"
-                      value={values.dayItem.TeacherID}
+                      value={values?.dayItem?.TeacherID}
                       onChange={(option) => {
                         setFieldValue("dayItem.TeacherID", option, false);
                       }}
@@ -193,8 +249,8 @@ function ModalAddBooks({
                   </div>
                 </div>
                 <div className="p-15px">
-                  <div className="d-flex align-items-center justify-content-between mb-5px">
-                    <div className="font-weight-bold text-uppercase font-size-sm">
+                  <div className="d-flex align-items-center justify-content-between mb-12px">
+                    <div className="font-weight-bold text-uppercase font-size-md">
                       Giáo viên phụ
                     </div>
                     <OverlayTrigger
@@ -204,97 +260,30 @@ function ModalAddBooks({
                       placement="top"
                       overlay={
                         <Popover id={`popover-positioned-top}`}>
-                          <Popover.Header className="font-weight-bold d-flex justify-content-between py-2">
-                            Thêm giáo viên phụ
-                          </Popover.Header>
-                          <Popover.Body>
-                            <div className="form-group">
-                              <label>Giáo viên</label>
-                              <AsyncSelectTeachers
-                                className={`select-control ${
-                                  errors?.dayItem?.TeacherID &&
-                                  touched?.dayItem?.TeacherID
-                                    ? "is-invalid solid-invalid"
-                                    : ""
-                                }`}
-                                placeholder="Chọn giáo viên"
-                                name="adad"
-                                value={values.dayItem.TeacherID}
-                                onChange={(option) => {
-                                  setFieldValue(
-                                    "dayItem.TeacherID",
-                                    option,
-                                    false
-                                  );
-                                }}
-                                onBlur={handleBlur}
-                                noOptionsMessage={({ inputValue }) =>
-                                  !inputValue
-                                    ? "Danh sách giáo viên trống"
-                                    : "Không tìm thấy giáo viên phù hợp."
-                                }
-                              />
-                            </div>
-                            <div className="form-group">
-                              <label>Kỹ năng</label>
-                              <AsyncSelectSkills
-                                className={`select-control ${
-                                  errors?.dayItem?.TeacherID &&
-                                  touched?.dayItem?.TeacherID
-                                    ? "is-invalid solid-invalid"
-                                    : ""
-                                }`}
-                                placeholder="Chọn kỹ năng"
-                                name="adad"
-                                value={values.dayItem.TeacherID}
-                                onChange={(option) => {
-                                  setFieldValue(
-                                    "dayItem.TeacherID",
-                                    option,
-                                    false
-                                  );
-                                }}
-                                onBlur={handleBlur}
-                                noOptionsMessage={({ inputValue }) =>
-                                  !inputValue
-                                    ? "Danh sách giáo viên trống"
-                                    : "Không tìm thấy giáo viên phù hợp."
-                                }
-                              />
-                            </div>
-                            <div className="form-group">
-                              <label>Mô tả</label>
-                              <textarea
-                                rows="3"
-                                className="form-control"
-                                name="desc"
-                                value={values.desc}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                placeholder="Nhập mô tả"
-                              />
-                            </div>
-                            <div className="form-group mb-0 d-flex justify-content-between align-items-center">
-                              <label className="mb-0">Bắt buộc giáo viên</label>
-                              <span className="switchs">
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    name="required"
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    checked={values.required}
-                                  />
-                                  <span></span>
-                                </label>
-                              </span>
-                            </div>
-                          </Popover.Body>
-                          <div className="font-weight-bold d-flex justify-content-between py-2 px-3 border-top">
-                            <button className="btn btn-success py-1 font-size-sm">
-                              Lưu giáo viên
-                            </button>
-                          </div>
+                          <PopoverAddTeacher onSubmit={(value, { resetForm }) => {
+                            const newJoins = values.joins ? [...values.joins] : [];
+                            const index = newJoins.findIndex(item => item.TeacherID === value?.TeacherID?.value);
+                            if (index > -1) {
+                              newJoins[index].Desc = value.Desc;
+                              newJoins[index].IsRequire = value.IsRequire;
+                              newJoins[index].SkillID = value?.SkillID?.value;
+                              newJoins[index].SkillTitle = value?.SkillID?.label;
+                            }
+                            else {
+                              const newJoinItem = {
+                                TeacherID: value?.TeacherID?.value,
+                                TeacherTitle: value?.TeacherID?.label,
+                                Desc: value.Desc,
+                                IsRequire: value.IsRequire,
+                                SkillID: value?.SkillID?.value,
+                                SkillTitle: value?.SkillID?.label
+                              }
+                              newJoins.push(newJoinItem)
+                            }
+                            setFieldValue("joins", newJoins, false)
+                            resetForm();
+                            document.body.click();
+                          }} />
                         </Popover>
                       }
                     >
@@ -303,9 +292,36 @@ function ModalAddBooks({
                       </button>
                     </OverlayTrigger>
                   </div>
-                  <div className="text-muted font-size-sm">
-                    Chưa có giáo viên phụ.
-                  </div>
+                  {
+                    values.joins && values.joins.length > 0 ? (
+                      <FieldArray
+                        name="joins"
+                        render={arrayHelpers => (
+                          <div className="list-assistant">
+                            {
+                              values.joins.map((item, index) => (
+                                <div className="list-assistant__item" key={index}>
+                                  <div className="flex-1">
+                                    <div className="font-size-md font-weight-500">
+                                      {item.TeacherTitle}
+                                      {item.IsRequire && <i className="text-danger fas fa-badge-check pl-5px"></i>}
+                                    </div>
+                                    <div className="text-muted">{item.SkillTitle} - {item.Desc || "Không có ghi chú"}</div>
+                                  </div>
+                                  <div className="list-assistant__close" onClick={() => arrayHelpers.remove(index)}>
+                                    <i className="fal fa-times"></i>
+                                  </div>
+                                </div>
+                              ))
+                            }
+                          </div>
+                        )} />
+                    ) : (
+                      <div className="text-muted font-size-sm">
+                        Chưa có giáo viên phụ.
+                      </div>
+                    )
+                  }
                 </div>
               </Modal.Body>
               <Modal.Footer>

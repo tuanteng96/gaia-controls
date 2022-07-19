@@ -237,6 +237,7 @@ function CalendarSchool(props) {
             show={IsModalAdd}
             onHide={onHideModalAdd}
             InitialValueAdd={InitialValueAdd}
+            onSubmit={(value) => console.log(value)}
           />
         </div>
       </div>
