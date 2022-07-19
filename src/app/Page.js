@@ -23,8 +23,8 @@ export default function Page() {
         <Route path="/giao-vien" element={<Teacher />} />
         <Route path="/giao-vien-xin-nghi" element={<TeacherResigns />} />
         <Route path="/khung-chuong-trinh" element={<Curriculum />} />
-        <Route path="/bang-lich" element={<Calendar />} />
-        <Route path="/bang-lich-truong" element={<CalendarSchool />} />
+        <Route path="/bang-lich-truong" element={<Calendar />} />
+        <Route path="/bang-lich" element={<CalendarSchool />} />
         <Route path="/bang-lich-giao-vien" element={<CalendarTeacher />} />
         <Route path="/xep-lich" element={<ScheduleClass />} />
         <Route path="/xep-lich-giao-vien" element={<ScheduleTeacher />} />

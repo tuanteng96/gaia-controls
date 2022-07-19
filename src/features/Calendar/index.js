@@ -16,7 +16,6 @@ import Swal from "sweetalert2";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { AlertError } from "../../helpers/AlertHelpers";
 import SpinnerMessage from "../../components/spinners/SpinnerMessage";
-import ModalAddTeacher from "./components/Modal/ModalAddTeacher";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -37,8 +36,6 @@ function Calendar(props) {
   const [ListCalendar, setListCalendar] = useState([]);
   const [SpinnerShow, setSpinnerShow] = useState(false);
   const [StartEndHour, setStartEndHour] = useState(null);
-  const [isModalAdd, setIsModalAdd] = useState(false);
-  const [ItemModalCurrent, setItemModalCurrent] = useState(null);
   const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -262,16 +259,6 @@ function Calendar(props) {
     }
     return "bg-primary h-38px";
   };
-
-  const onOpenModalAdd = (item) => {
-    setIsModalAdd(true)
-    setItemModalCurrent(item)
-  }
-
-  const onHideModalAdd = () => {
-    setIsModalAdd(false)
-    setItemModalCurrent(null)
-  }
 
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -648,7 +635,7 @@ function Calendar(props) {
                                                       </div>
                                                     </div>
                                                     <div>
-                                                      <label className="w-100 d-flex justify-content-between align-items-end"><span>Trợ giảng</span> <button type="button" onClick={() => onOpenModalAdd(period)} className="btn btn-success btn-xss">Thêm</button></label>
+                                                      <label className="w-100 d-flex justify-content-between align-items-end"><span>Trợ giảng</span> <button type="button" className="btn btn-success btn-xss">Thêm</button></label>
                                                       <div className="text-muted">
                                                         Chưa có trợ giảng
                                                       </div>
@@ -822,7 +809,7 @@ function Calendar(props) {
                                                       />
                                                     </div>
                                                     <div>
-                                                      <label className="w-100 d-flex justify-content-between align-items-end"><span>Trợ giảng</span> <button type="button" onClick={() => onOpenModalAdd(period)} className="btn btn-success btn-xss">Thêm</button></label>
+                                                      <label className="w-100 d-flex justify-content-between align-items-end"><span>Trợ giảng</span> <button type="button" className="btn btn-success btn-xss">Thêm</button></label>
                                                       <div className="text-muted">
                                                         Chưa có trợ giảng
                                                       </div>
@@ -942,12 +929,6 @@ function Calendar(props) {
         </div>
       </div>
       <SpinnerMessage isShow={SpinnerShow} text="Đang cập nhập ..." />
-      <ModalAddTeacher 
-        show={isModalAdd}
-        onHide={onHideModalAdd}
-        defaultValues={ItemModalCurrent}
-        onSubmit={(value) => console.log(value)}
-      />
     </div>
   );
 }

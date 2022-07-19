@@ -224,7 +224,7 @@ function ModalKTT({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                       onBlur={handleBlur}
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group position-relative zindex-4">
                     <label>Cấp</label>
                     <Select
                       menuPosition="fixed"
@@ -251,7 +251,7 @@ function ModalKTT({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                       onBlur={handleBlur}
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group position-relative zindex-3">
                     <label>Trường</label>
                     <AsyncPaginate
                       key={values.Levels?.value}

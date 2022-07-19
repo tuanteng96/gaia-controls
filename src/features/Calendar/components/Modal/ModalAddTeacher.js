@@ -24,8 +24,7 @@ const AddSchema = Yup.object().shape({
 });
 
 function ModalAddTeacher({ show, onHide, onSubmit, defaultValues, btnLoading }) {
-    const [initialValues, setInitialValues] = useState(initialValue);
-    console.log(defaultValues)
+    const [initialValues, ] = useState(initialValue);
     const getAllTeacher = async (search, loadedOptions, { page }) => {
         const newPost = {
             _pi: page,

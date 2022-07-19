@@ -17,6 +17,9 @@ export const getArrayChildren = (arrays, type, { HourMax, HourMin }) => {
                 newSchedule.push({...item, IndexParent: schedulte.Index });
             }
         }
+        if (!schedulte.dayItems && schedulte.CalendarItem) {
+            newSchedule.push({...schedulte.CalendarItem, IndexParent: schedulte.Index, TeacherTitle: schedulte.CalendarItem.UserTitle, TeacherID: schedulte.CalendarItem.UserID });
+        }
     }
     return newSchedule.filter(item => {
         let TimeFrom = moment(moment(item.From).format("HH:mm:ss"), "HH:mm:ss");

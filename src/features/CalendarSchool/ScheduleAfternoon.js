@@ -6,11 +6,18 @@ import { ClassSchoolGenerator } from "../../helpers/ClassHelpers";
 import { getStyleSchool } from "../../helpers/DateTimeHelpers";
 import clsx from "clsx";
 
+import moment from "moment";
+import "moment/locale/vi";
+moment.locale("vi");
+
 ScheduleAfternoon.propTypes = {
   ScheduleDay: PropTypes.array,
 };
 
-function ScheduleAfternoon({ ScheduleDay }) {
+function ScheduleAfternoon({
+  ScheduleDay,
+  HourScheduleList,
+}) {
   const [ScheduleItem, setScheduleItem] = useState([]);
   const { HourSchool } = useSelector(({ calendarSchool }) => ({
     HourSchool: calendarSchool.HourSchool,
@@ -29,19 +36,17 @@ function ScheduleAfternoon({ ScheduleDay }) {
               className={`cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${ClassSchoolGenerator(
                 item
               )} ${clsx({ "opacity-70": item.IsAutoSet })}`}
-              style={getStyleSchool(item, "C", HourSchool)}
+              style={getStyleSchool(item, "C", HourSchool, HourScheduleList)}
             >
               <span className="text-white font-size-xs font-weight-border">
-                {item.Index} {item.From}
+                {item.Index}
               </span>
             </div>
-            {
-              item.TeacherTitle && (
-                <div className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3">
-                  {item.TeacherTitle}
-                </div>
-              )
-            }
+            {item.TeacherTitle && (
+              <div className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3">
+                {item.TeacherTitle}
+              </div>
+            )}
           </Fragment>
         ))}
     </Fragment>

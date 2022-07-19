@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { setHourSchool } from "./_redux/CalendarSchoolSlice";
 import { AlertError } from "../../helpers/AlertHelpers";
+import { Dropdown } from "react-bootstrap";
+import ModalAddBooks from "./components/Modal/ModalAddBooks";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -26,6 +28,8 @@ function CalendarSchool(props) {
   const [Lists, setLists] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [PageTotal, setPageTotal] = useState(0);
+  const [IsModalAdd, setIsModalAdd] = useState(false);
+  const [InitialValueAdd, setInitialValueAdd] = useState(null);
   const typingTimeoutRef = useRef(null);
 
   const dispatch = useDispatch();
@@ -59,7 +63,9 @@ function CalendarSchool(props) {
             window.location.href = "/";
           });
         } else {
-          setLists((prevState) => Pi > 1 ? prevState.concat(SchoolList) : SchoolList);
+          setLists((prevState) =>
+            Pi > 1 ? prevState.concat(SchoolList) : SchoolList
+          );
           setPageTotal(Total);
           setLoading(false);
           dispatch(setHourSchool({ HourMin, HourMax }));
@@ -96,7 +102,7 @@ function CalendarSchool(props) {
           error: response.error,
         });
       });
-  }
+  };
 
   const fetchMoreData = () => {
     if (Lists.length < PageTotal) {
@@ -153,15 +159,52 @@ function CalendarSchool(props) {
       setFilters({ ...filters, pi: 1, key: value });
     }, 500);
   };
+
+  const onOpenModalAdd = (value) => {
+    setInitialValueAdd(value);
+    setIsModalAdd(true);
+  };
+
+  const onHideModalAdd = (value) => {
+    setInitialValueAdd(null);
+    setIsModalAdd(false);
+  };
+
   return (
     <div className="calendar-school">
       <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
         <div className="hpanel">
-          <div className="panel-body">
+          <div className="panel-body overflow-visible">
             <div className="d-flex justify-content-between align-items-center">
               <h2 className="text-uppercase font-size-h3 mb-0">
                 Bảng lịch trường
               </h2>
+              <Dropdown>
+                <Dropdown.Toggle variant="primary">
+                  Đặt lịch mới
+                  <i className="fal fa-angle-down"></i>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item
+                    onClick={() =>
+                      onOpenModalAdd({
+                        IsThematic: false, // Không phải chuyên đề
+                      })
+                    }
+                  >
+                    Tạo tiết thông thường
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() =>
+                      onOpenModalAdd({
+                        IsThematic: true, // Có phải chuyên đề
+                      })
+                    }
+                  >
+                    Tạo tiết chuyên đề
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </div>
@@ -187,8 +230,13 @@ function CalendarSchool(props) {
               loading: loading,
             }}
             onChange={{
-              onChangeTeacher: onChangeTeacher
+              onChangeTeacher: onChangeTeacher,
             }}
+          />
+          <ModalAddBooks
+            show={IsModalAdd}
+            onHide={onHideModalAdd}
+            InitialValueAdd={InitialValueAdd}
           />
         </div>
       </div>
