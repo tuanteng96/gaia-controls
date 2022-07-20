@@ -11,6 +11,7 @@ import { setHourSchool } from "./_redux/CalendarSchoolSlice";
 import { AlertError } from "../../helpers/AlertHelpers";
 import { Dropdown } from "react-bootstrap";
 import ModalAddBooks from "./components/Modal/ModalAddBooks";
+import { toast } from "react-toastify";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -28,6 +29,9 @@ function CalendarSchool(props) {
   const [Lists, setLists] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [PageTotal, setPageTotal] = useState(0);
+  const [loadingBtn, setLoadingBtn] = useState({
+    Books: false
+  })
   const [IsModalAdd, setIsModalAdd] = useState(false);
   const [InitialValueAdd, setInitialValueAdd] = useState(null);
   const typingTimeoutRef = useRef(null);
@@ -74,6 +78,10 @@ function CalendarSchool(props) {
       })
       .catch((error) => console.log(error));
   };
+
+  const onRefresh = () => {
+    getListCalendar(true, { ...filters, pi: 1 });
+  }
 
   const onChangeTeacher = (value, item) => {
     setLoading(true);
@@ -170,6 +178,45 @@ function CalendarSchool(props) {
     setIsModalAdd(false);
   };
 
+  const onAddBooks = (values) => {
+    setLoadingBtn(prevState => ({...prevState, Books: true}))
+    let newData = values.dayItem.Index.map((item) => ({
+      ...values,
+      major: values.major.IsThematic ? { Title: values.major.Title } : null,
+      dayItem: {
+        ...values.dayItem,
+        Index: item.value,
+        IndexTitle: item.label,
+        ClassID: values.dayItem.ClassID?.value ?? "",
+        ClassLevel: values.dayItem.ClassID?.Level ?? "",
+        ClassTitle: values.dayItem.ClassID?.label ?? "",
+        Date: moment(values.dayItem.Date).format("YYYY-MM-DD"),
+        SchoolID: values.dayItem.SchoolID?.ID ?? "",
+        SchoolTitle: values.dayItem.SchoolID?.Title ?? "",
+        TeacherID: values.dayItem.TeacherID?.value ?? "",
+        TeacherTitle: values.dayItem.TeacherID?.label ?? "",
+      },
+    }));
+    const dataSubmit = {
+      list: newData,
+    };
+    CalendarSchoolCrud.addBooks(dataSubmit)
+      .then((response) => {
+        getListCalendar(false, { ...filters, pi: 1 }, () => {
+          setLoadingBtn((prevState) => ({ ...prevState, Books: false }));
+          onHideModalAdd();
+          toast.success(
+            values.dayItem.ID ? "Cập nhập thành công !" : "Thêm mới thành công",
+            {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1500,
+            }
+          );
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div className="calendar-school">
       <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -215,6 +262,7 @@ function CalendarSchool(props) {
               WeeksPrev: () => onWeeksChange(filters.From, "PREV"),
               WeeksNext: () => onWeeksChange(filters.From, "NEXT"),
               WeeksToday: () => onWeeksChange(),
+              onRefresh: () => onRefresh(),
             }}
             onChange={{
               Key: (value) => onChangeKey(value),
@@ -231,13 +279,15 @@ function CalendarSchool(props) {
             }}
             onChange={{
               onChangeTeacher: onChangeTeacher,
+              onOpenModalAdd: onOpenModalAdd,
             }}
           />
           <ModalAddBooks
             show={IsModalAdd}
             onHide={onHideModalAdd}
             InitialValueAdd={InitialValueAdd}
-            onSubmit={(value) => console.log(value)}
+            onSubmit={onAddBooks}
+            loadingBtn={loadingBtn}
           />
         </div>
       </div>

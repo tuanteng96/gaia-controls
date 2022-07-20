@@ -195,6 +195,13 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                   >
                                     <div className="list--weeks_item position-relative flex-1 border-right">
                                       <ScheduleMorning
+                                        itemAdd={{
+                                          Date: moment(filters.from)
+                                            .add(indexDay, "days")
+                                            .toString(),
+                                          Class: Class,
+                                          School: School,
+                                        }}
                                         ScheduleDay={getScheduleList(
                                           moment(filters.from)
                                             .add(indexDay, "days")
@@ -204,6 +211,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                         onChangeTeacher={
                                           onChange.onChangeTeacher
                                         }
+                                        onOpenModalAdd={onChange.onOpenModalAdd}
                                         HourScheduleList={
                                           School?.HourScheduleList
                                         }
@@ -211,6 +219,13 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     </div>
                                     <div className="list--weeks_item position-relative flex-1">
                                       <ScheduleAfternoon
+                                        itemAdd={{
+                                          Date: moment(filters.from)
+                                            .add(indexDay, "days")
+                                            .toString(),
+                                          Class: Class,
+                                          School: School,
+                                        }}
                                         ScheduleDay={getScheduleList(
                                           moment(filters.from)
                                             .add(indexDay, "days")
@@ -220,6 +235,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                         onChangeTeacher={
                                           onChange.onChangeTeacher
                                         }
+                                        onOpenModalAdd={onChange.onOpenModalAdd}
                                         HourScheduleList={
                                           School?.HourScheduleList
                                         }

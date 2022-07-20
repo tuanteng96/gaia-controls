@@ -88,6 +88,9 @@ function HeaderCalendar({ filters, options, onChange }) {
           </div>
         </div>
         <div className="d-flex">
+          <button type="button" className="btn btn-primary mr-10px" onClick={options.onRefresh}>
+            Làm mới
+          </button>
           <div className="w-300px position-relative me-3">
             <input
               name="_key"
