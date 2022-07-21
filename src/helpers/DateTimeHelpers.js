@@ -68,10 +68,12 @@ export const getStyleSchool = (item, type, {
         );
         const TotalTime = moment(moment(To).format("HH:mm:ss"), "HH:mm:ss").diff(moment(moment(From).format("HH:mm:ss"), "HH:mm:ss"), "seconds");
         const TotalStart = moment(moment(From).format("HH:mm:ss"), "HH:mm:ss").diff(moment(newHourMin, "HH:mm:ss"), "seconds");
-
         styles.width = `${(TotalTime / TotalSeconds) * 100}%`;
         styles.top = 0;
-        styles.left = `${(TotalStart / TotalSeconds) * 100}%`;;
+        styles.left = `${(TotalStart / TotalSeconds) * 100}%`;
+    }
+    if (item?.MajorID) {
+        styles.borderBottom = "2px solid #f64e60"
     }
     return styles;
 }
