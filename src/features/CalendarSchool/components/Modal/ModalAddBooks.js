@@ -150,7 +150,6 @@ function ModalAddBooks({
             handleBlur,
             setFieldValue,
           } = formikProps;
-          console.log(values);
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>

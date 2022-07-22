@@ -4,7 +4,7 @@ import { LayoutSplashScreen } from "../../../layout/_core/EzsSplashScreen";
 import { setToken } from "./AuthSlice";
 
 window.Token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjciLCJuYmYiOjE2NTc3ODQ3MzgsImV4cCI6MTY1ODM4OTUzOCwiaWF0IjoxNjU3Nzg0NzM4fQ.tNeLZmNcZsYcS3-5Bi-6hKp-rEX9S7Y1UOaQkrwvtsg";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwIiwibmJmIjoxNjU4NDUyOTMwLCJleHAiOjE2NTkwNTc3MzAsImlhdCI6MTY1ODQ1MjkzMH0.QIYS6J3ngzZC_weigMUv5HSkKT9BZ6wZLbgVLiNfEfs";
 
   function getScrollbarWidth() {
     // Creating invisible container
