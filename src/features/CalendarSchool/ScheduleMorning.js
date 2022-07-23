@@ -79,6 +79,7 @@ function ScheduleMorning({
                             value: item.Index,
                           },
                         ],
+                    MajorID: item?.MajorID ?? 0,
                   },
                   joins: item.TeacherJoins ?? [],
                 };

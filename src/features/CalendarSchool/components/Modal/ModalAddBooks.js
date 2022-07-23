@@ -115,6 +115,7 @@ function ModalAddBooks({
           Date: InitialValueAdd?.dayItem?.Date ?? "",
           TeacherID: InitialValueAdd?.dayItem?.TeacherID ?? "",
           Index: InitialValueAdd?.dayItem?.Index ?? [],
+          MajorID: InitialValueAdd?.dayItem?.MajorID ?? 0,
         },
         joins: InitialValueAdd.joins ?? [],
       }));
