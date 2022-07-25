@@ -5,6 +5,7 @@ import teacherReducer from "../features/Teacher/_redux/TeacherSlice";
 import curriculumReducer from "../features/Curriculum/_redux/CurriculumSlice";
 import toolTeacherReducer from "../features/ToolsTeacher/_redux/ToolsTeacherSlice";
 import calendarSchoolReducer from "../features/CalendarSchool/_redux/CalendarSchoolSlice"
+import calendarTeachersReducer from "../features/CalendarTeacher/_redux/CalendarTeachersSlice"
 
 export const rootReducer = combineReducers({
     auth: authReducer,
@@ -13,4 +14,5 @@ export const rootReducer = combineReducers({
     toolTeacher: toolTeacherReducer,
     curriculum: curriculumReducer,
     calendarSchool: calendarSchoolReducer,
+    calendarTeachers: calendarTeachersReducer,
 });

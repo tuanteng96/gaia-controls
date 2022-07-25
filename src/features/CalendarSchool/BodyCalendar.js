@@ -80,7 +80,8 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                 style={{
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
-                                  WebkitLineClamp: ClassList.length,
+                                  WebkitLineClamp:
+                                    ClassList.length > 0 ? ClassList.length : 1,
                                   display: "-webkit-box",
                                   WebkitBoxOrient: "vertical",
                                 }}
@@ -105,6 +106,9 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     {Class.Title}
                                   </div>
                                 ))}
+                              {(!ClassList || ClassList.length === 0) && (
+                                <div className="bg-stripes class-title h-40px"></div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -121,9 +125,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                   .fill()
                   .map((item, index) => (
                     <div
-                      className={`top--weeks_gird ${
-                        index !== 6 ? "border-right" : ""
-                      }`}
+                      className={`top--weeks_gird ${clsx({"border-right" : index !== 6})}`}
                       key={index}
                     >
                       <div className="flex-grow-1 border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
@@ -243,6 +245,9 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     </div>
                                   </div>
                                 ))}
+                              {(!ClassList || ClassList.length === 0) && (
+                                <div className="bg-stripes class-title h-40px"></div>
+                              )}
                             </div>
                           ))}
                       </div>

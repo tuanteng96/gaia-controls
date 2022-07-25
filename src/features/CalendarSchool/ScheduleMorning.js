@@ -49,7 +49,8 @@ function ScheduleMorning({
                   },
                   dayItem: {
                     Date: item.Date ?? itemAdd.Date,
-                    ID: item.ID,
+                    ID: !item?.isCalendarItem ? item.ID : 0,
+                    CalendarItemID: item?.isCalendarItem ? item.ID : 0,
                     SchoolID: {
                       ...itemAdd.School,
                       label: itemAdd.School.Title,

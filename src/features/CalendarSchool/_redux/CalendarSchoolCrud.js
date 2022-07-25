@@ -16,9 +16,14 @@ const addBooks = (data) => {
     return axiosClient.post(ADD_BOOKS_URL, JSON.stringify(data));
 };
 
+const getAllTeachers = (data) => {
+    return axiosClient.post(GET_ALL_URL, JSON.stringify(data));
+};
+
 const CalendarSchoolCrud = {
     getAll,
     getAllSkills,
-    addBooks
+    addBooks,
+    getAllTeachers
 };
 export default CalendarSchoolCrud;

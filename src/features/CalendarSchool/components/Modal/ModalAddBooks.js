@@ -110,6 +110,7 @@ function ModalAddBooks({
         dayItem: {
           ...prevState.dayItem,
           ID: InitialValueAdd?.dayItem?.ID ?? 0,
+          CalendarItemID: InitialValueAdd?.dayItem?.CalendarItemID ?? 0,
           SchoolID: InitialValueAdd?.dayItem?.SchoolID ?? "",
           ClassID: InitialValueAdd?.dayItem?.ClassID ?? "",
           Date: InitialValueAdd?.dayItem?.Date ?? "",
@@ -408,7 +409,9 @@ function ModalAddBooks({
                     "spinner spinner-white spinner-right"} w-auto h-auto`}
                   disabled={loadingBtn.Books}
                 >
-                  {values?.dayItem?.ID ? "Cập nhập" : "Thêm mới"}
+                  {values?.dayItem?.ID || values?.dayItem?.CalendarItemID
+                    ? "Cập nhập"
+                    : "Thêm mới"}
                 </Button>
               </Modal.Footer>
             </Form>

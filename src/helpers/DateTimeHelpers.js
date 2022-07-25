@@ -73,7 +73,38 @@ export const getStyleSchool = (item, type, {
         styles.left = `${(TotalStart / TotalSeconds) * 100}%`;
     }
     if (item?.MajorID) {
-        styles.borderBottom = "2px solid #f64e60"
+        styles.borderBottom = "2px solid rgb(221 0 24)"
     }
     return styles;
 }
+
+export const getStyleTeacher = (
+  item,
+  { HourMax, HourMin },
+) => {
+  let newHourMin = HourMin;
+  let newHourMax = HourMax;
+  let styles = {};
+  if (item) {
+    const { From, To } = item;
+    var TotalSeconds = moment(newHourMax, "HH:mm:ss").diff(
+      moment(newHourMin, "HH:mm:ss"),
+      "seconds"
+    );
+    const TotalTime = moment(moment(To).format("HH:mm:ss"), "HH:mm:ss").diff(
+      moment(moment(From).format("HH:mm:ss"), "HH:mm:ss"),
+      "seconds"
+    );
+    const TotalStart = moment(moment(From).format("HH:mm:ss"), "HH:mm:ss").diff(
+      moment(newHourMin, "HH:mm:ss"),
+      "seconds"
+    );
+    styles.width = `${(TotalTime / TotalSeconds) * 100}%`;
+    styles.top = 0;
+    styles.left = `${(TotalStart / TotalSeconds) * 100}%`;
+  }
+  if (item?.MajorID) {
+    styles.borderBottom = "2px solid rgb(221 0 24)";
+  }
+  return styles;
+};

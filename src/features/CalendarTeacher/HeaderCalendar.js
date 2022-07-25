@@ -18,7 +18,7 @@ function HeaderCalendar({ filters, options, onChange }) {
 
   useEffect(() => {
     const CurrentWeek = moment().week();
-    const FilterWeek = moment(filters.From).week();
+    const FilterWeek = moment(filters.from).week();
     if (FilterWeek === CurrentWeek) {
       setIsDisabled(true);
     } else {
@@ -53,6 +53,13 @@ function HeaderCalendar({ filters, options, onChange }) {
           </button>
         </div>
         <div className="d-flex">
+          <button
+            type="button"
+            className="btn btn-primary mr-10px"
+            onClick={options.onRefresh}
+          >
+            Làm mới
+          </button>
           <div className="w-300px position-relative me-3">
             <input
               name="_key"
@@ -91,9 +98,9 @@ function HeaderCalendar({ filters, options, onChange }) {
       </div>
       <div className="h-40px border-top border-right border-left d-flex align-items-center justify-content-center">
         <div className="font-weight-bold text-uppercase font-size-md">
-          Lịch từ {moment(filters.From).format("ll")}
+          Lịch từ {moment(filters.from).format("ll")}
           <span className="px-2">đến</span>
-          {moment(filters.To).format("ll")}
+          {moment(filters.to).format("ll")}
         </div>
       </div>
     </Fragment>

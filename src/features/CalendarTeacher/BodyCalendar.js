@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { ScrollSync, ScrollSyncPane } from "react-scroll-sync";
 import InfiniteScroll from "react-infinite-scroll-component";
+import useWindowSize from "../../hooks/useWindowSize";
+import clsx from "clsx";
+import ScheduleItem from "./ScheduleItem";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -11,50 +14,73 @@ BodyCalendar.propTypes = {
   filters: PropTypes.object,
 };
 
-window.IsCall = false;
+function BodyCalendar({ filters, options, onChange, Lists }) {
+  const [HeightScroll, setHeightScroll] = useState(0);
+  const [HeightBodyScroll, setHeightBodyScroll] = useState(0);
 
-function BodyCalendar({ filters }) {
-  const [Items, setItems] = useState(Array.from({ length: 20 }));
-  const [hasMore, setHasMore] = useState(true);
-  const fetchMoreData = () => {
-    if (window.IsCall) return;
-    if (Items.length > 50) {
-      setHasMore(false);
-      return;
+  const refScroll = useRef("");
+  const refBodyScroll = useRef("");
+  const { width } = useWindowSize();
+
+  useEffect(() => {
+    setHeightScroll(refScroll?.current?.clientHeight || 0);
+  }, [refScroll, Lists, width]);
+
+  useEffect(() => {
+    setHeightBodyScroll(refBodyScroll?.current?.clientHeight - 80 || 0);
+  }, [refBodyScroll, Lists, width]);
+
+  const getScheduleList = (DayCurrent, Dates) => {
+    let ScheduleLists = [];
+    const indexDay =
+      Dates &&
+      Dates.findIndex(
+        (item) => moment(item.Date).format("DD-MM-YYYY") === DayCurrent
+      );
+    if (indexDay > -1) {
+      ScheduleLists = Dates[indexDay].IndexList ?? [];
     }
-    window.IsCall = true;
-    setTimeout(() => {
-      setItems((prevState) => prevState.concat(Array.from({ length: 20 })));
-      window.IsCall = false;
-    }, 1500);
+    return ScheduleLists;
   };
+
   return (
     <ScrollSync>
       <div className="h-650px calendar-teacher__body">
         <div className="d-flex h-100">
-          <div className="border calendar-teacher__user">
+          <div className="border calendar-teacher__user" ref={refBodyScroll}>
             <div className="top--user border-bottom text-uppercase font-weight-bold d-flex align-items-center px-3">
               Danh sách Giáo viên
             </div>
             <ScrollSyncPane>
-              <div className="list--user" id="scrollableUser">
+              <div className="list--user border-bottom" id="scrollableUser">
                 <InfiniteScroll
-                  dataLength={Items.length}
-                  next={fetchMoreData}
-                  hasMore={hasMore}
+                  dataLength={Lists.length}
+                  hasMore={options.hasMore}
                   scrollableTarget="scrollableUser"
                 >
-                  {Items &&
-                    Items.map((item, index) => (
-                      <div
-                        className={`h-40px px-3 d-flex align-items-center ${
-                          Items.length - 1 !== index ? "border-bottom" : ""
-                        }`}
-                        key={index}
-                      >
-                        div - #{index}
-                      </div>
-                    ))}
+                  <div ref={refScroll}>
+                    {Lists &&
+                      Lists.map((item, index) => (
+                        <div
+                          className={`h-40px px-3 d-flex align-items-center ${clsx(
+                            {
+                              "border-bottom":
+                                HeightScroll >= HeightBodyScroll
+                                  ? Lists.length - 1 !== index
+                                  : true,
+                            }
+                          )}`}
+                          key={index}
+                        >
+                          <div
+                            className="text-uppercase font-size-sm font-weight-bold text-truncate"
+                            data-id={item?.teacher.TeacherID}
+                          >
+                            {item?.teacher?.TeacherTitle}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                 </InfiniteScroll>
               </div>
             </ScrollSyncPane>
@@ -66,9 +92,9 @@ function BodyCalendar({ filters }) {
                   .fill()
                   .map((item, index) => (
                     <div
-                      className={`top--weeks_gird ${
-                        index !== 6 ? "border-right" : ""
-                      }`}
+                      className={`top--weeks_gird ${clsx({
+                        "border-right": index !== 6,
+                      })}`}
                       key={index}
                     >
                       <div className="flex-grow-1 border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
@@ -91,9 +117,9 @@ function BodyCalendar({ filters }) {
             <ScrollSyncPane>
               <div className="list--weeks" id="scrollableWeeks">
                 <InfiniteScroll
-                  dataLength={Items.length}
-                  next={fetchMoreData}
-                  hasMore={hasMore}
+                  dataLength={Lists.length}
+                  next={options.loadMoreData}
+                  hasMore={options.hasMore}
                   loader={
                     <div className="element-loader">
                       <div className="blockui">
@@ -110,27 +136,36 @@ function BodyCalendar({ filters }) {
                 >
                   {Array(7)
                     .fill()
-                    .map((o, idx) => (
+                    .map((o, indexDay) => (
                       <div
-                        className={`list--weeks_gird ${
-                          idx !== 6 ? "border-right" : ""
-                        }`}
-                        key={idx}
+                        className={`list--weeks_gird ${clsx({
+                          "border-right": indexDay !== 6,
+                        })}`}
+                        key={indexDay}
                       >
-                        {Items &&
-                          Items.map((item, index) => (
+                        {Lists &&
+                          Lists.map(({ list }, index) => (
                             <div
-                              className={`h-40px d-flex ${
-                                Items.length - 1 !== index
-                                  ? "border-bottom"
-                                  : ""
-                              }`}
+                              className={`h-40px d-flex position-relative ${clsx(
+                                {
+                                  "border-bottom":
+                                    HeightScroll >= HeightBodyScroll
+                                      ? Lists.length - 1 !== index
+                                      : true,
+                                }
+                              )}`}
                               key={index}
                             >
-                              <div className="flex-1 border-right">
-                                div - #{index}
-                              </div>
+                              <div className="flex-1 border-right"></div>
                               <div className="flex-1"></div>
+                              <ScheduleItem
+                                ScheduleDay={getScheduleList(
+                                  moment(filters.from)
+                                    .add(indexDay, "days")
+                                    .format("DD-MM-YYYY"),
+                                  list
+                                )}
+                              />
                             </div>
                           ))}
                       </div>
@@ -138,6 +173,16 @@ function BodyCalendar({ filters }) {
                 </InfiniteScroll>
               </div>
             </ScrollSyncPane>
+            {options.loading && (
+              <div className="element-loader">
+                <div className="blockui">
+                  <span>Đang tải ...</span>
+                  <span>
+                    <div className="spinner spinner-primary"></div>
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

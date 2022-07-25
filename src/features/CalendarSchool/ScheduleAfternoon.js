@@ -41,13 +41,15 @@ function ScheduleAfternoon({
               style={getStyleSchool(item, "C", HourSchool, HourScheduleList)}
               onClick={() => {
                 const initialValues = {
+                  ...item,
                   IsThematic: item.MajorID ? true : false,
                   major: {
                     Title: item?.MajorTitle,
                   },
                   dayItem: {
                     Date: item.Date ?? itemAdd.Date,
-                    ID: item.ID,
+                    ID: !item?.isCalendarItem ? item.ID : 0,
+                    CalendarItemID: item?.isCalendarItem ? item.ID : 0,
                     SchoolID: {
                       ...itemAdd.School,
                       label: itemAdd.School.Title,
@@ -77,7 +79,7 @@ function ScheduleAfternoon({
                             label: item.IndexTitle ?? item.Title,
                             value: item.Index,
                           },
-                      ],
+                        ],
                     MajorID: item?.MajorID ?? 0,
                   },
                   joins: item.TeacherJoins ?? [],
@@ -89,7 +91,7 @@ function ScheduleAfternoon({
                 {item.Index}
               </span>
             </div>
-            {item.TeacherTitle && (
+            {item.TeacherTitle && index ===0 && (
               <div className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3">
                 {item.TeacherTitle}
               </div>
