@@ -179,7 +179,7 @@ function CalendarSchool(props) {
   };
 
   const onAddBooks = (values) => {
-    setLoadingBtn(prevState => ({...prevState, Books: true}))
+    setLoadingBtn(prevState => ({ ...prevState, Books: true }))
     let newData = values.dayItem.Index.map((item) => ({
       ...values,
       major: values.major.IsThematic ? { Title: values.major.Title } : null,
@@ -227,32 +227,35 @@ function CalendarSchool(props) {
               <h2 className="text-uppercase font-size-h3 mb-0">
                 Bảng lịch trường
               </h2>
-              <Dropdown>
-                <Dropdown.Toggle variant="primary">
-                  Đặt lịch mới
-                  <i className="fal fa-angle-down"></i>
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() =>
-                      onOpenModalAdd({
-                        IsThematic: false, // Không phải chuyên đề
-                      })
-                    }
-                  >
-                    Tạo tiết thông thường
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() =>
-                      onOpenModalAdd({
-                        IsThematic: true, // Có phải chuyên đề
-                      })
-                    }
-                  >
-                    Tạo tiết chuyên đề
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+              <div className="d-flex">
+                <a href="/admin/r/bang-lich-giao-vien" className="btn btn-outline-primary mr-8px">Bảng lịch giáo viên</a>
+                <Dropdown>
+                  <Dropdown.Toggle variant="primary">
+                    Đặt lịch mới
+                    <i className="fal fa-angle-down"></i>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      onClick={() =>
+                        onOpenModalAdd({
+                          IsThematic: false, // Không phải chuyên đề
+                        })
+                      }
+                    >
+                      Tạo tiết thông thường
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() =>
+                        onOpenModalAdd({
+                          IsThematic: true, // Có phải chuyên đề
+                        })
+                      }
+                    >
+                      Tạo tiết chuyên đề
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             </div>
           </div>
         </div>

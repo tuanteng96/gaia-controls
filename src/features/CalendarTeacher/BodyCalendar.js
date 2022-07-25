@@ -14,6 +14,27 @@ BodyCalendar.propTypes = {
   filters: PropTypes.object,
 };
 
+function getScrollbarWidth() {
+  // Creating invisible container
+  const outer = document.createElement("div");
+  outer.style.visibility = "hidden";
+  outer.style.overflow = "scroll"; // forcing scrollbar to appear
+  outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+  document.body.appendChild(outer);
+
+  // Creating inner element and placing it in the container
+  const inner = document.createElement("div");
+  outer.appendChild(inner);
+
+  // Calculating difference between container's full width and the child width
+  const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
+
+  // Removing temporary elements from the DOM
+  outer.parentNode.removeChild(outer);
+
+  return scrollbarWidth;
+}
+
 function BodyCalendar({ filters, options, onChange, Lists }) {
   const [HeightScroll, setHeightScroll] = useState(0);
   const [HeightBodyScroll, setHeightBodyScroll] = useState(0);
@@ -52,7 +73,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
               Danh sách Giáo viên
             </div>
             <ScrollSyncPane>
-              <div className="list--user border-bottom" id="scrollableUser">
+              <div className={`list--user ${clsx({"border-bottom" : getScrollbarWidth() > 0})}`} id="scrollableUser">
                 <InfiniteScroll
                   dataLength={Lists.length}
                   hasMore={options.hasMore}
@@ -103,10 +124,10 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                           .format("ddd, ll")}
                       </div>
                       <div className="d-flex flex-grow-1">
-                        <div className="flex-1 border-right d-flex align-items-center justify-content-center">
+                        <div className="h-100 min-h-100 flex-1 border-right d-flex align-items-center justify-content-center">
                           Sáng
                         </div>
-                        <div className="flex-1 d-flex align-items-center justify-content-center">
+                        <div className="h-100 min-h-100 flex-1 d-flex align-items-center justify-content-center">
                           Chiều
                         </div>
                       </div>

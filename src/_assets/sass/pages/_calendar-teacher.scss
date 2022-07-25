@@ -26,6 +26,7 @@ $height-title: 80px;
         width: calc(100% - #{$width-content-user});
         display: flex;
         flex-direction: column;
+        height: 100%;
         .top--weeks {
             height: $height-title;
             overflow: hidden scroll;
