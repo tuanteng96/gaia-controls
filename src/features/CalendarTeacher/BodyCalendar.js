@@ -144,7 +144,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                         key={indexDay}
                       >
                         {Lists &&
-                          Lists.map(({ list }, index) => (
+                          Lists.map(({ list, teacher }, index) => (
                             <div
                               className={`h-40px d-flex position-relative ${clsx(
                                 {
@@ -165,6 +165,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     .format("DD-MM-YYYY"),
                                   list
                                 )}
+                                Teacher={teacher}
                               />
                             </div>
                           ))}

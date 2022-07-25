@@ -11,11 +11,11 @@ export const ClassSchoolGenerator = (item) => {
     return "bg-primary h-38px";
 }
 
-export const ClassTeacherGenerator = (item) => {
+export const ClassTeacherGenerator = (item, Teacher) => {
     if (item.TeachingRejectIDs || item.TeachingStatus === "TU_CHOI") {
         return "bg-danger";
     }
-    if ((item.UserID > 0 || item.TeacherID) && item.TeachingStatus !== "HOAN_THANH") {
+    if ((item.UserID > 0 || item.TeacherID) && item.TeacherID === Teacher.TeacherID && item.TeachingStatus !== "HOAN_THANH") {
         return "bg-warning";
     }
     if (item.TeachingStatus === "HOAN_THANH") {

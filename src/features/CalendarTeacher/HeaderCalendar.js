@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import DatePicker from "react-datepicker";
+import { Dropdown } from "react-bootstrap";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -51,6 +52,40 @@ function HeaderCalendar({ filters, options, onChange }) {
           >
             Hôm nay
           </button>
+          <div className="ms-2">
+            <Dropdown>
+              <Dropdown.Toggle className="h-40px btn-calendar-teacher">
+                Chú thích <i className="fal fa-angle-down"></i>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item className="d-flex align-items-center">
+                  <div className="w-10px h-10px bg-success rounded-circle"></div>
+                  <span className="pl-10px font-size-sm font-weight-bold">
+                    Hoàn thành
+                  </span>
+                </Dropdown.Item>
+                <Dropdown.Item className="d-flex align-items-center">
+                  <div className="w-10px h-10px bg-warning rounded-circle"></div>
+                  <span className="pl-10px font-size-sm font-weight-bold">
+                    Giáo viên chính
+                  </span>
+                </Dropdown.Item>
+                <Dropdown.Item className="d-flex align-items-center">
+                  <div className="w-10px h-10px bg-primary rounded-circle"></div>
+                  <span className="pl-10px font-size-sm font-weight-bold">
+                    Giáo viên phụ
+                  </span>
+                </Dropdown.Item>
+                <Dropdown.Item className="d-flex align-items-center">
+                  <div className="w-10px h-10px bg-danger rounded-circle"></div>
+                  <span className="pl-10px font-size-sm font-weight-bold">
+                    GV thay thế
+                  </span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
         </div>
         <div className="d-flex">
           <button
