@@ -185,6 +185,7 @@ function CalendarSchool(props) {
       major: values.major.IsThematic ? { Title: values.major.Title } : null,
       dayItem: {
         ...values.dayItem,
+        ID: values?.dayItem?.MajorID ? item?.ID : values.dayItem?.ID ?? 0,
         Index: item.value,
         IndexTitle: item.label,
         ClassID: values.dayItem.ClassID?.value ?? "",

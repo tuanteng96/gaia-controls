@@ -70,6 +70,7 @@ function ScheduleMorning({
                       ? item?.MajorGroup &&
                         item?.MajorGroup?.Items &&
                         item?.MajorGroup?.Items.map((item) => ({
+                          ...item,
                           label: item.IndexTitle,
                           value: item.Index,
                         }))
