@@ -137,6 +137,13 @@ function CalendarTeacher(props) {
               <h2 className="text-uppercase font-size-h3 mb-0">
                 Bảng lịch giáo viên
               </h2>
+              <a
+                href="/admin/r/bang-lich"
+                className="btn btn-outline-primary"
+              >
+                <i className="fal fa-angle-left"></i>
+                Quay lại bảng lịch
+              </a>
             </div>
           </div>
         </div>

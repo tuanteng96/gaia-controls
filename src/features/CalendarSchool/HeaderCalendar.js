@@ -72,12 +72,6 @@ function HeaderCalendar({ filters, options, onChange }) {
                   </span>
                 </Dropdown.Item>
                 <Dropdown.Item className="d-flex align-items-center">
-                  <div className="w-10px h-10px bg-danger rounded-circle"></div>
-                  <span className="pl-10px font-size-sm font-weight-bold">
-                    GV thay thế
-                  </span>
-                </Dropdown.Item>
-                <Dropdown.Item className="d-flex align-items-center">
                   <div className="w-10px h-10px bg-primary rounded-circle"></div>
                   <span className="pl-10px font-size-sm font-weight-bold">
                     Chưa chọn GV

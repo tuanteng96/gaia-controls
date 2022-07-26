@@ -184,7 +184,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                   }
                   scrollableTarget="scrollableWeeks"
                   className="d-flex"
-                  style={{ minWidth: `${235 * 7}px` }}
+                  style={{ minWidth: `${220 * 7}px` }}
                 >
                   {Array(7)
                     .fill()

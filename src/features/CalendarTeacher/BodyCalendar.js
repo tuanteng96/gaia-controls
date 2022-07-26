@@ -4,7 +4,9 @@ import { ScrollSync, ScrollSyncPane } from "react-scroll-sync";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useWindowSize from "../../hooks/useWindowSize";
 import clsx from "clsx";
-import ScheduleItem from "./ScheduleItem";
+// import ScheduleItem from "./ScheduleItem";
+import ScheduleMorning from "./ScheduleMorning";
+import ScheduleAfternoon from "./ScheduleAfternoon";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -73,7 +75,12 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
               Danh sách Giáo viên
             </div>
             <ScrollSyncPane>
-              <div className={`list--user ${clsx({"border-bottom" : getScrollbarWidth() > 0})}`} id="scrollableUser">
+              <div
+                className={`list--user ${clsx({
+                  "border-bottom": getScrollbarWidth() > 0,
+                })}`}
+                id="scrollableUser"
+              >
                 <InfiniteScroll
                   dataLength={Lists.length}
                   hasMore={options.hasMore}
@@ -119,7 +126,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                       key={index}
                     >
                       <div className="flex-grow-1 border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                        {moment(filters.From)
+                        {moment(filters.from)
                           .add(index, "days")
                           .format("ddd, ll")}
                       </div>
@@ -153,7 +160,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                   }
                   scrollableTarget="scrollableWeeks"
                   className="d-flex"
-                  style={{ width: `${250 * 7}px` }}
+                  style={{ minWidth: `${220 * 7}px` }}
                 >
                   {Array(7)
                     .fill()
@@ -167,19 +174,37 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                         {Lists &&
                           Lists.map(({ list, teacher }, index) => (
                             <div
-                              className={`h-40px d-flex position-relative ${clsx(
-                                {
-                                  "border-bottom":
-                                    HeightScroll >= HeightBodyScroll
-                                      ? Lists.length - 1 !== index
-                                      : true,
-                                }
-                              )}`}
+                              className={`h-40px d-flex ${clsx({
+                                "border-bottom":
+                                  HeightScroll >= HeightBodyScroll
+                                    ? Lists.length - 1 !== index
+                                    : true,
+                              })}`}
                               key={index}
                             >
-                              <div className="flex-1 border-right"></div>
-                              <div className="flex-1"></div>
-                              <ScheduleItem
+                              <div className="flex-1 border-right h-100 min-h-100 position-relative">
+                                <ScheduleMorning
+                                  ScheduleDay={getScheduleList(
+                                    moment(filters.from)
+                                      .add(indexDay, "days")
+                                      .format("DD-MM-YYYY"),
+                                    list
+                                  )}
+                                  Teacher={teacher}
+                                />
+                              </div>
+                              <div className="flex-1 h-100 min-h-100 position-relative">
+                                <ScheduleAfternoon
+                                  ScheduleDay={getScheduleList(
+                                    moment(filters.from)
+                                      .add(indexDay, "days")
+                                      .format("DD-MM-YYYY"),
+                                    list
+                                  )}
+                                  Teacher={teacher}
+                                />
+                              </div>
+                              {/* <ScheduleItem
                                 ScheduleDay={getScheduleList(
                                   moment(filters.from)
                                     .add(indexDay, "days")
@@ -187,7 +212,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                   list
                                 )}
                                 Teacher={teacher}
-                              />
+                              /> */}
                             </div>
                           ))}
                       </div>

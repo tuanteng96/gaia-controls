@@ -7,11 +7,15 @@ import { ClassTeacherGenerator } from "../../helpers/ClassHelpers";
 import { getStyleSchool } from "../../helpers/DateTimeHelpers";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 
+import moment from "moment";
+import "moment/locale/vi";
+moment.locale("vi");
+
 ScheduleAfternoon.propTypes = {
   ScheduleDay: PropTypes.array,
 };
 
-function ScheduleAfternoon({ ScheduleDay }) {
+function ScheduleAfternoon({ ScheduleDay, Teacher }) {
   const [ScheduleItem, setScheduleItem] = useState([]);
   const { HourSchool } = useSelector(({ calendarTeachers }) => ({
     HourSchool: calendarTeachers.HourSchool,
@@ -27,7 +31,8 @@ function ScheduleAfternoon({ ScheduleDay }) {
         ScheduleItem.map((item, index) => (
           <div
             className={`cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center h-100 min-h-100 ${ClassTeacherGenerator(
-              item
+              item,
+              Teacher
             )} ${clsx({ "opacity-70": item.IsAutoSet })}`}
             style={getStyleSchool(item, "C", HourSchool, null)}
             key={index}
@@ -38,16 +43,113 @@ function ScheduleAfternoon({ ScheduleDay }) {
               placement="top"
               popperConfig={{ strategy: "fixed" }}
               overlay={
-                <Popover id={item.ID}>
-                  <Popover.Header as="h3">{item.From}</Popover.Header>
-                  <Popover.Body>
-                    And here's some <strong>amazing</strong> content. It's very
-                    engaging. right?
+                <Popover id={item.ID} className="min-w-350px">
+                  <Popover.Header className="pt-10px font-weight-bold text-uppercase">
+                    Tiết {item.Index}
+                    <span className="pl-5px">
+                      (
+                      <span className="pl-2px">
+                        {moment(item.From).format("HH:mm")}
+                      </span>
+                      <span className="px-4px">-</span>
+                      <span className="pr-2px">
+                        {moment(item.To).format("HH:mm")}
+                      </span>
+                      )
+                    </span>
+                  </Popover.Header>
+                  <Popover.Body className="p-0 max-h-250px overflow-auto">
+                    <div className="p-15px border-bottom">
+                      <div className="text-uppercase font-weight-bold mb-8px">
+                        <i className="fas fa-info-circle pr-5px"></i>
+                        Thông tin
+                      </div>
+                      <div className="d-flex justify-content-between mb-5px">
+                        <div className="text-muted font-weight-500">Ngày</div>
+                        <div className="font-weight-bold">
+                          {moment(item.Date).format("DD-MM-YYYY")}
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between mb-5px">
+                        <div className="text-muted font-weight-500">Trường</div>
+                        <div className="font-weight-bold">
+                          {item.SchoolTitle}
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between mb-5px">
+                        <div className="text-muted font-weight-500">Lớp</div>
+                        <div className="font-weight-bold">
+                          {item.ClassTitle} - Tiết {item.Index}
+                          <span className="pl-5px">
+                            (
+                            <span className="pl-2px">
+                              {moment(item.From).format("HH:mm")}
+                            </span>
+                            <span className="px-4px">-</span>
+                            <span className="pr-2px">
+                              {moment(item.To).format("HH:mm")}
+                            </span>
+                            )
+                          </span>
+                        </div>
+                      </div>
+                      {item.MajorID > 0 && (
+                        <div className="d-flex justify-content-between mb-5px">
+                          <div className="text-muted font-weight-500">
+                            Chuyên đề
+                          </div>
+                          <div className="font-weight-bold">
+                            {item.MajorTitle}
+                          </div>
+                        </div>
+                      )}
+                      <div className="d-flex justify-content-between">
+                        <div className="text-muted font-weight-500">
+                          Giáo viên
+                        </div>
+                        <div className="font-weight-bold">
+                          {item.TeacherTitle}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-15px">
+                      <div
+                        className="text-uppercase font-weight-bold mb-8px"
+                        onClick={() => console.log(item)}
+                      >
+                        <i className="fas fa-users pr-5px"></i>
+                        Giáo viên phụ
+                      </div>
+                      {item.TeacherJoins && item.TeacherJoins.length > 0 ? (
+                        <div className="list-assistant">
+                          {item.TeacherJoins.map((teacher, idx) => (
+                            <div className="list-assistant__item" key={idx}>
+                              <div className="flex-1">
+                                <div className="font-weight-500">
+                                  {teacher.TeacherTitle}
+                                  {teacher.IsRequire && (
+                                    <i className="text-danger fas fa-badge-check pl-5px"></i>
+                                  )}
+                                </div>
+                                <div className="text-muted">
+                                  {teacher.SkillTitle} -{" "}
+                                  {teacher.Desc || "Không có ghi chú"}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-muted font-size-sm">
+                          Chưa có giáo viên phụ.
+                        </div>
+                      )}
+                    </div>
                   </Popover.Body>
                 </Popover>
               }
             >
-              <span className="text-white font-size-xs font-weight-border h-100 min-h-100 d-flex align-items-center">
+              <span className="text-white font-size-xs font-weight-border w-100 h-100 min-h-100 d-flex align-items-center justify-content-center">
                 {item.Index}
               </span>
             </OverlayTrigger>

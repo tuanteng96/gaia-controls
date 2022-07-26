@@ -60,12 +60,6 @@ function HeaderCalendar({ filters, options, onChange }) {
 
               <Dropdown.Menu>
                 <Dropdown.Item className="d-flex align-items-center">
-                  <div className="w-10px h-10px bg-success rounded-circle"></div>
-                  <span className="pl-10px font-size-sm font-weight-bold">
-                    Hoàn thành
-                  </span>
-                </Dropdown.Item>
-                <Dropdown.Item className="d-flex align-items-center">
                   <div className="w-10px h-10px bg-warning rounded-circle"></div>
                   <span className="pl-10px font-size-sm font-weight-bold">
                     Giáo viên chính
@@ -75,12 +69,6 @@ function HeaderCalendar({ filters, options, onChange }) {
                   <div className="w-10px h-10px bg-primary rounded-circle"></div>
                   <span className="pl-10px font-size-sm font-weight-bold">
                     Giáo viên phụ
-                  </span>
-                </Dropdown.Item>
-                <Dropdown.Item className="d-flex align-items-center">
-                  <div className="w-10px h-10px bg-danger rounded-circle"></div>
-                  <span className="pl-10px font-size-sm font-weight-bold">
-                    GV thay thế
                   </span>
                 </Dropdown.Item>
               </Dropdown.Menu>
