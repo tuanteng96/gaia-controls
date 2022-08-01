@@ -27,7 +27,6 @@ export const getArrayChildren = (arrays, type, { HourMax, HourMin }) => {
             });
         }
     }
-
     return newSchedule.filter((item) => {
         let TimeFrom = moment(moment(item.From).format("HH:mm:ss"), "HH:mm:ss");
         let TimeTo = moment(moment(item.To).format("HH:mm:ss"), "HH:mm:ss");

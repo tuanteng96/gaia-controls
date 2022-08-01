@@ -29,7 +29,6 @@ function ScheduleMorning({
     setScheduleItem(getArrayChildren(ScheduleDay, "S", HourSchool));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ScheduleDay, HourSchool]);
-
   return (
     <Fragment>
       {ScheduleItem && ScheduleItem.length > 0 ? (
