@@ -6,6 +6,7 @@ import { clsx } from "clsx";
 import useWindowSize from "../../hooks/useWindowSize";
 import ScheduleMorning from "./ScheduleMorning";
 import ScheduleAfternoon from "./ScheduleAfternoon";
+import ModalItem from "./components/Modal/ModalItem";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -39,6 +40,8 @@ function getScrollbarWidth() {
 function BodyCalendar({ filters, options, onChange, Lists }) {
   const [HeightScroll, setHeightScroll] = useState(0);
   const [HeightBodyScroll, setHeightBodyScroll] = useState(0);
+  const [isModal, setIsModal] = useState(false);
+  const [IdModal, setIdModal] = useState("");
 
   const refScroll = useRef("");
   const refBodyScroll = useRef("");
@@ -65,6 +68,16 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
     return ScheduleLists;
   };
 
+  const onOpenModal = (ID) => {
+    setIdModal(ID);
+    setIsModal(true);
+  };
+
+  const onHideModal = () => {
+    setIdModal("");
+    setIsModal(false);
+  };
+
   return (
     <ScrollSync>
       <div className="h-650px calendar-teacher__body">
@@ -74,7 +87,12 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
               DS Trường / Lớp
             </div>
             <ScrollSyncPane>
-              <div className={`list--school ${clsx({"border-bottom" : getScrollbarWidth() > 0})}`} id="scrollableSchool">
+              <div
+                className={`list--school ${clsx({
+                  "border-bottom": getScrollbarWidth() > 0,
+                })}`}
+                id="scrollableSchool"
+              >
                 <InfiniteScroll
                   dataLength={Lists.length}
                   hasMore={options.hasMore}
@@ -146,7 +164,9 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                   .fill()
                   .map((item, index) => (
                     <div
-                      className={`top--weeks_gird ${clsx({"border-right" : index !== 6})}`}
+                      className={`top--weeks_gird ${clsx({
+                        "border-right": index !== 6,
+                      })}`}
                       key={index}
                     >
                       <div className="flex-grow-1 border-bottom d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
@@ -238,6 +258,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                         HourScheduleList={
                                           School?.HourScheduleList
                                         }
+                                        onOpenModal={onOpenModal}
                                       />
                                     </div>
                                     <div className="list--weeks_item position-relative flex-1">
@@ -262,6 +283,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                         HourScheduleList={
                                           School?.HourScheduleList
                                         }
+                                        onOpenModal={onOpenModal}
                                       />
                                     </div>
                                   </div>
@@ -288,6 +310,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
             )}
           </div>
         </div>
+        <ModalItem show={isModal} onHide={onHideModal} IdModal={IdModal}/>
       </div>
     </ScrollSync>
   );

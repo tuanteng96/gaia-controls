@@ -19,6 +19,7 @@ function ScheduleMorning({
   HourScheduleList,
   itemAdd,
   onOpenModalAdd,
+  onOpenModal,
 }) {
   const [ScheduleItem, setScheduleItem] = useState([]);
   const { HourSchool } = useSelector(({ calendarSchool }) => ({
@@ -92,7 +93,10 @@ function ScheduleMorning({
               </span>
             </div>
             {item.TeacherTitle && index === 0 && (
-              <div className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3">
+              <div
+                className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3 cursor-pointer"
+                onClick={() => onOpenModal(item.ID)}
+              >
                 {item.TeacherTitle}
               </div>
             )}
