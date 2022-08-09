@@ -30,8 +30,8 @@ function CalendarSchool(props) {
   const [hasMore, setHasMore] = useState(true);
   const [PageTotal, setPageTotal] = useState(0);
   const [loadingBtn, setLoadingBtn] = useState({
-    Books: false
-  })
+    Books: false,
+  });
   const [IsModalAdd, setIsModalAdd] = useState(false);
   const [InitialValueAdd, setInitialValueAdd] = useState(null);
   const typingTimeoutRef = useRef(null);
@@ -81,7 +81,7 @@ function CalendarSchool(props) {
 
   const onRefresh = () => {
     getListCalendar(true, { ...filters, pi: 1 });
-  }
+  };
 
   const onChangeTeacher = (value, item) => {
     setLoading(true);
@@ -179,7 +179,7 @@ function CalendarSchool(props) {
   };
 
   const onAddBooks = (values) => {
-    setLoadingBtn(prevState => ({ ...prevState, Books: true }))
+    setLoadingBtn((prevState) => ({ ...prevState, Books: true }));
     let newData = values.dayItem.Index.map((item) => ({
       ...values,
       major: values.major.IsThematic ? { Title: values.major.Title } : null,
@@ -218,6 +218,41 @@ function CalendarSchool(props) {
       .catch((error) => console.log(error));
   };
 
+  const onDeleteBook = (item) => {
+    Swal.fire({
+      title: "Bạn muốn xóa ?",
+      text: "Bạn có chắc chắn muốn lịch này không ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6e7881",
+      confirmButtonText: "Tôi muốn xóa!",
+      cancelButtonText: "Đóng",
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      preConfirm: () => {
+        return new Promise((resolve, reject) => {
+          CalendarSchoolCrud.deleteBooks({
+            deletedIDs: [item.ID || item.CalendarItemID],
+          })
+            .then((response) => {
+              getListCalendar(true, { ...filters, pi: 1 }, () => {
+                resolve();
+                onHideModalAdd();
+                toast.success("Xóa lịch thành công.",
+                  {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 1500,
+                  }
+                );
+              });
+            })
+            .catch((error) => console.log(error));
+        });
+      },
+    });
+  };
+
   return (
     <div className="calendar-school">
       <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -228,7 +263,12 @@ function CalendarSchool(props) {
                 Bảng lịch trường
               </h2>
               <div className="d-flex">
-                <a href="/admin/r/bang-lich-giao-vien" className="btn btn-outline-primary mr-8px">Bảng lịch giáo viên</a>
+                <a
+                  href="/admin/r/bang-lich-giao-vien"
+                  className="btn btn-outline-primary mr-8px"
+                >
+                  Bảng lịch giáo viên
+                </a>
                 <Dropdown>
                   <Dropdown.Toggle variant="primary">
                     Đặt lịch mới
@@ -291,6 +331,7 @@ function CalendarSchool(props) {
             onHide={onHideModalAdd}
             InitialValueAdd={InitialValueAdd}
             onSubmit={onAddBooks}
+            onDeleteBook={onDeleteBook}
             loadingBtn={loadingBtn}
           />
         </div>

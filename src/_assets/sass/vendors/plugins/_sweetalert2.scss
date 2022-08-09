@@ -53,6 +53,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
         background: transparent;
         border-radius: 0.42rem;
     }
+    .swal2-styled {
+        font-size: 13px;
+        font-weight: 400;
+    }
 }
 
 // Container

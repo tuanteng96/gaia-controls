@@ -4,10 +4,12 @@ import { Form, Formik, FieldArray } from "formik";
 import { Button, Modal } from "react-bootstrap";
 import ScheduleGenerator from "../../ScheduleGenerator";
 import Select, { components } from "react-select";
+import Swal from "sweetalert2";
+import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
 
 import moment from "moment";
 import "moment/locale/vi";
-import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
+import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
 moment.locale("vi");
 
 ModalScheduleClass.propTypes = {
@@ -107,11 +109,48 @@ function ModalScheduleClass({
     return ListDay;
   };
 
-  const onGeneratorBook = ({ School, From, To }) => {
-    const { ClassList, HourScheduleList } = School;
+  const onGeneratorBook = async ({ School, From, To }) => {
+    const { ClassList, HourScheduleList, Title, ID } = School;
     if (!ClassList || (Array.isArray(ClassList) && ClassList.length === 0)) {
+      Swal.fire({
+        icon: "error",
+        title: "Xảy ra lỗi",
+        text: `Vui lòng tạo lớp cho trường ${Title} để tạo có thể tạo được lịch.`,
+      });
       return;
     }
+    await Swal.fire({
+      title: "Bạn có xóa lịch không ?",
+      text: `Bạn có muốn xóa lịch cũ của trường ${Title} không trước khi tạo lịch không?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6e7881",
+      confirmButtonText: "Có và Tạo mới",
+      cancelButtonText: "Không và Tạo mới",
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      preConfirm: () => {
+        return new Promise((resolve, reject) => {
+          ScheduleClassCrud.DeleteTime({
+            from: From
+              ? moment(From).format("DD/MM/YYYY")
+              : moment().format("DD/MM/YYYY"),
+            to: To
+              ? moment(From).format("DD/MM/YYYY")
+              : moment()
+                  .add(30, "year")
+                  .format("DD/MM/YYYY"),
+            schoolID: ID,
+          })
+            .then((response) => {
+              resolve();
+            })
+            .catch((error) => console.log(error));
+        });
+      },
+    });
+
     var newCalendarList = [];
 
     newCalendarList = ClassList.map((item) => ({

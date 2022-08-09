@@ -79,6 +79,24 @@ function ScheduleClass(props) {
 
   const onAddEdit = (values) => {
     setBtnLoading(true);
+    Swal.fire({
+      title: "Bạn muốn xóa ?",
+      text: "Bạn có chắc chắn muốn đơn này này không ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6e7881",
+      confirmButtonText: "Tôi muốn xóa!",
+      cancelButtonText: "Đóng",
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      preConfirm: () => {
+        return new Promise((resolve, reject) => {
+          resolve();
+        });
+      },
+    });
+
     const newObj = {
       ...values,
       From: values.From ? moment(values.From).format("MM-DD-YYYY HH:mm") : "",
@@ -101,7 +119,6 @@ function ScheduleClass(props) {
     };
 
     delete newObj.HourScheduleList;
-
     ScheduleClassCrud.addEdit(newObj)
       .then((response) => {
         if (response.error) {

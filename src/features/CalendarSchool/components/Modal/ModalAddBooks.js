@@ -66,6 +66,7 @@ function ModalAddBooks({
   onSubmit,
   InitialValueAdd,
   loadingBtn,
+  onDeleteBook,
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
   const [SchoolCurrent, setSchoolCurrent] = useState(null);
@@ -399,20 +400,38 @@ function ModalAddBooks({
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button type="button" variant="secondary" onClick={onHide}>
-                  Đóng
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className={`btn btn-primary ${loadingBtn.Books &&
-                    "spinner spinner-white spinner-right"} w-auto h-auto`}
-                  disabled={loadingBtn.Books}
-                >
-                  {values?.dayItem?.ID || values?.dayItem?.CalendarItemID
-                    ? "Cập nhập"
-                    : "Thêm mới"}
-                </Button>
+                <div className="d-flex justify-content-between w-100">
+                  <div>
+                    {values?.dayItem?.ID || values?.dayItem?.CalendarItemID ? (
+                      <Button
+                        type="button"
+                        variant="danger"
+                        onClick={() => onDeleteBook(values?.dayItem)}
+                        className={`btn btn-primary`}
+                      >
+                        Xóa lịch
+                      </Button>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div>
+                    <Button type="button" variant="secondary" onClick={onHide}>
+                      Đóng
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className={`btn btn-primary ${loadingBtn.Books &&
+                        "spinner spinner-white spinner-right"} w-auto h-auto`}
+                      disabled={loadingBtn.Books}
+                    >
+                      {values?.dayItem?.ID || values?.dayItem?.CalendarItemID
+                        ? "Cập nhập"
+                        : "Thêm mới"}
+                    </Button>
+                  </div>
+                </div>
               </Modal.Footer>
             </Form>
           );
