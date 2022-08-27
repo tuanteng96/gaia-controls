@@ -34,7 +34,7 @@ function ScheduleMorning({
     <Fragment>
       {ScheduleItem && ScheduleItem.length > 0 ? (
         ScheduleItem.map((item, index) => (
-          <Fragment key={index}>
+          <div className="position-relative flex-grow-1" key={index}>
             <div
               className={`cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${ClassSchoolGenerator(
                 item
@@ -92,7 +92,7 @@ function ScheduleMorning({
                 {item.Index}
               </span>
             </div>
-            {item.TeacherTitle && index === 0 && (
+            {item.TeacherTitle && (
               <div
                 className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3 cursor-pointer"
                 onClick={() => onOpenModal(item.ID)}
@@ -100,7 +100,7 @@ function ScheduleMorning({
                 {item.TeacherTitle}
               </div>
             )}
-          </Fragment>
+          </div>
         ))
       ) : (
         <div

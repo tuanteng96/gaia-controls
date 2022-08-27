@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from "react";
+import React, { useState, Fragment, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Form, Formik, FieldArray } from "formik";
 import { Button, Modal } from "react-bootstrap";
@@ -6,10 +6,11 @@ import ScheduleGenerator from "../../ScheduleGenerator";
 import Select, { components } from "react-select";
 import Swal from "sweetalert2";
 import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
+import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
+import _ from "lodash";
 
 import moment from "moment";
 import "moment/locale/vi";
-import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
 moment.locale("vi");
 
 ModalScheduleClass.propTypes = {
@@ -30,6 +31,13 @@ const initialGenerator = {
   To: null,
 };
 
+const MyRefComponent = ({ values, onSubmitRef }) => {
+  useEffect(() => {
+    onSubmitRef(values);
+  }, [values, onSubmitRef]);
+  return null;
+};
+
 function ModalScheduleClass({
   show,
   onHide,
@@ -40,6 +48,8 @@ function ModalScheduleClass({
   const [initialValues, setInitialValues] = useState(initialValue);
   const [initialGenerators, setInitialGenerator] = useState(initialGenerator);
   const [isCTModal, setIsCTModal] = useState(true);
+  const [refHeight, setRefHeight] = useState([]);
+  const elRefs = useRef([]);
 
   useEffect(() => {
     if (!defaultValues.ID) {
@@ -75,11 +85,11 @@ function ModalScheduleClass({
                           day.Items &&
                           Array.isArray(day.Items) &&
                           day.Items.length > 0
-                            ? {
-                                ...day.Items[0],
-                                label: day.Items[0].Title,
-                                value: day.Items[0].Title,
-                              }
+                            ? day.Items.map((os) => ({
+                                ...os,
+                                label: os.Title,
+                                value: os.Title,
+                              }))
                             : null,
                       }))
                     : [],
@@ -169,7 +179,11 @@ function ModalScheduleClass({
       CalendarList: newCalendarList,
       HourScheduleList:
         HourScheduleList && HourScheduleList.length > 0
-          ? HourScheduleList.map((item) => ({ ...item, label: item.Title }))
+          ? HourScheduleList.map((item) => ({
+              ...item,
+              label: item.Title,
+              value: item.Title,
+            }))
           : [],
     }));
   };
@@ -186,6 +200,17 @@ function ModalScheduleClass({
     );
   };
 
+  const onSubmitRef = (values) => {
+    if (!values.CalendarList || values.CalendarList.length === 0) return;
+    const newHeight = [];
+    for (let x in values.CalendarList) {
+      newHeight.push(elRefs?.current[x]?.clientHeight);
+    }
+    if (!_.isEqual(_.sortBy(newHeight), _.sortBy(refHeight))) {
+      setRefHeight(newHeight);
+    }
+  };
+
   return (
     <Modal
       show={show}
@@ -199,6 +224,7 @@ function ModalScheduleClass({
         initialValues={initialValues}
         onSubmit={onAddEdit}
         enableReinitialize={true}
+        validateOnChange={false}
       >
         {(formikProps) => {
           const { values, handleBlur, setFieldValue } = formikProps;
@@ -240,7 +266,10 @@ function ModalScheduleClass({
                           {values.CalendarList &&
                             values.CalendarList.map((item, index) => (
                               <div
-                                className="border-top px-2 h-55px d-flex align-items-center justify-content-center"
+                                className="border-top px-2 d-flex align-items-center justify-content-center"
+                                style={{
+                                  height: `${refHeight[index] || 55}px`,
+                                }}
                                 key={index}
                               >
                                 {item.ClassTitle}
@@ -287,9 +316,17 @@ function ModalScheduleClass({
                             </div>
                           </div>
                         </div>
+                        <MyRefComponent
+                          values={values}
+                          onSubmitRef={onSubmitRef}
+                        />
                         {values.CalendarList &&
                           values.CalendarList.map((item, index) => (
-                            <div className="d-flex" key={index}>
+                            <div
+                              className="d-flex"
+                              ref={(el) => (elRefs.current[index] = el)}
+                              key={index}
+                            >
                               <FieldArray
                                 name={`CalendarList[${index}].Days`}
                                 render={(arrayHelpers) => (
@@ -297,11 +334,12 @@ function ModalScheduleClass({
                                     {values.CalendarList[index].Days.map(
                                       (o, idx) => (
                                         <div
-                                          className={`flex-1 p-2 h-55px border-top ${idx !==
+                                          className={`flex-1 p-2 min-h-55px border-top ${idx !==
                                             6 && "border-right"} min-w-200px`}
                                           key={idx}
                                         >
                                           <Select
+                                            isMulti
                                             components={{
                                               Option: CustomOption,
                                             }}

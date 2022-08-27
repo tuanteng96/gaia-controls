@@ -3,8 +3,8 @@ import { useDispatch } from "react-redux";
 import { LayoutSplashScreen } from "../../../layout/_core/EzsSplashScreen";
 import { setToken } from "./AuthSlice";
 
-// window.Token =
-//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjM2IiwibmJmIjoxNjYwMDE5MTQ4LCJleHAiOjE2NjA2MjM5NDgsImlhdCI6MTY2MDAxOTE0OH0.nEVDDB8dKJyCvdcN1L6mMUtQUq6C1FcJOIM3bhn4nV8";
+window.Token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjQzIiwibmJmIjoxNjYxNTY3MTQyLCJleHAiOjE2NjIxNzE5NDIsImlhdCI6MTY2MTU2NzE0Mn0.byerxSbNTqwkzArYnXAvLTB7-XOp88Dcv-pV6YELVKA";
 
   function getScrollbarWidth() {
     // Creating invisible container

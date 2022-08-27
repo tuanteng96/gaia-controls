@@ -2,7 +2,7 @@
     "name": "gaiav2-controls",
     "version": "0.1.0",
     "private": true,
-    "homepage": "/Admin/ReactAdmin/",
+    "_homepage": "/Admin/ReactAdmin/",
     "dependencies": {
         "@material-ui/lab": "^4.0.0-alpha.60",
         "@reduxjs/toolkit": "^1.7.1",

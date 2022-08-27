@@ -7,6 +7,8 @@ import useWindowSize from "../../hooks/useWindowSize";
 import ScheduleMorning from "./ScheduleMorning";
 import ScheduleAfternoon from "./ScheduleAfternoon";
 import ModalItem from "./components/Modal/ModalItem";
+import { getMaxSession } from "../../helpers/ArrayHelpers";
+import { useSelector } from "react-redux";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -42,6 +44,10 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
   const [HeightBodyScroll, setHeightBodyScroll] = useState(0);
   const [isModal, setIsModal] = useState(false);
   const [IdModal, setIdModal] = useState("");
+
+  const { HourSchool } = useSelector(({ calendarSchool }) => ({
+    HourSchool: calendarSchool.HourSchool,
+  }));
 
   const refScroll = useRef("");
   const refBodyScroll = useRef("");
@@ -131,9 +137,13 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                             <div className="school-class border-left">
                               {ClassList &&
                                 ClassList.length > 0 &&
-                                ClassList.map(({ Class }, idx) => (
+                                ClassList.map(({ Class, Dates }, idx) => (
                                   <div
-                                    className={`class-title h-40px d-flex align-items-center justify-content-center text-uppercase font-weight-bolder ${clsx(
+                                    className={`class-title h-${
+                                      getMaxSession(Dates, HourSchool) > 0
+                                        ? 40 * getMaxSession(Dates, HourSchool)
+                                        : 40
+                                    }px d-flex align-items-center justify-content-center text-uppercase font-weight-bolder ${clsx(
                                       {
                                         "border-bottom":
                                           ClassList.length - 1 !== idx,
@@ -230,13 +240,17 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                               {ClassList &&
                                 ClassList.map(({ Class, Dates }, idx) => (
                                   <div
-                                    className={`h-40px d-flex ${clsx({
+                                    className={`h-${
+                                      getMaxSession(Dates, HourSchool) > 0
+                                        ? 40 * getMaxSession(Dates, HourSchool)
+                                        : 40
+                                    }px d-flex ${clsx({
                                       "border-bottom":
                                         ClassList.length - 1 !== idx,
                                     })}`}
                                     key={idx}
                                   >
-                                    <div className="list--weeks_item position-relative flex-1 border-right">
+                                    <div className="list--weeks_item position-relative flex-1 border-right d-flex flex-column">
                                       <ScheduleMorning
                                         itemAdd={{
                                           Date: moment(filters.from)
@@ -310,7 +324,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
             )}
           </div>
         </div>
-        <ModalItem show={isModal} onHide={onHideModal} IdModal={IdModal}/>
+        <ModalItem show={isModal} onHide={onHideModal} IdModal={IdModal} />
       </div>
     </ScrollSync>
   );

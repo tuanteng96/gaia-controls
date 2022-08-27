@@ -65,3 +65,19 @@ export const getArrayChildrenAll = (arrays, { HourMax, HourMin }) => {
         return TimeTo.isSameOrBefore(TimeMx) && TimeFrom.isSameOrAfter(TimeMin);
     });
 };
+
+export const getMaxSession = (Dates, HourSchool) => {
+    let Max = 0
+    for (let date of Dates) {
+        if (date.IndexList.length > 0) {
+            let MaxItem = 0
+            if (getArrayChildren(date.IndexList, "S", HourSchool).length > getArrayChildren(date.IndexList, "C", HourSchool).length) {
+                MaxItem = getArrayChildren(date.IndexList, "S", HourSchool).length
+            } else {
+                MaxItem = getArrayChildren(date.IndexList, "C", HourSchool).length
+            }
+            if (MaxItem > Max) Max = MaxItem;
+        }
+    }
+    return Max;
+}

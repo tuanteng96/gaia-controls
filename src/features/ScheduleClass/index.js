@@ -79,24 +79,6 @@ function ScheduleClass(props) {
 
   const onAddEdit = (values) => {
     setBtnLoading(true);
-    Swal.fire({
-      title: "Bạn muốn xóa ?",
-      text: "Bạn có chắc chắn muốn đơn này này không ?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#6e7881",
-      confirmButtonText: "Tôi muốn xóa!",
-      cancelButtonText: "Đóng",
-      showLoaderOnConfirm: true,
-      allowOutsideClick: () => !Swal.isLoading(),
-      preConfirm: () => {
-        return new Promise((resolve, reject) => {
-          resolve();
-        });
-      },
-    });
-
     const newObj = {
       ...values,
       From: values.From ? moment(values.From).format("MM-DD-YYYY HH:mm") : "",
@@ -106,13 +88,11 @@ function ScheduleClass(props) {
         Days: item.Days.map((day) => ({
           ...day,
           Items: day.Items
-            ? [
-                {
-                  Title: day.Items.Title,
-                  From: day.Items.From,
-                  To: day.Items.To,
-                },
-              ]
+            ? day.Items.map((os) => ({
+                Title: os.Title,
+                From: os.From,
+                To: os.To,
+              }))
             : [],
         })),
       })),
@@ -201,10 +181,7 @@ function ScheduleClass(props) {
             <h2 className="text-uppercase font-size-h3 mb-0">
               Xếp lịch trường
             </h2>
-            <div
-              className="btn btn-md btn-primary t_dong_xep_lich"
-              id="0"
-            >
+            <div className="btn btn-md btn-primary t_dong_xep_lich" id="0">
               Tự động xếp lịch
             </div>
           </div>
