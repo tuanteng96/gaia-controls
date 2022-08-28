@@ -18,3 +18,19 @@ export const ClassTeacherGenerator = (item, Teacher) => {
         return `bg-primary ${item.TeachingStatus === "HOAN_THANH" ? "bg-stripes" : ""}`;
     }
 }
+
+export const getNameLast = (name) => {
+    if(!name) return 'Chưa có tên';
+    const nameSplit = name.split(' ');
+    if(nameSplit.length > 1) {
+        const nameCharAt = nameSplit.map((o,index) => {
+            if(index === nameSplit.length - 1 || index === nameSplit.length - 2) {
+                return o
+            }
+            //return o.charAt()
+            return ''
+        })
+        return nameCharAt.join(' ')
+    }
+    return name;
+}

@@ -13,6 +13,7 @@ import DatePicker from "react-datepicker";
 const initialValue = {
   major: { Title: "", IsThematic: false },
   dayItem: {
+    IsThematic: false,
     ID: 0, //id buoi
     SchoolID: "", //id truong
     SchoolTitle: "", //ten truong
@@ -45,7 +46,10 @@ const AddSchema = Yup.object().shape({
         .required("Vui lòng chọn trường"),
       ClassID: Yup.object()
         .nullable()
-        .required("Vui lòng chọn lớp"),
+        .when("IsThematic", {
+          is: (IsThematic) => !IsThematic,
+          then: Yup.object().nullable().required("Vui lòng chọn lớp"),
+        }),
       Index: Yup.array()
         .nullable()
         .required("Vui lòng chọn tiết"),
@@ -110,6 +114,7 @@ function ModalAddBooks({
         },
         dayItem: {
           ...prevState.dayItem,
+          IsThematic: InitialValueAdd.IsThematic ?? false,
           ID: InitialValueAdd?.dayItem?.ID ?? 0,
           CalendarItemID: InitialValueAdd?.dayItem?.CalendarItemID ?? 0,
           SchoolID: InitialValueAdd?.dayItem?.SchoolID ?? "",
@@ -155,6 +160,7 @@ function ModalAddBooks({
           } = formikProps;
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
+              {console.log(errors)}
               <Modal.Header closeButton>
                 <Modal.Title>
                   {values?.dayItem?.ID ? "Thông tin tiết" : "Tạo mới tiết"}
@@ -224,7 +230,11 @@ function ModalAddBooks({
                     <label>Lớp</label>
                     <Select
                       isClearable
-                      className="select-control"
+                      className={`select-control ${
+                        errors?.dayItem?.ClassID && touched?.dayItem?.ClassID
+                          ? "is-invalid solid-invalid"
+                          : ""
+                      }`}
                       classNamePrefix="select"
                       name="dayItem.ClassID"
                       options={ListClass}
@@ -242,8 +252,12 @@ function ModalAddBooks({
                     <label>Tiết học</label>
                     <Select
                       isClearable
+                      className={`select-control ${
+                        errors?.dayItem?.Index && touched?.dayItem?.Index
+                          ? "is-invalid solid-invalid"
+                          : ""
+                      }`}
                       isMulti={values?.major?.IsThematic}
-                      className="select-control"
                       classNamePrefix="select"
                       name="dayItem.Index"
                       options={ListIndex}
@@ -423,7 +437,7 @@ function ModalAddBooks({
                       type="submit"
                       variant="primary"
                       className={`btn btn-primary ${loadingBtn.Books &&
-                        "spinner spinner-white spinner-right"} w-auto h-auto`}
+                        "spinner spinner-white spinner-right mt-0"} w-auto h-auto`}
                       disabled={loadingBtn.Books}
                     >
                       {values?.dayItem?.ID || values?.dayItem?.CalendarItemID

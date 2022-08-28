@@ -26,6 +26,10 @@ export const getArrayChildren = (arrays, type, { HourMax, HourMin }) => {
                 isCalendarItem: true,
             });
         }
+        
+        if(!schedulte.dayItems && !schedulte.CalendarItem && schedulte) {
+            newSchedule.push({...schedulte});
+        }
     }
     return newSchedule.filter((item) => {
         let TimeFrom = moment(moment(item.From).format("HH:mm:ss"), "HH:mm:ss");
@@ -69,12 +73,12 @@ export const getArrayChildrenAll = (arrays, { HourMax, HourMin }) => {
 export const getMaxSession = (Dates, HourSchool) => {
     let Max = 0
     for (let date of Dates) {
-        if (date.IndexList.length > 0) {
+        if (date?.IndexList?.length > 0 || date?.DayItems?.length > 0) {
             let MaxItem = 0
-            if (getArrayChildren(date.IndexList, "S", HourSchool).length > getArrayChildren(date.IndexList, "C", HourSchool).length) {
-                MaxItem = getArrayChildren(date.IndexList, "S", HourSchool).length
+            if (getArrayChildren(date?.IndexList || date?.DayItems, "S", HourSchool).length > getArrayChildren(date?.IndexList || date?.DayItems, "C", HourSchool).length) {
+                MaxItem = getArrayChildren(date?.IndexList || date?.DayItems, "S", HourSchool).length
             } else {
-                MaxItem = getArrayChildren(date.IndexList, "C", HourSchool).length
+                MaxItem = getArrayChildren(date?.IndexList || date?.DayItems, "C", HourSchool).length
             }
             if (MaxItem > Max) Max = MaxItem;
         }

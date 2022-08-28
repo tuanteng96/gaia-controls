@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { getArrayChildren } from "../../helpers/ArrayHelpers";
-import { ClassSchoolGenerator } from "../../helpers/ClassHelpers";
+import { ClassSchoolGenerator, getNameLast } from "../../helpers/ClassHelpers";
 import { getStyleSchool } from "../../helpers/DateTimeHelpers";
 import clsx from "clsx";
 
@@ -34,7 +34,7 @@ function ScheduleAfternoon({
     <Fragment>
       {ScheduleItem && ScheduleItem.length > 0 ? (
         ScheduleItem.map((item, index) => (
-          <Fragment key={index}>
+          <div className="position-relative flex-grow-1 h-40px" key={index}>
             <div
               className={`cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${ClassSchoolGenerator(
                 item
@@ -56,11 +56,11 @@ function ScheduleAfternoon({
                       label: itemAdd.School.Title,
                       value: itemAdd.School.ID,
                     },
-                    ClassID: {
+                    ClassID: itemAdd.Class ? {
                       ...itemAdd.Class,
                       label: itemAdd.Class.Title,
                       value: itemAdd.Class.ID,
-                    },
+                    } : null,
                     TeacherID: item.TeacherID
                       ? {
                           value: item.TeacherID,
@@ -92,15 +92,16 @@ function ScheduleAfternoon({
                 {item.Index}
               </span>
             </div>
-            {item.TeacherTitle && index === 0 && (
+            {item.TeacherTitle && (
               <div
-                className="shadow h-20px w-100 position-absolute bottom-0 text-center font-size-xs pt-2px text-truncate px-3 cursor-pointer"
+                className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize px-2 cursor-pointer d-flex justify-content-between"
                 onClick={() => onOpenModal(item.ID)}
               >
-                {item.TeacherTitle}
+                <div className="text-truncate flex-fill pr-10px">{item?.TeacherCode} - {getNameLast(item.TeacherTitle)}</div>
+                { item.TeacherJoins && item.TeacherJoins.length > 0 && <span className="text-danger font-weight-bolder">{item.TeacherJoins.length}</span>}
               </div>
             )}
-          </Fragment>
+          </div>
         ))
       ) : (
         <div
