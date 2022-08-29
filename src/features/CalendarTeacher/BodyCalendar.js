@@ -159,7 +159,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                     </div>
                   }
                   scrollableTarget="scrollableWeeks"
-                  className="d-flex"
+                  className="d-flex overflow-hidden"
                   style={{ minWidth: `${220 * 7}px` }}
                 >
                   {Array(7)

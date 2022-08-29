@@ -219,6 +219,7 @@ function CalendarSchool(props) {
   };
 
   const onDeleteBook = (item) => {
+    console.log(item);
     Swal.fire({
       title: "Bạn muốn xóa ?",
       text: "Bạn có chắc chắn muốn lịch này không ?",
@@ -226,9 +227,12 @@ function CalendarSchool(props) {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#6e7881",
-      confirmButtonText: "Tôi muốn xóa!",
+      denyButtonColor: "#3699FF",
+      confirmButtonText: "Xóa lịch",
       cancelButtonText: "Đóng",
       showLoaderOnConfirm: true,
+      showDenyButton: item?.Index.length > 1,
+      denyButtonText: "Xóa chuyên đề",
       allowOutsideClick: () => !Swal.isLoading(),
       preConfirm: () => {
         return new Promise((resolve, reject) => {
@@ -239,12 +243,28 @@ function CalendarSchool(props) {
               getListCalendar(true, { ...filters, pi: 1 }, () => {
                 resolve();
                 onHideModalAdd();
-                toast.success("Xóa lịch thành công.",
-                  {
-                    position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 1500,
-                  }
-                );
+                toast.success("Xóa lịch thành công.", {
+                  position: toast.POSITION.TOP_RIGHT,
+                  autoClose: 1500,
+                });
+              });
+            })
+            .catch((error) => console.log(error));
+        });
+      },
+      preDeny: () => {
+        return new Promise((resolve, reject) => {
+          CalendarSchoolCrud.deleteBooks({
+            deletedIDs: item.Index && item.Index.map(o => o.ID),
+          })
+            .then((response) => {
+              getListCalendar(true, { ...filters, pi: 1 }, () => {
+                resolve();
+                onHideModalAdd();
+                toast.success("Xóa lịch thành công.", {
+                  position: toast.POSITION.TOP_RIGHT,
+                  autoClose: 1500,
+                });
               });
             })
             .catch((error) => console.log(error));

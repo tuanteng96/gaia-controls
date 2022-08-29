@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { isDevelopment } from "../../../helpers/DevelopmentHelpers";
 import { LayoutSplashScreen } from "../../../layout/_core/EzsSplashScreen";
 import { setToken } from "./AuthSlice";
 
-// window.Token =
-//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjQzIiwibmJmIjoxNjYxNTY3MTQyLCJleHAiOjE2NjIxNzE5NDIsImlhdCI6MTY2MTU2NzE0Mn0.byerxSbNTqwkzArYnXAvLTB7-XOp88Dcv-pV6YELVKA";
-
+if (isDevelopment()) {
+  window.Token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjQzIiwibmJmIjoxNjYxNTY3MTQyLCJleHAiOjE2NjIxNzE5NDIsImlhdCI6MTY2MTU2NzE0Mn0.byerxSbNTqwkzArYnXAvLTB7-XOp88Dcv-pV6YELVKA";
+}
   function getScrollbarWidth() {
     // Creating invisible container
     const outer = document.createElement("div");

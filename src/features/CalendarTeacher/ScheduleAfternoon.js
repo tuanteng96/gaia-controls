@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { getArrayChildren } from "../../helpers/ArrayHelpers";
+import { getArraysChildren } from "../../helpers/ArrayHelpers";
 import clsx from "clsx";
 import { ClassTeacherGenerator } from "../../helpers/ClassHelpers";
 import { getStyleSchool } from "../../helpers/DateTimeHelpers";
@@ -21,7 +21,7 @@ function ScheduleAfternoon({ ScheduleDay, Teacher }) {
     HourSchool: calendarTeachers.HourSchool,
   }));
   useEffect(() => {
-    setScheduleItem(getArrayChildren(ScheduleDay, "C", HourSchool));
+    setScheduleItem(getArraysChildren(ScheduleDay, "C", HourSchool));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ScheduleDay, HourSchool]);
 

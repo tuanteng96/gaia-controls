@@ -160,7 +160,6 @@ function ModalAddBooks({
           } = formikProps;
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
-              {console.log(errors)}
               <Modal.Header closeButton>
                 <Modal.Title>
                   {values?.dayItem?.ID ? "Thông tin tiết" : "Tạo mới tiết"}

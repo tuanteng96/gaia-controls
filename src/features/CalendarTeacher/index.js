@@ -17,7 +17,7 @@ moment.locale("vi");
 function CalendarTeacher(props) {
   const [filters, setFilters] = useState({
     pi: 1,
-    ps: 10,
+    ps: 20,
     from: getCurrentDate().From,
     to: getCurrentDate().To,
     key: "",
