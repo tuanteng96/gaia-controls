@@ -111,6 +111,7 @@ function HeaderCalendar({ filters, options, onChange }) {
               selected={DateNow}
               onChange={(date) => {
                 setDateNow(date);
+                if (!date) return;
                 onChange.DatePicker(date);
               }}
               popperPlacement="bottom-end"

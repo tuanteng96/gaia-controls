@@ -138,8 +138,8 @@ function ScheduleAfternoon({
                 },
                 ClassID: {
                   ...itemAdd.Class,
-                  label: itemAdd.Class.Title,
-                  value: itemAdd.Class.ID,
+                  label: itemAdd.Class?.Title,
+                  value: itemAdd.Class?.ID,
                 },
               },
             };

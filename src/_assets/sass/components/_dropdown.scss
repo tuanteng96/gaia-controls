@@ -20,7 +20,7 @@
                 width: auto;
             }
             .dropdown-item {
-                padding: 0.6rem 1.25rem;
+                padding: 0.5rem 1.25rem;
                 clear: both;
                 font-weight: 400;
                 color: #181c32;
@@ -88,7 +88,7 @@
         @each $name,
         $width in $dropdown-menu-widths {
             &.dropdown-menu-#{$name} {
-                @media (min-width: $width + 30px) {
+                @media (min-width: calc($width + 30px)) {
                     width: $width;
                 }
             }
@@ -166,4 +166,8 @@
                 top: 55px !important;
             }
         }
+    }
+    
+    .dropdown-divider {
+        border-top: 1px solid #EBEDF3 !important;
     }

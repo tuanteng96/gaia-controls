@@ -1,12 +1,12 @@
 import React, { useState, Fragment, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { Form, Formik, FieldArray } from "formik";
+import { Form, Formik, FieldArray, FastField } from "formik";
 import { Button, Modal } from "react-bootstrap";
 import ScheduleGenerator from "../../ScheduleGenerator";
 import Select, { components } from "react-select";
 import Swal from "sweetalert2";
 import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
-import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
+//import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
 import _ from "lodash";
 
 import moment from "moment";
@@ -27,6 +27,7 @@ const initialValue = {
 
 const initialGenerator = {
   School: null,
+  Class: null,
   From: null,
   To: null,
 };
@@ -44,15 +45,17 @@ function ModalScheduleClass({
   onAddEdit,
   defaultValues,
   btnLoading,
+  AllInitial
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
   const [initialGenerators, setInitialGenerator] = useState(initialGenerator);
   const [isCTModal, setIsCTModal] = useState(true);
   const [refHeight, setRefHeight] = useState([]);
+  const [loadingBtn, setLoadingBtn] = useState(false);
   const elRefs = useRef([]);
 
   useEffect(() => {
-    if (!defaultValues.ID) {
+    if (!defaultValues?.ID) {
       setInitialGenerator(initialGenerator);
       setInitialValues(initialValue);
     } else {
@@ -119,8 +122,9 @@ function ModalScheduleClass({
     return ListDay;
   };
 
-  const onGeneratorBook = async ({ School, From, To }) => {
-    const { ClassList, HourScheduleList, Title, ID } = School;
+  const onGeneratorBook = ({ School, From, To, Class }) => {
+    setLoadingBtn(true);
+    const { ClassList, HourScheduleList, Title } = School;
     if (!ClassList || (Array.isArray(ClassList) && ClassList.length === 0)) {
       Swal.fire({
         icon: "error",
@@ -129,46 +133,55 @@ function ModalScheduleClass({
       });
       return;
     }
-    await Swal.fire({
-      title: "Bạn có xóa lịch không ?",
-      text: `Bạn có muốn xóa lịch cũ của trường ${Title} không trước khi tạo lịch không?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#6e7881",
-      confirmButtonText: "Có và Tạo mới",
-      cancelButtonText: "Không và Tạo mới",
-      showLoaderOnConfirm: true,
-      allowOutsideClick: () => !Swal.isLoading(),
-      preConfirm: () => {
-        return new Promise((resolve, reject) => {
-          ScheduleClassCrud.DeleteTime({
-            from: From
-              ? moment(From).format("DD/MM/YYYY")
-              : moment().format("DD/MM/YYYY"),
-            to: To
-              ? moment(From).format("DD/MM/YYYY")
-              : moment()
-                  .add(30, "year")
-                  .format("DD/MM/YYYY"),
-            schoolID: ID,
-          })
-            .then((response) => {
-              resolve();
-            })
-            .catch((error) => console.log(error));
-        });
-      },
-    });
+    // await Swal.fire({
+    //   title: "Bạn có xóa lịch không ?",
+    //   text: `Bạn có muốn xóa lịch cũ của trường ${Title} không trước khi tạo lịch không?`,
+    //   icon: "warning",
+    //   showCancelButton: true,
+    //   confirmButtonColor: "#d33",
+    //   cancelButtonColor: "#6e7881",
+    //   confirmButtonText: "Có và Tạo mới",
+    //   cancelButtonText: "Không và Tạo mới",
+    //   showLoaderOnConfirm: true,
+    //   allowOutsideClick: () => !Swal.isLoading(),
+    //   preConfirm: () => {
+    //     return new Promise((resolve, reject) => {
+    //       ScheduleClassCrud.DeleteTime({
+    //         from: From
+    //           ? moment(From).format("DD/MM/YYYY")
+    //           : moment().format("DD/MM/YYYY"),
+    //         to: To
+    //           ? moment(From).format("DD/MM/YYYY")
+    //           : moment()
+    //               .add(30, "year")
+    //               .format("DD/MM/YYYY"),
+    //         schoolID: ID,
+    //       })
+    //         .then((response) => {
+    //           resolve();
+    //         })
+    //         .catch((error) => console.log(error));
+    //     });
+    //   },
+    // });
 
     var newCalendarList = [];
-
-    newCalendarList = ClassList.map((item) => ({
-      ClassTitle: item.Title,
-      ClassID: item.ID,
-      ClassLevel: item.Level,
-      Days: dayGenerator(),
-    }));
+    if (!Class) {
+      newCalendarList = ClassList.map((item) => ({
+        ClassTitle: item.Title,
+        ClassID: item.ID,
+        ClassLevel: item.Level,
+        Days: dayGenerator(),
+      }));
+    }
+    else {
+      newCalendarList = Class.map((item) => ({
+        ClassTitle: item.Title,
+        ClassID: item.ID,
+        ClassLevel: item.Level,
+        Days: dayGenerator(),
+      }));
+    }
 
     setInitialValues((prevState) => ({
       ...prevState,
@@ -186,6 +199,7 @@ function ModalScheduleClass({
             }))
           : [],
     }));
+    setLoadingBtn(false);
   };
 
   const CustomOption = ({ children, innerRef, data, ...props }) => {
@@ -227,7 +241,7 @@ function ModalScheduleClass({
         validateOnChange={false}
       >
         {(formikProps) => {
-          const { values, handleBlur, setFieldValue } = formikProps;
+          const { values, handleBlur } = formikProps;
 
           return (
             <Form
@@ -243,9 +257,12 @@ function ModalScheduleClass({
               </Modal.Header>
               <Modal.Body>
                 <ScheduleGenerator
+                  loading={loadingBtn}
                   onSubmit={onGeneratorBook}
                   initialValues={initialGenerators}
                   ID={values.ID}
+                  onClearSchool={() => setInitialValues(initialValue)}
+                  AllInitial={AllInitial}
                 />
                 {isCTModal && <LoaderTable />}
 
@@ -338,29 +355,39 @@ function ModalScheduleClass({
                                             6 && "border-right"} min-w-200px`}
                                           key={idx}
                                         >
-                                          <Select
-                                            isMulti
-                                            components={{
-                                              Option: CustomOption,
-                                            }}
-                                            menuPosition="fixed"
-                                            className="select-control"
-                                            classNamePrefix="select"
-                                            isClearable={true}
-                                            isSearchable={true}
+                                          <FastField
                                             name={`CalendarList[${index}].Days[${idx}].Items`}
-                                            options={values.HourScheduleList}
                                             placeholder="Chọn tiết học"
-                                            value={o.Items}
-                                            onChange={(option) => {
-                                              setFieldValue(
-                                                `CalendarList[${index}].Days[${idx}].Items`,
-                                                option,
-                                                false
-                                              );
-                                            }}
-                                            onBlur={handleBlur}
-                                          />
+                                          >
+                                            {({ field, form, meta }) => (
+                                              <Select
+                                                {...field}
+                                                isMulti
+                                                components={{
+                                                  Option: CustomOption,
+                                                }}
+                                                menuPosition="fixed"
+                                                className="select-control"
+                                                classNamePrefix="select"
+                                                isClearable={true}
+                                                isSearchable={true}
+                                                //name={`CalendarList[${index}].Days[${idx}].Items`}
+                                                options={
+                                                  values.HourScheduleList
+                                                }
+                                                placeholder="Chọn tiết học"
+                                                //value={o.Items}
+                                                onChange={(option) => {
+                                                  form.setFieldValue(
+                                                    `CalendarList[${index}].Days[${idx}].Items`,
+                                                    option,
+                                                    false
+                                                  );
+                                                }}
+                                                onBlur={handleBlur}
+                                              />
+                                            )}
+                                          </FastField>
                                         </div>
                                       )
                                     )}

@@ -135,19 +135,17 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                               </div>
                             </div>
                             <div className="school-class border-left">
-                              {
-                                Majors && (
-                                  <div
-                                    className={`class-title h-${
-                                      getMaxSession(Majors, HourSchool) > 0
-                                        ? 40 * getMaxSession(Majors, HourSchool)
-                                        : 40
-                                    }px d-flex align-items-center justify-content-center text-uppercase font-weight-bolder border-bottom`}
-                                  >
-                                    C.Đề
-                                  </div>
-                                )
-                              }
+                              {Majors && (
+                                <div
+                                  className={`class-title h-${
+                                    getMaxSession(Majors, HourSchool) > 0
+                                      ? 40 * getMaxSession(Majors, HourSchool)
+                                      : 40
+                                  }px d-flex align-items-center justify-content-center text-uppercase font-weight-bolder border-bottom`}
+                                >
+                                  C.Đề
+                                </div>
+                              )}
                               {ClassList &&
                                 ClassList.length > 0 &&
                                 ClassList.map(({ Class, Dates }, idx) => (
@@ -250,68 +248,62 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                               data-school={School.ID}
                               key={index}
                             >
-                              {
-                                Majors && (
-                                  <div
-                                    className={`h-${
-                                      getMaxSession(Majors, HourSchool) > 0
-                                        ? 40 * getMaxSession(Majors, HourSchool)
-                                        : 40
-                                    }px d-flex border-bottom`}
-                                  >
-                                    <div className="list--weeks_item position-relative flex-1 border-right d-flex flex-column">
-                                      <ScheduleMorning
-                                        itemAdd={{
-                                          Date: moment(filters.from)
-                                            .add(indexDay, "days")
-                                            .toString(),
-                                          Class: null,
-                                          School: School,
-                                        }}
-                                        ScheduleDay={getScheduleList(
-                                          moment(filters.from)
-                                            .add(indexDay, "days")
-                                            .format("DD-MM-YYYY"),
-                                            Majors
-                                        )}
-                                        onChangeTeacher={
-                                          onChange.onChangeTeacher
-                                        }
-                                        onOpenModalAdd={onChange.onOpenModalAdd}
-                                        HourScheduleList={
-                                          School?.HourScheduleList
-                                        }
-                                        onOpenModal={onOpenModal}
-                                      />
-                                    </div>
-                                    <div className="list--weeks_item position-relative flex-1">
-                                      <ScheduleAfternoon
-                                        itemAdd={{
-                                          Date: moment(filters.from)
-                                            .add(indexDay, "days")
-                                            .toString(),
-                                          Class: null,
-                                          School: School,
-                                        }}
-                                        ScheduleDay={getScheduleList(
-                                          moment(filters.from)
-                                            .add(indexDay, "days")
-                                            .format("DD-MM-YYYY"),
-                                            Majors
-                                        )}
-                                        onChangeTeacher={
-                                          onChange.onChangeTeacher
-                                        }
-                                        onOpenModalAdd={onChange.onOpenModalAdd}
-                                        HourScheduleList={
-                                          School?.HourScheduleList
-                                        }
-                                        onOpenModal={onOpenModal}
-                                      />
-                                    </div>
+                              {Majors && (
+                                <div
+                                  className={`h-${
+                                    getMaxSession(Majors, HourSchool) > 0
+                                      ? 40 * getMaxSession(Majors, HourSchool)
+                                      : 40
+                                  }px d-flex border-bottom`}
+                                >
+                                  <div className="list--weeks_item position-relative flex-1 border-right d-flex flex-column">
+                                    <ScheduleMorning
+                                      itemAdd={{
+                                        Date: moment(filters.from)
+                                          .add(indexDay, "days")
+                                          .toString(),
+                                        Class: null,
+                                        School: School,
+                                      }}
+                                      ScheduleDay={getScheduleList(
+                                        moment(filters.from)
+                                          .add(indexDay, "days")
+                                          .format("DD-MM-YYYY"),
+                                        Majors
+                                      )}
+                                      onChangeTeacher={onChange.onChangeTeacher}
+                                      onOpenModalAdd={onChange.onOpenModalAdd}
+                                      HourScheduleList={
+                                        School?.HourScheduleList
+                                      }
+                                      onOpenModal={onOpenModal}
+                                    />
                                   </div>
-                                )
-                              }
+                                  <div className="list--weeks_item position-relative flex-1">
+                                    <ScheduleAfternoon
+                                      itemAdd={{
+                                        Date: moment(filters.from)
+                                          .add(indexDay, "days")
+                                          .toString(),
+                                        Class: null,
+                                        School: School,
+                                      }}
+                                      ScheduleDay={getScheduleList(
+                                        moment(filters.from)
+                                          .add(indexDay, "days")
+                                          .format("DD-MM-YYYY"),
+                                        Majors
+                                      )}
+                                      onChangeTeacher={onChange.onChangeTeacher}
+                                      onOpenModalAdd={onChange.onOpenModalAdd}
+                                      HourScheduleList={
+                                        School?.HourScheduleList
+                                      }
+                                      onOpenModal={onOpenModal}
+                                    />
+                                  </div>
+                                </div>
+                              )}
                               {ClassList &&
                                 ClassList.map(({ Class, Dates }, idx) => (
                                   <div

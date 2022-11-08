@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import SchoolManageCrud from "../SchoolManage/_redux/SchoolManageCrud";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
+import Select from "react-select";
 
 ScheduleGenerator.propTypes = {
   onSubmit: PropTypes.func,
@@ -16,8 +17,15 @@ const GeneratorSchema = Yup.object().shape({
     .nullable(),
 });
 
-function ScheduleGenerator({ onSubmit, initialValues, ID }) {
-
+function ScheduleGenerator({
+  onSubmit,
+  initialValues,
+  ID,
+  loading,
+  onClearSchool,
+  AllInitial,
+}) {
+  const [ListClass, setListClass] = useState([]);
   const getAllSchool = async (search, loadedOptions, { page }) => {
     const newPost = {
       _key: search,
@@ -41,7 +49,6 @@ function ScheduleGenerator({ onSubmit, initialValues, ID }) {
       },
     };
   };
-
   return (
     <Formik
       initialValues={initialValues}
@@ -74,6 +81,17 @@ function ScheduleGenerator({ onSubmit, initialValues, ID }) {
                 placeholder="Chọn trường"
                 value={values.School}
                 onChange={(option) => {
+                  if (!option) {
+                    onClearSchool();
+                    setListClass([]);
+                  } else {
+                    const newListClass = option.ClassList.map((x) => ({
+                      ...x,
+                      value: x.Title,
+                      label: x.Title,
+                    }));
+                    setListClass(newListClass);
+                  }
                   setFieldValue("School", option, false);
                 }}
                 onBlur={handleBlur}
@@ -82,6 +100,28 @@ function ScheduleGenerator({ onSubmit, initialValues, ID }) {
                 }}
               />
             </div>
+            {AllInitial && AllInitial.isClassChoose && (
+              <div className="flex-1 me-3">
+                <Select
+                  isMulti
+                  isClearable
+                  className={`select-control`}
+                  classNamePrefix="select"
+                  name="Class"
+                  options={ListClass}
+                  placeholder="Chọn lớp"
+                  value={values.Class}
+                  onChange={(option) => {
+                    setFieldValue(`Class`, option, false);
+                  }}
+                  onBlur={handleBlur}
+                  menuPosition="fixed"
+                  isDisabled={!values.School}
+                  noOptionsMessage={() => "Không có lớp"}
+                />
+              </div>
+            )}
+
             <div className="w-250px me-3">
               <DatePicker
                 popperProps={{
@@ -113,9 +153,10 @@ function ScheduleGenerator({ onSubmit, initialValues, ID }) {
             <div>
               <button
                 type="button"
-                className={`btn btn-primary m-0  w-auto h-auto`} //spinner spinner-white spinner-right
+                className={`btn btn-primary m-0  w-auto h-auto ${loading &&
+                  "spinner spinner-white spinner-right"}`} //spinner spinner-white spinner-right
                 onClick={() => formikSubProps.handleSubmit()}
-                //disabled={loading}
+                disabled={loading}
               >
                 {ID ? "Tạo mới bảng lịch" : "Tạo bảng lịch"}
               </button>

@@ -25,7 +25,6 @@ function ScheduleMorning({
   const { HourSchool } = useSelector(({ calendarSchool }) => ({
     HourSchool: calendarSchool.HourSchool,
   }));
-
   useEffect(() => {
     setScheduleItem(getArrayChildren(ScheduleDay, "S", HourSchool));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,8 +127,9 @@ function ScheduleMorning({
       ) : (
         <div
           className="w-100 min-h-100 max-h-100 cursor-pointer"
-          onClick={() => {
+            onClick={() => {
             const initialValues = {
+              
               dayItem: {
                 Date: itemAdd.Date,
                 SchoolID: {
@@ -139,8 +139,8 @@ function ScheduleMorning({
                 },
                 ClassID: {
                   ...itemAdd.Class,
-                  label: itemAdd.Class.Title,
-                  value: itemAdd.Class.ID,
+                  label: itemAdd.Class?.Title,
+                  value: itemAdd.Class?.ID,
                 },
               },
             };
