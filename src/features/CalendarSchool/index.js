@@ -322,38 +322,71 @@ function CalendarSchool(props) {
       .catch((err) => console.log(err));
   };
 
-  const onOpenModalDeleteScheduleClass = () => {
+  const onOpenModalDeleteScheduleClass = (value) => {
+    setAllInitial(value)
     setIsModal((prevState) => ({ ...prevState, DeleteSchedule: true }));
   };
 
   const onHideModalDeleteScheduleClass = () => {
+    setAllInitial(null);
     setIsModal((prevState) => ({ ...prevState, DeleteSchedule: false }));
   };
 
   const onDeleteSchedule = (values) => {
     setLoadingBtn((prevState) => ({ ...prevState, DeleteSchedule: true }));
-    const newValues = {
-      SchoolID: values.SchoolID?.ID,
-      From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
-      To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
-      DeleteClassIDs: values.DeleteClassIDs ? values.DeleteClassIDs.map(x => x.ID) : [],
-    };
-    CalendarSchoolCrud.deleteScheduleClass(newValues)
-      .then((response) => {
-        getListCalendar(false, "", () => {
-          setLoadingBtn((prevState) => ({
-            ...prevState,
-            DeleteSchedule: false,
-          }));
-          onHideModalDeleteScheduleClass();
-          toast.success("Xóa lịch của lớp thành công", {
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 1500,
+    if (AllInitial?.TakeBreak) {
+      const newValues = {
+        SchoolID: values.SchoolID?.ID,
+        ClassIDs: values.DeleteClassIDs
+          ? values.DeleteClassIDs.map((x) => x.ID)
+          : [],
+        From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
+        To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
+        Items: [],
+        StatusDesc: "Nghỉ buổi",
+      };
+      CalendarSchoolCrud.takeScheduleOff(newValues)
+        .then((response) => {
+          getListCalendar(false, "", () => {
+            setLoadingBtn((prevState) => ({
+              ...prevState,
+              DeleteSchedule: false,
+            }));
+            onHideModalDeleteScheduleClass();
+            toast.success("Thông báo nghỉ buổi thành công", {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1500,
+            });
           });
-        });
-      })
-      .catch((err) => console.log(err));
-  }
+        })
+        .catch((err) => console.log(err));
+    }
+    else {
+      const newValues = {
+        SchoolID: values.SchoolID?.ID,
+        From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
+        To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
+        DeleteClassIDs: values.DeleteClassIDs
+          ? values.DeleteClassIDs.map((x) => x.ID)
+          : [],
+      };
+      CalendarSchoolCrud.deleteScheduleClass(newValues)
+        .then((response) => {
+          getListCalendar(false, "", () => {
+            setLoadingBtn((prevState) => ({
+              ...prevState,
+              DeleteSchedule: false,
+            }));
+            onHideModalDeleteScheduleClass();
+            toast.success("Xóa lịch của lớp thành công", {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1500,
+            });
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+  };
 
   return (
     <div className="calendar-school">
@@ -394,7 +427,15 @@ function CalendarSchool(props) {
                     <Dropdown.Item onClick={onOpenModalDeleteScheduleClass}>
                       Xóa lịch cho lớp
                     </Dropdown.Item>
-                    <Dropdown.Item>Thông báo nghỉ buổi</Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={() =>
+                        onOpenModalDeleteScheduleClass({
+                          TakeBreak: true,
+                        })
+                      }
+                    >
+                      Thông báo nghỉ buổi
+                    </Dropdown.Item>
                     <Dropdown.Item>
                       Thay đổi lịch trong 1 khoảng thời gian
                     </Dropdown.Item>
@@ -474,6 +515,7 @@ function CalendarSchool(props) {
             onHide={onHideModalDeleteScheduleClass}
             loadingBtn={loadingBtn.DeleteSchedule}
             onSubmit={onDeleteSchedule}
+            AllInitial={AllInitial}
           />
         </div>
       </div>

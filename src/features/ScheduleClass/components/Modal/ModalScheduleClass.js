@@ -5,8 +5,10 @@ import { Button, Modal } from "react-bootstrap";
 import ScheduleGenerator from "../../ScheduleGenerator";
 import Select, { components } from "react-select";
 import Swal from "sweetalert2";
-import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
+//import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
 //import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
+//import clsx from "clsx";
+import CalendarSchoolCrud from "../../../CalendarSchool/_redux/CalendarSchoolCrud";
 import _ from "lodash";
 
 import moment from "moment";
@@ -23,6 +25,9 @@ const initialValue = {
   From: "",
   To: "",
   CalendarList: [],
+  SchoolTeacherID: "",
+  AvaiList: null,
+  NotList: null,
 };
 
 const initialGenerator = {
@@ -45,19 +50,22 @@ function ModalScheduleClass({
   onAddEdit,
   defaultValues,
   btnLoading,
-  AllInitial
+  AllInitial,
 }) {
   const [initialValues, setInitialValues] = useState(initialValue);
   const [initialGenerators, setInitialGenerator] = useState(initialGenerator);
-  const [isCTModal, setIsCTModal] = useState(true);
+  //const [isCTModal, setIsCTModal] = useState(true);
   const [refHeight, setRefHeight] = useState([]);
-  const [loadingBtn, setLoadingBtn] = useState(false);
+  const [loadingBtnNext, setLoadingBtnNext] = useState(false);
+  const [TabCurrent, setTabCurrent] = useState("Index");
+
   const elRefs = useRef([]);
 
   useEffect(() => {
     if (!defaultValues?.ID) {
       setInitialGenerator(initialGenerator);
       setInitialValues(initialValue);
+      setTabCurrent("Index");
     } else {
       setInitialGenerator((prevState) => ({
         ...prevState,
@@ -123,7 +131,6 @@ function ModalScheduleClass({
   };
 
   const onGeneratorBook = ({ School, From, To, Class }) => {
-    setLoadingBtn(true);
     const { ClassList, HourScheduleList, Title } = School;
     if (!ClassList || (Array.isArray(ClassList) && ClassList.length === 0)) {
       Swal.fire({
@@ -173,13 +180,13 @@ function ModalScheduleClass({
         ClassLevel: item.Level,
         Days: dayGenerator(),
       }));
-    }
-    else {
+    } else {
       newCalendarList = Class.map((item) => ({
         ClassTitle: item.Title,
         ClassID: item.ID,
         ClassLevel: item.Level,
         Days: dayGenerator(),
+        ClassTeacherID: "",
       }));
     }
 
@@ -199,7 +206,6 @@ function ModalScheduleClass({
             }))
           : [],
     }));
-    setLoadingBtn(false);
   };
 
   const CustomOption = ({ children, innerRef, data, ...props }) => {
@@ -225,14 +231,55 @@ function ModalScheduleClass({
     }
   };
 
+  const onNextTeacher = ({ values, setFieldValue }) => {
+    const { CalendarList } = values;
+    setLoadingBtnNext(true);
+    const newValues = {
+      SchoolID: values.SchoolID,
+      From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
+      To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
+      CalendarList: values.CalendarList.map((item) => ({
+        ...item,
+        Days: item.Days.map((day) => ({
+          ...day,
+          Items: day.Items ? day.Items.map((os) => os.Title) : [],
+        })),
+      })),
+    };
+    CalendarSchoolCrud.previewScheduleClass(newValues)
+      .then((response) => {
+        if (response?.Previews) {
+          const { Previews } = response;
+          const indexNull = Previews.findIndex((o) => !o.ClassID);
+          const newCalendarList = CalendarList.map(item => {
+            let newCalendarItem = { ...item, AvaiList: null, NotList: null };
+            const index = Previews.findIndex((o) => o.ClassID === item.ClassID);
+            if (index > -1) {
+              newCalendarItem.AvaiList = Previews[index].AvaiList;
+              newCalendarItem.NotList = Previews[index].NotList;
+            }
+            return newCalendarItem;
+          });
+          setLoadingBtnNext(false);
+          if (indexNull > -1) {
+            setFieldValue("AvaiList", Previews[indexNull].AvaiList, false);
+            setFieldValue("NotList", Previews[indexNull].NotList, false);
+          }
+          setFieldValue("CalendarList", newCalendarList, false);
+          setTabCurrent("Teacher");
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <Modal
       show={show}
       onHide={onHide}
       scrollable={true}
       size="xxl"
-      onEntered={() => setIsCTModal(false)}
-      onExit={() => setIsCTModal(true)}
+      // onEntered={() => setIsCTModal(false)}
+      // onExit={() => setIsCTModal(true)}
     >
       <Formik
         initialValues={initialValues}
@@ -242,7 +289,6 @@ function ModalScheduleClass({
       >
         {(formikProps) => {
           const { values, handleBlur } = formikProps;
-
           return (
             <Form
               className="d-flex flex-column overflow-hidden align-items-stretch"
@@ -257,16 +303,14 @@ function ModalScheduleClass({
               </Modal.Header>
               <Modal.Body>
                 <ScheduleGenerator
-                  loading={loadingBtn}
                   onSubmit={onGeneratorBook}
                   initialValues={initialGenerators}
                   ID={values.ID}
                   onClearSchool={() => setInitialValues(initialValue)}
                   AllInitial={AllInitial}
                 />
-                {isCTModal && <LoaderTable />}
-
-                {!isCTModal && values.SchoolID && (
+                {console.log(values)}
+                {values.SchoolID && (
                   <div className="mt-4">
                     <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-50px d-flex justify-content-center align-items-center font-size-md">
                       {values.SchoolTitle}{" "}
@@ -274,148 +318,214 @@ function ModalScheduleClass({
                         `- Từ ngày ${moment(values.From).format("ll")}`}{" "}
                       {values.To && `đến ${moment(values.To).format("ll")}`}
                     </div>
-                    <div className="d-flex position-relative align-items-start">
-                      <div className="border border-end-0 w-150px">
-                        <div className="p-2 h-55px d-flex align-items-center justify-content-center min-w-150px border-right text-uppercase font-weight-bold">
-                          Lớp
+                    {/* SET 1 */}
+                    {TabCurrent === "Teacher" && (
+                      <div className="table-responsive">
+                        <table className="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">First</th>
+                              <th scope="col">Last</th>
+                              <th scope="col">Handle</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <th scope="row">1</th>
+                              <td>Mark</td>
+                              <td>Otto</td>
+                              <td>@mdo</td>
+                            </tr>
+                            <tr>
+                              <th scope="row">2</th>
+                              <td>Jacob</td>
+                              <td>Thornton</td>
+                              <td>@fat</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {/* SET 2 */}
+                    {TabCurrent === "Index" && (
+                      <div className="d-flex position-relative align-items-start">
+                        <div className="border border-end-0 w-150px">
+                          <div className="p-2 h-55px d-flex align-items-center justify-content-center min-w-150px border-right text-uppercase font-weight-bold">
+                            Lớp
+                          </div>
+                          <div>
+                            {values.CalendarList &&
+                              values.CalendarList.map((item, index) => (
+                                <div
+                                  className="border-top px-2 d-flex align-items-center justify-content-center"
+                                  style={{
+                                    height: `${refHeight[index] || 55}px`,
+                                  }}
+                                  key={index}
+                                >
+                                  {item.ClassTitle}
+                                </div>
+                              ))}
+                          </div>
                         </div>
-                        <div>
+
+                        <div className="border flex-1 overflow-auto">
+                          <div className="d-flex">
+                            <div className="flex-1 border-right min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                Thứ 2
+                              </div>
+                            </div>
+                            <div className="flex-1 border-right min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                Thứ 3
+                              </div>
+                            </div>
+                            <div className="flex-1 border-right min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                Thứ 4
+                              </div>
+                            </div>
+                            <div className="flex-1 border-right min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                Thứ 5
+                              </div>
+                            </div>
+                            <div className="flex-1 border-right min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                Thứ 6
+                              </div>
+                            </div>
+                            <div className="flex-1 border-right min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                Thứ 7
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-200px">
+                              <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
+                                CN
+                              </div>
+                            </div>
+                          </div>
+                          <MyRefComponent
+                            values={values}
+                            onSubmitRef={onSubmitRef}
+                          />
                           {values.CalendarList &&
                             values.CalendarList.map((item, index) => (
                               <div
-                                className="border-top px-2 d-flex align-items-center justify-content-center"
-                                style={{
-                                  height: `${refHeight[index] || 55}px`,
-                                }}
+                                className="d-flex"
+                                ref={(el) => (elRefs.current[index] = el)}
                                 key={index}
                               >
-                                {item.ClassTitle}
+                                <FieldArray
+                                  name={`CalendarList[${index}].Days`}
+                                  render={(arrayHelpers) => (
+                                    <Fragment>
+                                      {values.CalendarList[index].Days.map(
+                                        (o, idx) => (
+                                          <div
+                                            className={`flex-1 p-2 min-h-55px border-top ${idx !==
+                                              6 && "border-right"} min-w-200px`}
+                                            key={idx}
+                                          >
+                                            <FastField
+                                              name={`CalendarList[${index}].Days[${idx}].Items`}
+                                              placeholder="Chọn tiết học"
+                                            >
+                                              {({ field, form, meta }) => (
+                                                <Select
+                                                  {...field}
+                                                  isMulti
+                                                  components={{
+                                                    Option: CustomOption,
+                                                  }}
+                                                  menuPosition="fixed"
+                                                  className="select-control"
+                                                  classNamePrefix="select"
+                                                  isClearable={true}
+                                                  isSearchable={true}
+                                                  //name={`CalendarList[${index}].Days[${idx}].Items`}
+                                                  options={
+                                                    values.HourScheduleList
+                                                  }
+                                                  placeholder="Chọn tiết học"
+                                                  //value={o.Items}
+                                                  onChange={(option) => {
+                                                    form.setFieldValue(
+                                                      `CalendarList[${index}].Days[${idx}].Items`,
+                                                      option,
+                                                      false
+                                                    );
+                                                  }}
+                                                  onBlur={handleBlur}
+                                                />
+                                              )}
+                                            </FastField>
+                                          </div>
+                                        )
+                                      )}
+                                    </Fragment>
+                                  )}
+                                />
                               </div>
                             ))}
                         </div>
                       </div>
-
-                      <div className="border flex-1 overflow-auto">
-                        <div className="d-flex">
-                          <div className="flex-1 border-right min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              Thứ 2
-                            </div>
-                          </div>
-                          <div className="flex-1 border-right min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              Thứ 3
-                            </div>
-                          </div>
-                          <div className="flex-1 border-right min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              Thứ 4
-                            </div>
-                          </div>
-                          <div className="flex-1 border-right min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              Thứ 5
-                            </div>
-                          </div>
-                          <div className="flex-1 border-right min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              Thứ 6
-                            </div>
-                          </div>
-                          <div className="flex-1 border-right min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              Thứ 7
-                            </div>
-                          </div>
-                          <div className="flex-1 min-w-200px">
-                            <div className="h-55px d-flex align-items-center justify-content-center text-uppercase font-weight-bold">
-                              CN
-                            </div>
-                          </div>
-                        </div>
-                        <MyRefComponent
-                          values={values}
-                          onSubmitRef={onSubmitRef}
-                        />
-                        {values.CalendarList &&
-                          values.CalendarList.map((item, index) => (
-                            <div
-                              className="d-flex"
-                              ref={(el) => (elRefs.current[index] = el)}
-                              key={index}
-                            >
-                              <FieldArray
-                                name={`CalendarList[${index}].Days`}
-                                render={(arrayHelpers) => (
-                                  <Fragment>
-                                    {values.CalendarList[index].Days.map(
-                                      (o, idx) => (
-                                        <div
-                                          className={`flex-1 p-2 min-h-55px border-top ${idx !==
-                                            6 && "border-right"} min-w-200px`}
-                                          key={idx}
-                                        >
-                                          <FastField
-                                            name={`CalendarList[${index}].Days[${idx}].Items`}
-                                            placeholder="Chọn tiết học"
-                                          >
-                                            {({ field, form, meta }) => (
-                                              <Select
-                                                {...field}
-                                                isMulti
-                                                components={{
-                                                  Option: CustomOption,
-                                                }}
-                                                menuPosition="fixed"
-                                                className="select-control"
-                                                classNamePrefix="select"
-                                                isClearable={true}
-                                                isSearchable={true}
-                                                //name={`CalendarList[${index}].Days[${idx}].Items`}
-                                                options={
-                                                  values.HourScheduleList
-                                                }
-                                                placeholder="Chọn tiết học"
-                                                //value={o.Items}
-                                                onChange={(option) => {
-                                                  form.setFieldValue(
-                                                    `CalendarList[${index}].Days[${idx}].Items`,
-                                                    option,
-                                                    false
-                                                  );
-                                                }}
-                                                onBlur={handleBlur}
-                                              />
-                                            )}
-                                          </FastField>
-                                        </div>
-                                      )
-                                    )}
-                                  </Fragment>
-                                )}
-                              />
-                            </div>
-                          ))}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 )}
               </Modal.Body>
               <Modal.Footer>
-                <Button type="button" variant="secondary" onClick={onHide}>
-                  Đóng
-                </Button>
-                {values.SchoolID && (
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className={`btn btn-primary ${btnLoading &&
-                      "spinner spinner-white spinner-right"} w-auto h-auto`}
-                    disabled={btnLoading}
-                  >
-                    {values.ID ? "Lưu thay đổi" : "Thêm mới"}
-                  </Button>
-                )}
+                <div className="d-flex w-100 justify-content-between">
+                  <div>
+                    {TabCurrent === "Teacher" && (
+                      <Button
+                        type="button"
+                        variant="light"
+                        onClick={() => setTabCurrent("Index")}
+                      >
+                        <i className="far fa-chevron-left font-size-xs mr-2"></i>
+                        Quay lại
+                      </Button>
+                    )}
+                  </div>
+                  <div>
+                    <Button type="button" variant="secondary" onClick={onHide}>
+                      Đóng
+                    </Button>
+                    {values.SchoolID && (
+                      <>
+                        {TabCurrent === "Teacher" && (
+                          <Button
+                            type="submit"
+                            variant="primary"
+                            className={`btn btn-primary ${btnLoading &&
+                              "spinner spinner-white spinner-right"} w-auto h-auto`}
+                            disabled={btnLoading}
+                          >
+                            {values.ID ? "Lưu thay đổi" : "Thêm mới"}
+                          </Button>
+                        )}
+                        {TabCurrent === "Index" && (
+                          <Button
+                            type="button"
+                            variant="primary"
+                            className={`btn btn-primary mt-0 ${loadingBtnNext &&
+                              "spinner spinner-white spinner-right"} w-auto h-auto`}
+                            onClick={() => onNextTeacher(formikProps)}
+                            disabled={loadingBtnNext}
+                          >
+                            Tiếp tục
+                            <i className="far fa-chevron-right font-size-xs ms-2"></i>
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </Modal.Footer>
             </Form>
           );

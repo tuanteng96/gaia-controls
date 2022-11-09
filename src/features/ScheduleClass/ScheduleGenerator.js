@@ -21,7 +21,6 @@ function ScheduleGenerator({
   onSubmit,
   initialValues,
   ID,
-  loading,
   onClearSchool,
   AllInitial,
 }) {
@@ -153,10 +152,8 @@ function ScheduleGenerator({
             <div>
               <button
                 type="button"
-                className={`btn btn-primary m-0  w-auto h-auto ${loading &&
-                  "spinner spinner-white spinner-right"}`} //spinner spinner-white spinner-right
+                className={`btn btn-primary m-0  w-auto h-auto`} //spinner spinner-white spinner-right
                 onClick={() => formikSubProps.handleSubmit()}
-                disabled={loading}
               >
                 {ID ? "Tạo mới bảng lịch" : "Tạo bảng lịch"}
               </button>

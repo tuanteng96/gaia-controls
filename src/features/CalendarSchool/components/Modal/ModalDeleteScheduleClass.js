@@ -32,7 +32,13 @@ const AddSchema = Yup.object().shape({
     .min(1, "The error message if length === 0 | 1"),
 });
 
-function ModalDeleteScheduleClass({ show, onHide, onSubmit, loadingBtn }) {
+function ModalDeleteScheduleClass({
+  show,
+  onHide,
+  onSubmit,
+  loadingBtn,
+  AllInitial,
+}) {
   const [initialValues] = useState({
     SchoolID: "",
     From: "",
@@ -62,11 +68,14 @@ function ModalDeleteScheduleClass({ show, onHide, onSubmit, loadingBtn }) {
             handleBlur,
             setFieldValue,
           } = formikProps;
-          
+
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
-                <Modal.Title>Xóa lịch cho lớp</Modal.Title>
+                <Modal.Title>
+                  {AllInitial?.TakeBreak && "Thông báo nghỉ buổi"}
+                  {!AllInitial?.TakeBreak && "Xóa lịch cho lớp"}
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body className="p-0">
                 <div className="p-15px">
