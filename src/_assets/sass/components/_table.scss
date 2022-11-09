@@ -6,3 +6,21 @@
         border-top: 0;
     }
 }
+.table-responsive-x {
+    position: relative;
+    &:before, 
+    &:after{
+        content: '';
+        width: 1px;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        background: #ddd;
+    }
+    &:before {
+        left: 0;
+    }
+    &:after {
+        right: 0;
+    }
+}

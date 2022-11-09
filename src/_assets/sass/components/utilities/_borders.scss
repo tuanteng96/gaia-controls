@@ -151,6 +151,21 @@
                 border-left: 0 !important;
             }
         }
+        .border#{$infix}-0 {
+                border: 0 !important;
+            }
+            .border-top#{$infix}-0 {
+                border-top: 0 !important;
+            }
+            .border-right#{$infix}-0 {
+                border-right: 0 !important;
+            }
+            .border-bottom#{$infix}-0 {
+                border-bottom: 0 !important;
+            }
+            .border-left#{$infix}-0 {
+                border-left: 0 !important;
+            }
         @for $i from 1 through 5 {
             .border#{$infix}-#{$i} {
                 border-width: #{$i}px !important;
