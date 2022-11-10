@@ -298,7 +298,8 @@ function CalendarSchool(props) {
       From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
       To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
       CalendarList: values.CalendarList.map((item) => ({
-        ...item,
+        ClassID: item?.ClassID || "",
+        ClassTeacherID: item?.ClassTeacherID || "",
         Days: item.Days.map((day) => ({
           ...day,
           Items: day.Items ? day.Items.map((os) => os.Title) : [],
@@ -323,7 +324,7 @@ function CalendarSchool(props) {
   };
 
   const onOpenModalDeleteScheduleClass = (value) => {
-    setAllInitial(value)
+    setAllInitial(value);
     setIsModal((prevState) => ({ ...prevState, DeleteSchedule: true }));
   };
 
@@ -360,8 +361,7 @@ function CalendarSchool(props) {
           });
         })
         .catch((err) => console.log(err));
-    }
-    else {
+    } else {
       const newValues = {
         SchoolID: values.SchoolID?.ID,
         From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",

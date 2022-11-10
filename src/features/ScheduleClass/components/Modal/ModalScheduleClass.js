@@ -1,51 +1,61 @@
-import React, { useState, Fragment, useEffect, useRef } from 'react'
-import PropTypes from 'prop-types'
-import { Form, Formik, FieldArray, FastField } from 'formik'
-import { Button, Modal } from 'react-bootstrap'
-import ScheduleGenerator from '../../ScheduleGenerator'
-import Select, { components } from 'react-select'
-import Swal from 'sweetalert2'
+import React, { useState, Fragment, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import { Form, Formik, FieldArray, FastField } from "formik";
+import { Button, Modal } from "react-bootstrap";
+import ScheduleGenerator from "../../ScheduleGenerator";
+import Select, { components } from "react-select";
+import Swal from "sweetalert2";
 //import LoaderTable from "../../../../layout/components/Loadings/LoaderTable";
 //import ScheduleClassCrud from "../../_redux/ScheduleClassCrud";
 //import clsx from "clsx";
-import CalendarSchoolCrud from '../../../CalendarSchool/_redux/CalendarSchoolCrud'
-import _ from 'lodash'
-import ListTeacherChoose from '../ListTeacherChoose'
+import CalendarSchoolCrud from "../../../CalendarSchool/_redux/CalendarSchoolCrud";
+import _ from "lodash";
+import ListTeacherChoose from "../ListTeacherChoose";
 
-import moment from 'moment'
-import 'moment/locale/vi'
-import clsx from 'clsx'
+import moment from "moment";
+import "moment/locale/vi";
+import clsx from "clsx";
 
-moment.locale('vi')
+moment.locale("vi");
 
 ModalScheduleClass.propTypes = {
   show: PropTypes.bool,
-}
+};
 
 const initialValue = {
   SchoolID: null,
-  SchoolTitle: '',
-  From: '',
-  To: '',
+  SchoolTitle: "",
+  From: "",
+  To: "",
   CalendarList: [],
-  SchoolTeacherID: '',
-  AvaiList: null,
-  NotList: null,
-}
+};
 
 const initialGenerator = {
   School: null,
   Class: null,
   From: null,
   To: null,
-}
+};
 
 const MyRefComponent = ({ values, onSubmitRef }) => {
   useEffect(() => {
-    onSubmitRef(values)
-  }, [values, onSubmitRef])
-  return null
-}
+    onSubmitRef(values);
+  }, [values, onSubmitRef]);
+  return null;
+};
+
+const dayGenerator = () => {
+  const ListDay = [];
+  for (var i = 0; i < 7; i++) {
+    const obj = {
+      DayOfWeek: i,
+      Items: null,
+    };
+    ListDay.push(obj);
+  }
+  ListDay.push(ListDay.shift());
+  return ListDay;
+};
 
 function ModalScheduleClass({
   show,
@@ -55,20 +65,21 @@ function ModalScheduleClass({
   btnLoading,
   AllInitial,
 }) {
-  const [initialValues, setInitialValues] = useState(initialValue)
-  const [initialGenerators, setInitialGenerator] = useState(initialGenerator)
+  const [initialValues, setInitialValues] = useState(initialValue);
+  const [initialGenerators, setInitialGenerator] = useState(initialGenerator);
   //const [isCTModal, setIsCTModal] = useState(true);
-  const [refHeight, setRefHeight] = useState([])
-  const [loadingBtnNext, setLoadingBtnNext] = useState(false)
-  const [TabCurrent, setTabCurrent] = useState('Index')
+  const [refHeight, setRefHeight] = useState([]);
+  const [loadingBtnNext, setLoadingBtnNext] = useState(false);
+  const [TabCurrent, setTabCurrent] = useState("Index");
+  const [ListDay] = useState(dayGenerator());
 
-  const elRefs = useRef([])
+  const elRefs = useRef([]);
 
   useEffect(() => {
     if (!defaultValues?.ID) {
-      setInitialGenerator(initialGenerator)
-      setInitialValues(initialValue)
-      setTabCurrent('Index')
+      setInitialGenerator(initialGenerator);
+      setInitialValues(initialValue);
+      setTabCurrent("Index");
     } else {
       setInitialGenerator((prevState) => ({
         ...prevState,
@@ -79,7 +90,7 @@ function ModalScheduleClass({
         },
         From: defaultValues.From,
         To: defaultValues.To,
-      }))
+      }));
       setInitialValues((prevState) => ({
         ...prevState,
         ID: defaultValues.ID,
@@ -116,32 +127,19 @@ function ModalScheduleClass({
               value: item.Title,
             }))
           : [],
-      }))
+      }));
     }
-  }, [show, defaultValues])
-
-  const dayGenerator = () => {
-    const ListDay = []
-    for (var i = 0; i < 7; i++) {
-      const obj = {
-        DayOfWeek: i,
-        Items: null,
-      }
-      ListDay.push(obj)
-    }
-    ListDay.push(ListDay.shift())
-    return ListDay
-  }
+  }, [show, defaultValues]);
 
   const onGeneratorBook = ({ School, From, To, Class }) => {
-    const { ClassList, HourScheduleList, Title } = School
+    const { ClassList, HourScheduleList, Title } = School;
     if (!ClassList || (Array.isArray(ClassList) && ClassList.length === 0)) {
       Swal.fire({
-        icon: 'error',
-        title: 'Xảy ra lỗi',
+        icon: "error",
+        title: "Xảy ra lỗi",
         text: `Vui lòng tạo lớp cho trường ${Title} để tạo có thể tạo được lịch.`,
-      })
-      return
+      });
+      return;
     }
     // await Swal.fire({
     //   title: "Bạn có xóa lịch không ?",
@@ -175,22 +173,23 @@ function ModalScheduleClass({
     //   },
     // });
 
-    var newCalendarList = []
+    var newCalendarList = [];
     if (!Class) {
       newCalendarList = ClassList.map((item) => ({
         ClassTitle: item.Title,
         ClassID: item.ID,
         ClassLevel: item.Level,
-        Days: dayGenerator(),
-      }))
+        Days: ListDay,
+        ClassTeacherID: "",
+      }));
     } else {
       newCalendarList = Class.map((item) => ({
         ClassTitle: item.Title,
         ClassID: item.ID,
         ClassLevel: item.Level,
-        Days: dayGenerator(),
-        ClassTeacherID: '',
-      }))
+        Days: ListDay,
+        ClassTeacherID: "",
+      }));
     }
 
     setInitialValues((prevState) => ({
@@ -208,39 +207,39 @@ function ModalScheduleClass({
               value: item.Title,
             }))
           : [],
-    }))
-  }
+    }));
+  };
 
   const CustomOption = ({ children, innerRef, data, ...props }) => {
     return (
       <components.Option {...props}>
         {children}
         <span className="font-size-xs ps-2 text-muted">
-          ( {moment(data.From, 'HH:mm:ss').format('HH:mm')} -{' '}
-          {moment(data.To, 'HH:mm:ss').format('HH:mm')} )
+          ( {moment(data.From, "HH:mm:ss").format("HH:mm")} -{" "}
+          {moment(data.To, "HH:mm:ss").format("HH:mm")} )
         </span>
       </components.Option>
-    )
-  }
+    );
+  };
 
   const onSubmitRef = (values) => {
-    if (!values.CalendarList || values.CalendarList.length === 0) return
-    const newHeight = []
+    if (!values.CalendarList || values.CalendarList.length === 0) return;
+    const newHeight = [];
     for (let x in values.CalendarList) {
-      newHeight.push(elRefs?.current[x]?.clientHeight)
+      newHeight.push(elRefs?.current[x]?.clientHeight);
     }
     if (!_.isEqual(_.sortBy(newHeight), _.sortBy(refHeight))) {
-      setRefHeight(newHeight)
+      setRefHeight(newHeight);
     }
-  }
+  };
 
   const onNextTeacher = ({ values, setFieldValue }) => {
-    const { CalendarList } = values
-    setLoadingBtnNext(true)
+    const { CalendarList } = values;
+    setLoadingBtnNext(true);
     const newValues = {
       SchoolID: values.SchoolID,
-      From: values.From ? moment(values.From).format('DD-MM-YYYY HH:mm') : '',
-      To: values.To ? moment(values.To).format('DD-MM-YYYY HH:mm') : '',
+      From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
+      To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
       CalendarList: values.CalendarList.map((item) => ({
         ...item,
         Days: item.Days.map((day) => ({
@@ -248,34 +247,29 @@ function ModalScheduleClass({
           Items: day.Items ? day.Items.map((os) => os.Title) : [],
         })),
       })),
-    }
+    };
     CalendarSchoolCrud.previewScheduleClass(newValues)
       .then((response) => {
         if (response?.Previews) {
-          const { Previews } = response
-          const indexNull = Previews.findIndex((o) => !o.ClassID)
+          const { Previews } = response;
           const newCalendarList = CalendarList.map((item) => {
-            let newCalendarItem = { ...item, AvaiList: null, NotList: null }
-            const index = Previews.findIndex((o) => o.ClassID === item.ClassID)
+            let newCalendarItem = { ...item, AvaiList: null, NotList: null };
+            const index = Previews.findIndex((o) => o.ClassID === item.ClassID);
             if (index > -1) {
-              newCalendarItem.AvaiList = Previews[index].AvaiList
-              newCalendarItem.NotList = Previews[index].NotList
+              newCalendarItem.AvaiList = Previews[index].AvaiList;
+              newCalendarItem.NotList = Previews[index].NotList;
             }
-            return newCalendarItem
-          })
-          setLoadingBtnNext(false)
-          if (indexNull > -1) {
-            setFieldValue('AvaiList', Previews[indexNull].AvaiList, false)
-            setFieldValue('NotList', Previews[indexNull].NotList, false)
-          }
-          setFieldValue('CalendarList', newCalendarList, false)
-          setTabCurrent('Teacher')
+            return newCalendarItem;
+          });
+          setLoadingBtnNext(false);
+          setFieldValue("CalendarList", newCalendarList, false);
+          setTabCurrent("Teacher");
         } else {
-          setLoadingBtnNext(false)
+          setLoadingBtnNext(false);
         }
       })
-      .catch((err) => console.log(err))
-  }
+      .catch((err) => console.log(err));
+  };
 
   return (
     <Modal
@@ -293,8 +287,7 @@ function ModalScheduleClass({
         validateOnChange={false}
       >
         {(formikProps) => {
-          const { values, handleBlur } = formikProps
-          console.log(values)
+          const { values, handleBlur } = formikProps;
           return (
             <Form
               className="d-flex flex-column overflow-hidden align-items-stretch"
@@ -304,7 +297,7 @@ function ModalScheduleClass({
                 <Modal.Title>
                   {values.ID
                     ? `Lịch học ${values.SchoolTitle}`
-                    : 'Tạo mới lịch học'}
+                    : "Tạo mới lịch học"}
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
@@ -315,26 +308,27 @@ function ModalScheduleClass({
                   onClearSchool={() => setInitialValues(initialValue)}
                   AllInitial={AllInitial}
                 />
-                {console.log(values)}
                 {values.SchoolID && (
                   <div className="mt-4">
                     <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-50px d-flex justify-content-center align-items-center font-size-md">
-                      {values.SchoolTitle}{' '}
+                      {values.SchoolTitle}{" "}
                       {values.From &&
-                        `- Từ ngày ${moment(values.From).format('ll')}`}{' '}
-                      {values.To && `đến ${moment(values.To).format('ll')}`}
+                        `- Từ ngày ${moment(values.From).format("ll")}`}{" "}
+                      {values.To && `đến ${moment(values.To).format("ll")}`}
                     </div>
                     {/* SET 1 */}
-                    {TabCurrent === 'Teacher' && (
+                    {TabCurrent === "Teacher" && (
                       <div className="table-responsive-x">
                         <div className="table-responsive">
-                          <table className="table table-bordered">
+                          <table className="table table-bordered mb-0">
                             <thead>
                               <tr>
                                 {values.CalendarList &&
                                   values.CalendarList.map((item, index) => (
                                     <th
-                                      className={clsx('min-w-265px w-265px h-50px text-center')}
+                                      className={clsx(
+                                        "min-w-265px w-265px h-50px text-center"
+                                      )}
                                       key={index}
                                     >
                                       {item.ClassTitle}
@@ -343,25 +337,54 @@ function ModalScheduleClass({
                               </tr>
                             </thead>
                             <tbody>
-                              <tr>
-                                {values.CalendarList &&
-                                  values.CalendarList.map((item, index) => (
-                                    <td
-                                      className="min-w-265px w-265px p-0"
-                                      key={index}
-                                    >
-                                      <ListTeacherChoose item={item} />
-                                    </td>
-                                  ))}
-                              </tr>
+                              <FieldArray
+                                name={`CalendarList`}
+                                render={(arrayHelpers) => (
+                                  <tr>
+                                    {values.CalendarList &&
+                                      values.CalendarList.map((item, index) => (
+                                        <td
+                                          className="min-w-265px w-265px p-0"
+                                          key={index}
+                                        >
+                                          <ListTeacherChoose
+                                            item={item}
+                                            name={`CalendarList[${index}].ClassTeacherID`}
+                                            valueClassTeacherID={
+                                              item.ClassTeacherID
+                                            }
+                                            onUpdate={() =>
+                                              onNextTeacher(formikProps)
+                                            }
+                                            formikProps={formikProps}
+                                          />
+                                        </td>
+                                      ))}
+                                  </tr>
+                                )}
+                              />
                             </tbody>
                           </table>
+                        </div>
+                        <div
+                          className={clsx(
+                            "element-loader",
+                            !loadingBtnNext && "hide"
+                          )}
+                          style={{ top: "51px" }}
+                        >
+                          <div className="blockui">
+                            <span>Đang tải ...</span>
+                            <span>
+                              <div className="spinner spinner-primary"></div>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )}
 
                     {/* SET 2 */}
-                    {TabCurrent === 'Index' && (
+                    {TabCurrent === "Index" && (
                       <div className="d-flex position-relative align-items-start">
                         <div className="border border-end-0 w-150px">
                           <div className="p-2 h-55px d-flex align-items-center justify-content-center min-w-150px border-right text-uppercase font-weight-bold">
@@ -439,9 +462,8 @@ function ModalScheduleClass({
                                       {values.CalendarList[index].Days.map(
                                         (o, idx) => (
                                           <div
-                                            className={`flex-1 p-2 min-h-55px border-top ${
-                                              idx !== 6 && 'border-right'
-                                            } min-w-200px`}
+                                            className={`flex-1 p-2 min-h-55px border-top ${idx !==
+                                              6 && "border-right"} min-w-200px`}
                                             key={idx}
                                           >
                                             <FastField
@@ -470,15 +492,15 @@ function ModalScheduleClass({
                                                     form.setFieldValue(
                                                       `CalendarList[${index}].Days[${idx}].Items`,
                                                       option,
-                                                      false,
-                                                    )
+                                                      false
+                                                    );
                                                   }}
                                                   onBlur={handleBlur}
                                                 />
                                               )}
                                             </FastField>
                                           </div>
-                                        ),
+                                        )
                                       )}
                                     </Fragment>
                                   )}
@@ -494,11 +516,11 @@ function ModalScheduleClass({
               <Modal.Footer>
                 <div className="d-flex w-100 justify-content-between">
                   <div>
-                    {TabCurrent === 'Teacher' && (
+                    {TabCurrent === "Teacher" && (
                       <Button
                         type="button"
                         variant="light"
-                        onClick={() => setTabCurrent('Index')}
+                        onClick={() => setTabCurrent("Index")}
                       >
                         <i className="far fa-chevron-left font-size-xs mr-2"></i>
                         Quay lại
@@ -511,27 +533,23 @@ function ModalScheduleClass({
                     </Button>
                     {values.SchoolID && (
                       <>
-                        {TabCurrent === 'Teacher' && (
+                        {TabCurrent === "Teacher" && (
                           <Button
                             type="submit"
                             variant="primary"
-                            className={`btn btn-primary ${
-                              btnLoading &&
-                              'spinner spinner-white spinner-right'
-                            } w-auto h-auto`}
+                            className={`btn btn-primary mt-0 ${btnLoading &&
+                              "spinner spinner-white spinner-right"} w-auto h-auto`}
                             disabled={btnLoading}
                           >
-                            {values.ID ? 'Lưu thay đổi' : 'Thêm mới'}
+                            {values.ID ? "Lưu thay đổi" : "Thêm mới"}
                           </Button>
                         )}
-                        {TabCurrent === 'Index' && (
+                        {TabCurrent === "Index" && (
                           <Button
                             type="button"
                             variant="primary"
-                            className={`btn btn-primary mt-0 ${
-                              loadingBtnNext &&
-                              'spinner spinner-white spinner-right'
-                            } w-auto h-auto`}
+                            className={`btn btn-primary mt-0 ${loadingBtnNext &&
+                              "spinner spinner-white spinner-right"} w-auto h-auto`}
                             onClick={() => onNextTeacher(formikProps)}
                             disabled={loadingBtnNext}
                           >
@@ -545,11 +563,11 @@ function ModalScheduleClass({
                 </div>
               </Modal.Footer>
             </Form>
-          )
+          );
         }}
       </Formik>
     </Modal>
-  )
+  );
 }
 
-export default ModalScheduleClass
+export default ModalScheduleClass;
