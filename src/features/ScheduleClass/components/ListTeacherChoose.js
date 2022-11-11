@@ -60,6 +60,9 @@ function ListTeacherChoose({ item, name, valueClassTeacherID, onUpdate }) {
                 <span className="location">
                   Khoảng {formatSeconds(teacher?.DurationValue)}
                 </span>
+                <span className="location">
+                  {teacher?.Text}
+                </span>
               </div>
             </label>
           ))}
