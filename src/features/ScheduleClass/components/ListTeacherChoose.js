@@ -3,6 +3,11 @@ import PropTypes from "prop-types";
 import { FastField } from "formik";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
+import moment from "moment";
+import "moment/locale/vi";
+
+moment.locale("vi");
+
 const perfectScrollbarOptions = {
   wheelSpeed: 2,
   wheelPropagation: false,
@@ -18,6 +23,13 @@ function ListTeacherChoose({ item, name, valueClassTeacherID, onUpdate }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueClassTeacherID]);
+
+  const formatSeconds = (seconds) => {
+    if (seconds > -1) {
+      return moment.duration({ seconds: seconds }).humanize();
+    }
+    return "không xác định.";
+  };
 
   return (
     <PerfectScrollbar
@@ -45,7 +57,9 @@ function ListTeacherChoose({ item, name, valueClassTeacherID, onUpdate }) {
               <span />
               <div className="d-flex flex-column">
                 <span className="text">{teacher?.FullName}</span>
-                <span className="location">Khoảng {teacher?.DurationText}</span>
+                <span className="location">
+                  Khoảng {formatSeconds(teacher?.DurationValue)}
+                </span>
               </div>
             </label>
           ))}
