@@ -94,6 +94,10 @@ function TeacherResigns(props) {
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        if (status === "DUYET") {
+          localStorage.setItem("teacher_resigns", JSON.stringify(item));
+          window.open("/admin/r/bang-lich", "_blank");
+        }
         toast.success(
           status === "DUYET" ? "Duyệt thành công !" : "Từ chối thành công",
           {
@@ -104,7 +108,7 @@ function TeacherResigns(props) {
       }
     });
   };
-  console.log(ListTeacher);
+  
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
       <div className="hpanel">

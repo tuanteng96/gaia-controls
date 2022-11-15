@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import { Button, Modal } from "react-bootstrap";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
@@ -21,15 +21,15 @@ const AddSchema = Yup.object().shape({
   SchoolID: Yup.object()
     .nullable()
     .required("Vui lòng chọn trường"),
-  DeleteClassIDs: Yup.array()
-    .of(
-      Yup.object().shape({
-        value: Yup.string()
-          .required()
-          .label("value"),
-      })
-    )
-    .min(1, "The error message if length === 0 | 1"),
+  // ClassIDs: Yup.array()
+  //   .of(
+  //     Yup.object().shape({
+  //       value: Yup.string()
+  //         .required()
+  //         .label("value"),
+  //     })
+  //   )
+  //   .min(1, "The error message if length === 0 | 1"),
 });
 
 function ModalDeleteScheduleClass({
@@ -43,7 +43,7 @@ function ModalDeleteScheduleClass({
     SchoolID: "",
     From: "",
     To: "",
-    DeleteClassIDs: [],
+    ClassIDs: [],
   });
   const [ListClass, setListClass] = useState([]);
   return (
@@ -57,7 +57,7 @@ function ModalDeleteScheduleClass({
       <Formik
         initialValues={initialValues}
         validationSchema={AddSchema}
-        onSubmit={onSubmit}
+        onSubmit={(values) => onSubmit(values, ListClass)}
         enableReinitialize={true}
       >
         {(formikProps) => {
@@ -150,17 +150,17 @@ function ModalDeleteScheduleClass({
                       isMulti
                       isClearable
                       className={`select-control ${
-                        errors?.DeleteClassIDs && touched?.DeleteClassIDs
+                        errors?.ClassIDs && touched?.ClassIDs
                           ? "is-invalid solid-invalid"
                           : ""
                       }`}
                       classNamePrefix="select"
-                      name="DeleteClassIDs"
+                      name="ClassIDs"
                       options={ListClass}
                       placeholder="Chọn lớp"
-                      value={values.DeleteClassIDs}
+                      value={values.ClassIDs}
                       onChange={(option) => {
-                        setFieldValue("DeleteClassIDs", option);
+                        setFieldValue("ClassIDs", option);
                       }}
                       onBlur={handleBlur}
                       menuPosition="fixed"
@@ -168,21 +168,62 @@ function ModalDeleteScheduleClass({
                       noOptionsMessage={() => "Không có lớp"}
                     />
                   </div>
+                  {values.SchoolID && (
+                    <span className="form-text text-muted d-inline-block mt-5px">
+                      Nếu bạn không chọn lớp sẽ xóa tất cả lịch của lớp tại
+                      trường.
+                    </span>
+                  )}
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button type="button" variant="secondary" onClick={onHide}>
-                  Đóng
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className={`btn btn-primary ${loadingBtn &&
-                    "spinner spinner-white spinner-right mt-0"} w-auto h-auto`}
-                  disabled={loadingBtn}
-                >
-                  Thực hiện
-                </Button>
+                <div className="d-flex justify-content-between w-100 align-items-center">
+                  <div>
+                    {!AllInitial?.TakeBreak && (
+                      <label className="radio">
+                        <Field>
+                          {({ field, form }) => (
+                            <input
+                              type="checkbox"
+                              {...field}
+                              onChange={(e) => {
+                                const { checked } = e.target;
+                                form.setFieldValue(
+                                  "From",
+                                  checked ? new Date("01/01/2000") : ""
+                                );
+                                form.setFieldValue(
+                                  "To",
+                                  checked ? new Date("01/01/2050") : ""
+                                );
+                              }}
+                            />
+                          )}
+                        </Field>
+                        <span />
+                        <div className="d-flex flex-column">
+                          <span className="text font-size-sm">
+                            Xóa tất cả lịch
+                          </span>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                  <div>
+                    <Button type="button" variant="secondary" onClick={onHide}>
+                      Đóng
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className={`btn btn-primary ${loadingBtn &&
+                        "spinner spinner-white spinner-right mt-0"} w-auto h-auto`}
+                      disabled={loadingBtn}
+                    >
+                      Thực hiện
+                    </Button>
+                  </div>
+                </div>
               </Modal.Footer>
             </Form>
           );

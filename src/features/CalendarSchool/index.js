@@ -14,6 +14,7 @@ import ModalAddBooks from "./components/Modal/ModalAddBooks";
 import { toast } from "react-toastify";
 import ModalScheduleClass from "../ScheduleClass/components/Modal/ModalScheduleClass";
 import ModalDeleteScheduleClass from "./components/Modal/ModalDeleteScheduleClass";
+import ModalTakeBreak from "./components/Modal/ModalTakeBreak";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -35,10 +36,12 @@ function CalendarSchool(props) {
     Books: false,
     ScheduleClass: false,
     DeleteSchedule: false,
+    TakeBreak: false,
   });
   const [IsModal, setIsModal] = useState({
     AddScheduleClass: false,
     DeleteSchedule: false,
+    TakeBreak: false,
   });
   const [IsModalAdd, setIsModalAdd] = useState(false);
   const [InitialValueAdd, setInitialValueAdd] = useState(null);
@@ -46,6 +49,14 @@ function CalendarSchool(props) {
   const typingTimeoutRef = useRef(null);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    let teacher_resigns = localStorage.getItem("teacher_resigns");
+    if (teacher_resigns) {
+      teacher_resigns = JSON.parse(teacher_resigns);
+      onOpenModalTakeBreak(teacher_resigns);
+    }
+  }, []);
 
   useEffect(() => {
     getListCalendar();
@@ -304,6 +315,7 @@ function CalendarSchool(props) {
           ...day,
           Items: day.Items ? day.Items.map((os) => os.Title) : [],
         })),
+        IsHolder: item?.IsHolder && item.IsHolder === item?.ClassTeacherID,
       })),
     };
     CalendarSchoolCrud.addScheduleClass(newValues)
@@ -323,6 +335,31 @@ function CalendarSchool(props) {
       .catch((err) => console.log(err));
   };
 
+  const onSubmitTakeBreak = (values) => {
+    setLoadingBtn((prevState) => ({ ...prevState, TakeBreak: true }));
+    const newValue = {
+      Changes:
+        values.Changes &&
+        values.Changes.filter((item) => item.ClassTeacherID).map((item) => ({
+          DayItemID: item.ID,
+          TeacherID: item.ClassTeacherID,
+        })),
+      FromTeacherID: values.TeacherID?.value,
+    };
+    CalendarSchoolCrud.ChangeTeaches(newValue)
+      .then((response) => {
+        getListCalendar(false, "", () => {
+          onHideModalTakeBreak();
+          setLoadingBtn((prevState) => ({ ...prevState, TakeBreak: false }));
+          toast.success("Xóa lịch thành công", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500,
+          });
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+
   const onOpenModalDeleteScheduleClass = (value) => {
     setAllInitial(value);
     setIsModal((prevState) => ({ ...prevState, DeleteSchedule: true }));
@@ -333,14 +370,15 @@ function CalendarSchool(props) {
     setIsModal((prevState) => ({ ...prevState, DeleteSchedule: false }));
   };
 
-  const onDeleteSchedule = (values) => {
+  const onDeleteSchedule = (values, ListClass) => {
     setLoadingBtn((prevState) => ({ ...prevState, DeleteSchedule: true }));
     if (AllInitial?.TakeBreak) {
       const newValues = {
-        SchoolID: values.SchoolID?.ID,
-        ClassIDs: values.DeleteClassIDs
-          ? values.DeleteClassIDs.map((x) => x.ID)
-          : [],
+        SchoolIDs: values.SchoolID?.ID ? [values.SchoolID?.ID] : [],
+        ClassIDs:
+          values.ClassIDs && values.ClassIDs.length > 0
+            ? values.ClassIDs.map((x) => x.ID)
+            : ListClass && ListClass.map((x) => x.ID),
         From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
         To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
         Items: [],
@@ -363,12 +401,13 @@ function CalendarSchool(props) {
         .catch((err) => console.log(err));
     } else {
       const newValues = {
-        SchoolID: values.SchoolID?.ID,
+        SchoolIDs: values.SchoolID?.ID ? [values.SchoolID?.ID] : [],
         From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
         To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
-        DeleteClassIDs: values.DeleteClassIDs
-          ? values.DeleteClassIDs.map((x) => x.ID)
-          : [],
+        ClassIDs:
+          values.ClassIDs && values.ClassIDs.length > 0
+            ? values.ClassIDs.map((x) => x.ID)
+            : ListClass && ListClass.map((x) => x.ID),
       };
       CalendarSchoolCrud.deleteScheduleClass(newValues)
         .then((response) => {
@@ -388,6 +427,16 @@ function CalendarSchool(props) {
     }
   };
 
+  const onOpenModalTakeBreak = (initialValue) => {
+    if (initialValue) setAllInitial(initialValue);
+    setIsModal((prevState) => ({ ...prevState, TakeBreak: true }));
+  };
+
+  const onHideModalTakeBreak = () => {
+    setAllInitial(null);
+    setIsModal((prevState) => ({ ...prevState, TakeBreak: false }));
+  };
+  
   return (
     <div className="calendar-school">
       <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -415,19 +464,19 @@ function CalendarSchool(props) {
                         onOpenScheduleClass({ isClassChoose: false })
                       }
                     >
-                      Tạo mới lịch trường
+                      Tạo mới lịch
                     </Dropdown.Item>
-                    <Dropdown.Item
+                    {/* <Dropdown.Item
                       onClick={() =>
                         onOpenScheduleClass({ isClassChoose: true })
                       }
                     >
                       Tạo lịch cho lớp
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                     <Dropdown.Item onClick={onOpenModalDeleteScheduleClass}>
-                      Xóa lịch cho lớp
+                      Xóa lịch
                     </Dropdown.Item>
-                    <Dropdown.Item
+                    {/* <Dropdown.Item
                       onClick={() =>
                         onOpenModalDeleteScheduleClass({
                           TakeBreak: true,
@@ -435,13 +484,15 @@ function CalendarSchool(props) {
                       }
                     >
                       Thông báo nghỉ buổi
-                    </Dropdown.Item>
-                    <Dropdown.Item>
+                    </Dropdown.Item> */}
+                    {/* <Dropdown.Item>
                       Thay đổi lịch trong 1 khoảng thời gian
-                    </Dropdown.Item>
-                    <Dropdown.Item>Thêm tiết cho lớp</Dropdown.Item>
+                    </Dropdown.Item> */}
+                    {/* <Dropdown.Item>Thêm tiết cho lớp</Dropdown.Item> */}
                     <div className="dropdown-divider"></div>
-                    <Dropdown.Item>Xin nghỉ</Dropdown.Item>
+                    <Dropdown.Item onClick={() => onOpenModalTakeBreak()}>
+                      Xin nghỉ
+                    </Dropdown.Item>
                     <Dropdown.Item>Thay đổi giáo viên</Dropdown.Item>
                     <div className="dropdown-divider"></div>
                     <Dropdown.Item
@@ -515,6 +566,13 @@ function CalendarSchool(props) {
             onHide={onHideModalDeleteScheduleClass}
             loadingBtn={loadingBtn.DeleteSchedule}
             onSubmit={onDeleteSchedule}
+            AllInitial={AllInitial}
+          />
+          <ModalTakeBreak
+            show={IsModal.TakeBreak}
+            onHide={onHideModalTakeBreak}
+            loadingBtn={loadingBtn.TakeBreak}
+            onSubmit={onSubmitTakeBreak}
             AllInitial={AllInitial}
           />
         </div>

@@ -253,14 +253,18 @@ function ModalScheduleClass({
         if (response?.Previews) {
           const { Previews } = response
           const newCalendarList = CalendarList.map((item) => {
-            let newCalendarItem = { ...item, AvaiList: null, NotList: null }
-            const index = Previews.findIndex((o) => o.ClassID === item.ClassID)
+            let newCalendarItem = { ...item, AvaiList: null, NotList: null };
+            const index = Previews.findIndex((o) => o.ClassID === item.ClassID);
             if (index > -1) {
-              newCalendarItem.AvaiList = Previews[index].AvaiList
-              newCalendarItem.NotList = Previews[index].NotList
+              newCalendarItem.AvaiList = Previews[index].AvaiList;
+              newCalendarItem.NotList = Previews[index].NotList;
             }
-            return newCalendarItem
-          })
+            return newCalendarItem;
+          }).filter(
+            (calendar) =>
+              calendar.Days &&
+              calendar.Days.some((day) => day.Items && day.Items.length > 0)
+          );
           setLoadingBtnNext(false)
           setFieldValue('CalendarList', newCalendarList)
           setTabCurrent('Teacher')
@@ -297,7 +301,7 @@ function ModalScheduleClass({
                 <Modal.Title>
                   {values.ID
                     ? `Lịch học ${values.SchoolTitle}`
-                    : 'Tạo mới lịch học'}
+                    : "Tạo mới lịch học"}
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
@@ -307,17 +311,18 @@ function ModalScheduleClass({
                   ID={values.ID}
                   onClearSchool={() => setInitialValues(initialValue)}
                   AllInitial={AllInitial}
+                  TabCurrent={TabCurrent}
                 />
                 {values.SchoolID && (
                   <div className="mt-4">
                     <div className="border-top border-left border-right text-center font-weight-bold text-uppercase h-50px d-flex justify-content-center align-items-center font-size-md">
-                      {values.SchoolTitle}{' '}
+                      {values.SchoolTitle}{" "}
                       {values.From &&
-                        `- Từ ngày ${moment(values.From).format('ll')}`}{' '}
-                      {values.To && `đến ${moment(values.To).format('ll')}`}
+                        `- Từ ngày ${moment(values.From).format("ll")}`}{" "}
+                      {values.To && `đến ${moment(values.To).format("ll")}`}
                     </div>
                     {/* SET 1 */}
-                    {TabCurrent === 'Teacher' && (
+                    {TabCurrent === "Teacher" && (
                       <div className="table-responsive-x">
                         <div className="table-responsive">
                           <table className="table table-bordered mb-0">
@@ -327,7 +332,7 @@ function ModalScheduleClass({
                                   values.CalendarList.map((item, index) => (
                                     <th
                                       className={clsx(
-                                        'min-w-265px w-265px h-50px text-center',
+                                        "min-w-265px w-265px h-50px text-center"
                                       )}
                                       key={index}
                                     >
@@ -350,9 +355,14 @@ function ModalScheduleClass({
                                           <ListTeacherChoose
                                             item={item}
                                             name={`CalendarList[${index}].ClassTeacherID`}
+                                            nameHolder={`CalendarList[${index}].IsHolder`}
                                             valueClassTeacherID={
                                               values.CalendarList[index]
                                                 .ClassTeacherID
+                                            }
+                                            valueHolder={
+                                              values.CalendarList[index]
+                                                .IsHolder
                                             }
                                             onUpdate={() => {
                                               //console.log(values)
@@ -361,8 +371,8 @@ function ModalScheduleClass({
                                                   values: values,
                                                   setFieldValue: setFieldValue,
                                                 },
-                                                true,
-                                              )
+                                                true
+                                              );
                                             }}
                                             formikProps={formikProps}
                                           />
@@ -376,10 +386,10 @@ function ModalScheduleClass({
                         </div>
                         <div
                           className={clsx(
-                            'element-loader',
-                            !loadingBtnNext && 'hide',
+                            "element-loader",
+                            !loadingBtnNext && "hide"
                           )}
-                          style={{ top: '51px' }}
+                          style={{ top: "51px" }}
                         >
                           <div className="blockui">
                             <span>Đang tải ...</span>
@@ -392,7 +402,7 @@ function ModalScheduleClass({
                     )}
 
                     {/* SET 2 */}
-                    {TabCurrent === 'Index' && (
+                    {TabCurrent === "Index" && (
                       <div className="d-flex position-relative align-items-start">
                         <div className="border border-end-0 w-150px">
                           <div className="p-2 h-55px d-flex align-items-center justify-content-center min-w-150px border-right text-uppercase font-weight-bold">
@@ -470,9 +480,8 @@ function ModalScheduleClass({
                                       {values.CalendarList[index].Days.map(
                                         (o, idx) => (
                                           <div
-                                            className={`flex-1 p-2 min-h-55px border-top ${
-                                              idx !== 6 && 'border-right'
-                                            } min-w-200px`}
+                                            className={`flex-1 p-2 min-h-55px border-top ${idx !==
+                                              6 && "border-right"} min-w-200px`}
                                             key={idx}
                                           >
                                             <FastField
@@ -501,15 +510,15 @@ function ModalScheduleClass({
                                                     form.setFieldValue(
                                                       `CalendarList[${index}].Days[${idx}].Items`,
                                                       option,
-                                                      false,
-                                                    )
+                                                      false
+                                                    );
                                                   }}
                                                   onBlur={handleBlur}
                                                 />
                                               )}
                                             </FastField>
                                           </div>
-                                        ),
+                                        )
                                       )}
                                     </Fragment>
                                   )}
@@ -525,11 +534,11 @@ function ModalScheduleClass({
               <Modal.Footer>
                 <div className="d-flex w-100 justify-content-between">
                   <div>
-                    {TabCurrent === 'Teacher' && (
+                    {TabCurrent === "Teacher" && (
                       <Button
                         type="button"
                         variant="light"
-                        onClick={() => setTabCurrent('Index')}
+                        onClick={() => setTabCurrent("Index")}
                       >
                         <i className="far fa-chevron-left font-size-xs mr-2"></i>
                         Quay lại
@@ -542,27 +551,23 @@ function ModalScheduleClass({
                     </Button>
                     {values.SchoolID && (
                       <>
-                        {TabCurrent === 'Teacher' && (
+                        {TabCurrent === "Teacher" && (
                           <Button
                             type="submit"
                             variant="primary"
-                            className={`btn btn-primary mt-0 ${
-                              btnLoading &&
-                              'spinner spinner-white spinner-right'
-                            } w-auto h-auto`}
+                            className={`btn btn-primary mt-0 ${btnLoading &&
+                              "spinner spinner-white spinner-right"} w-auto h-auto`}
                             disabled={btnLoading}
                           >
-                            {values.ID ? 'Lưu thay đổi' : 'Thêm mới'}
+                            {values.ID ? "Lưu thay đổi" : "Thêm mới"}
                           </Button>
                         )}
-                        {TabCurrent === 'Index' && (
+                        {TabCurrent === "Index" && (
                           <Button
                             type="button"
                             variant="primary"
-                            className={`btn btn-primary mt-0 ${
-                              loadingBtnNext &&
-                              'spinner spinner-white spinner-right'
-                            } w-auto h-auto`}
+                            className={`btn btn-primary mt-0 ${loadingBtnNext &&
+                              "spinner spinner-white spinner-right"} w-auto h-auto`}
                             onClick={() => onNextTeacher(formikProps)}
                             disabled={loadingBtnNext}
                           >
@@ -576,7 +581,7 @@ function ModalScheduleClass({
                 </div>
               </Modal.Footer>
             </Form>
-          )
+          );
         }}
       </Formik>
     </Modal>

@@ -9,6 +9,7 @@ import Select from "react-select";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import PopoverAddTeacher from "../Popover/PopoverAddTeacher";
 import DatePicker from "react-datepicker";
+import SelectTeachersParams from "../SelectTeachersParams";
 
 const initialValue = {
   major: { Title: "", IsThematic: false },
@@ -48,7 +49,9 @@ const AddSchema = Yup.object().shape({
         .nullable()
         .when("IsThematic", {
           is: (IsThematic) => !IsThematic,
-          then: Yup.object().nullable().required("Vui lòng chọn lớp"),
+          then: Yup.object()
+            .nullable()
+            .required("Vui lòng chọn lớp"),
         }),
       Index: Yup.array()
         .nullable()
@@ -76,6 +79,7 @@ function ModalAddBooks({
   const [SchoolCurrent, setSchoolCurrent] = useState(null);
   const [ListIndex, setListIndex] = useState([]);
   const [ListClass, setListClass] = useState([]);
+  const [keyUpdate, setKeyUpdate] = useState(0);
 
   useEffect(() => {
     if (SchoolCurrent) {
@@ -200,6 +204,34 @@ function ModalAddBooks({
                     </div>
                   )}
                   <div className="form-group">
+                    <label>Ngày</label>
+                    <DatePicker
+                      popperProps={{
+                        positionFixed: true,
+                      }}
+                      className={`form-control ${
+                        errors?.dayItem?.Date && touched?.dayItem?.Date
+                          ? "is-invalid solid-invalid"
+                          : ""
+                      }`}
+                      selected={
+                        values?.dayItem?.Date
+                          ? new Date(values?.dayItem?.Date)
+                          : ""
+                      }
+                      onChange={(date) => {
+                        setFieldValue("dayItem.Date", date, false);
+                        !values?.major?.IsThematic &&
+                          setFieldValue("dayItem.TeacherID", "", false);
+                        setKeyUpdate(keyUpdate + 1);
+                      }}
+                      // popperPlacement="bottom-end"
+                      //shouldCloseOnSelect={false}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Chọn ngày"
+                    />
+                  </div>
+                  <div className="form-group">
                     <label>Trường</label>
                     <AsyncSelectSchool
                       className={`select-control ${
@@ -215,7 +247,10 @@ function ModalAddBooks({
                         setFieldValue("dayItem.SchoolID", option, false);
                         setFieldValue("dayItem.Index", "", false);
                         setFieldValue("dayItem.ClassID", "", false);
+                        !values?.major?.IsThematic &&
+                          setFieldValue("dayItem.TeacherID", "", false);
                         setSchoolCurrent(option);
+                        setKeyUpdate(keyUpdate + 1);
                       }}
                       onBlur={handleBlur}
                       noOptionsMessage={({ inputValue }) =>
@@ -241,6 +276,9 @@ function ModalAddBooks({
                       value={values.dayItem.ClassID}
                       onChange={(option) => {
                         setFieldValue("dayItem.ClassID", option, false);
+                        !values?.major?.IsThematic &&
+                          setFieldValue("dayItem.TeacherID", "", false);
+                        setKeyUpdate(keyUpdate + 1);
                       }}
                       onBlur={handleBlur}
                       menuPosition="fixed"
@@ -268,60 +306,66 @@ function ModalAddBooks({
                           !Array.isArray(option) ? [option] : option,
                           false
                         );
+                        !values?.major?.IsThematic &&
+                          setFieldValue("dayItem.TeacherID", "", false);
+                        setKeyUpdate(keyUpdate + 1);
                       }}
                       onBlur={handleBlur}
                       menuPosition="fixed"
                       isDisabled={!values.dayItem.SchoolID}
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Giáo viên</label>
-                    <AsyncSelectTeachers
-                      className={`select-control ${
-                        errors?.dayItem?.TeacherID &&
-                        touched?.dayItem?.TeacherID
-                          ? "is-invalid solid-invalid"
-                          : ""
-                      }`}
-                      placeholder="Chọn giáo viên"
-                      name="TeacherID"
-                      menuPosition="fixed"
-                      value={values?.dayItem?.TeacherID}
-                      onChange={(option) => {
-                        setFieldValue("dayItem.TeacherID", option, false);
-                      }}
-                      onBlur={handleBlur}
-                      noOptionsMessage={({ inputValue }) =>
-                        !inputValue
-                          ? "Danh sách giáo viên trống"
-                          : "Không tìm thấy giáo viên phù hợp."
-                      }
-                    />
-                  </div>
                   <div className="form-group mb-0">
-                    <label>Ngày</label>
-                    <DatePicker
-                      popperProps={{
-                        positionFixed: true,
-                      }}
-                      className={`form-control ${
-                        errors?.dayItem?.Date && touched?.dayItem?.Date
-                          ? "is-invalid solid-invalid"
-                          : ""
-                      }`}
-                      selected={
-                        values?.dayItem?.Date
-                          ? new Date(values?.dayItem?.Date)
-                          : ""
-                      }
-                      onChange={(date) =>
-                        setFieldValue("dayItem.Date", date, false)
-                      }
-                      // popperPlacement="bottom-end"
-                      //shouldCloseOnSelect={false}
-                      dateFormat="dd/MM/yyyy"
-                      placeholderText="Chọn ngày"
-                    />
+                    <label>Giáo viên</label>
+                    {values?.major?.IsThematic && (
+                      <AsyncSelectTeachers
+                        isClearable
+                        className={`select-control ${
+                          errors?.dayItem?.TeacherID &&
+                          touched?.dayItem?.TeacherID
+                            ? "is-invalid solid-invalid"
+                            : ""
+                        }`}
+                        placeholder="Chọn giáo viên"
+                        name="TeacherID"
+                        menuPosition="fixed"
+                        value={values?.dayItem?.TeacherID}
+                        onChange={(option) => {
+                          setFieldValue("dayItem.TeacherID", option, false);
+                        }}
+                        onBlur={handleBlur}
+                        noOptionsMessage={({ inputValue }) =>
+                          !inputValue
+                            ? "Danh sách giáo viên trống"
+                            : "Không tìm thấy giáo viên phù hợp."
+                        }
+                      />
+                    )}
+                    {!values?.major?.IsThematic && (
+                      <SelectTeachersParams
+                        key={keyUpdate}
+                        isClearable
+                        className={`select-control ${
+                          errors?.dayItem?.TeacherID &&
+                          touched?.dayItem?.TeacherID
+                            ? "is-invalid solid-invalid"
+                            : ""
+                        }`}
+                        placeholder="Chọn giáo viên"
+                        name="TeacherID"
+                        params={{
+                          Date: values?.dayItem?.Date,
+                          SchoolID: values.dayItem.SchoolID,
+                          ClassID: values.dayItem.ClassID,
+                          Index: values.dayItem.Index,
+                        }}
+                        value={values?.dayItem?.TeacherID}
+                        onChange={(option) => {
+                          setFieldValue("dayItem.TeacherID", option, false);
+                        }}
+                        onBlur={handleBlur}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="p-15px">

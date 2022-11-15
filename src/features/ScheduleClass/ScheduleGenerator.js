@@ -23,6 +23,7 @@ function ScheduleGenerator({
   ID,
   onClearSchool,
   AllInitial,
+  TabCurrent
 }) {
   const [ListClass, setListClass] = useState([]);
   const getAllSchool = async (search, loadedOptions, { page }) => {
@@ -154,6 +155,7 @@ function ScheduleGenerator({
                 type="button"
                 className={`btn btn-primary m-0  w-auto h-auto`} //spinner spinner-white spinner-right
                 onClick={() => formikSubProps.handleSubmit()}
+                disabled={TabCurrent === "Teacher"}
               >
                 {ID ? "Tạo mới bảng lịch" : "Tạo bảng lịch"}
               </button>

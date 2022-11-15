@@ -16,9 +16,7 @@ const perfectScrollbarOptions = {
 function ListTeacherChoose({
   item,
   name,
-  nameHolder,
   valueClassTeacherID,
-  valueHolder,
   onUpdate,
 }) {
   const [first, setFirst] = useState(true);
@@ -31,12 +29,6 @@ function ListTeacherChoose({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueClassTeacherID]);
 
-  const formatSeconds = (seconds) => {
-    if (seconds > -1) {
-      return moment.duration({ seconds: seconds }).humanize();
-    }
-    return "không xác định.";
-  };
   return (
     <PerfectScrollbar
       options={perfectScrollbarOptions}
@@ -54,7 +46,6 @@ function ListTeacherChoose({
                     {...field}
                     onChange={async (e) => {
                       const { checked } = e.target;
-                      form.setFieldValue(nameHolder, "");
                       form.setFieldValue(name, checked ? teacher.ID : "");
                     }}
                     checked={valueClassTeacherID === teacher.ID}
@@ -64,37 +55,11 @@ function ListTeacherChoose({
               </Field>
               <span />
               <div className="d-flex flex-column flex-1">
-                <div className="d-flex justify-content-between">
-                  <span className="text">{teacher?.FullName}</span>
-                  {valueClassTeacherID === teacher.ID && (
-                    <Field name={nameHolder}>
-                      {({ field, form }) => (
-                        <span className="switch switch-icon">
-                          <label>
-                            <input
-                              {...field}
-                              type="checkbox"
-                              onChange={async (e) => {
-                                const { checked } = e.target;
-                                form.setFieldValue(
-                                  nameHolder,
-                                  checked ? teacher.ID : ""
-                                );
-                              }}
-                              checked={valueHolder === teacher.ID}
-                              disabled={valueClassTeacherID !== teacher.ID}
-                            />
-                            <span></span>
-                          </label>
-                        </span>
-                      )}
-                    </Field>
-                  )}
-                </div>
-                <span className="location">
+                <div className="text">{teacher?.FullName}</div>
+                {/* <span className="location">
                   Khoảng {formatSeconds(teacher?.DurationValue)}
                 </span>
-                <span className="location">{teacher?.Text}</span>
+                <span className="location">{teacher?.Text}</span> */}
               </div>
             </label>
           ))}
