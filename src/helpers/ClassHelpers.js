@@ -1,7 +1,7 @@
 export const ClassSchoolGenerator = (item) => {
-    if (item.TeachingRejectIDs || item.TeachingStatus === "TU_CHOI") {
-        return "bg-danger h-20px";
-    }
+    // if (item.TeachingRejectIDs || item.TeachingStatus === "TU_CHOI") {
+    //     return "bg-danger h-20px";
+    // }
     if ((item.UserID > 0 || item.TeacherID) && item.TeachingStatus !== "HOAN_THANH") {
         return "bg-warning h-20px";
     }
@@ -20,11 +20,11 @@ export const ClassTeacherGenerator = (item, Teacher) => {
 }
 
 export const getNameLast = (name) => {
-    if(!name) return 'Chưa có tên';
+    if (!name) return 'Chưa có tên';
     const nameSplit = name.split(' ');
-    if(nameSplit.length > 1) {
-        const nameCharAt = nameSplit.map((o,index) => {
-            if(index === nameSplit.length - 1 || index === nameSplit.length - 2) {
+    if (nameSplit.length > 1) {
+        const nameCharAt = nameSplit.map((o, index) => {
+            if (index === nameSplit.length - 1 || index === nameSplit.length - 2) {
                 return o
             }
             //return o.charAt()

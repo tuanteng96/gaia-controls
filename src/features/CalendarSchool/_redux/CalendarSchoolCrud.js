@@ -9,7 +9,9 @@ const ADD_SCHEDULE_CLASS_URL = '/api/v3/DayItems@Add';
 const DELETE_SCHEDULE_CLASS_URL = '/api/v3/DayItems@Remove';
 const TAKE_SCHEDULE_OFF_URL = '/api/v3/DayItems@RemoveClass';
 const PREVIEW_TAKE_BREAK_URL = '/api/v3/DayItems@OffPreview';
-const CHANGE_REACHERS_URL = '/api/v3/DayItems@ChangeTeaches';
+const CHANGE_TEACHERS_URL = '/api/v3/DayItems@ChangeTeaches';
+const PRIVIEW_CHANGE_TEACHERS_URL = '/api/v3/DayItems@ReplaceTeacherPreview';
+const TRANFER_TEACHERS_URL = '/api/v3/DayItems@ReplaceTeacher';
 
 const getAll = (data) => {
     return axiosClient.post(GET_ALL_URL, JSON.stringify(data));
@@ -52,7 +54,15 @@ const previewTakeBreak = (data) => {
 }
 
 const ChangeTeaches = (data) => {
-    return axiosClient.post(CHANGE_REACHERS_URL, JSON.stringify(data));
+    return axiosClient.post(CHANGE_TEACHERS_URL, JSON.stringify(data));
+}
+
+const previewChangesTeacher = (data) => {
+    return axiosClient.post(PRIVIEW_CHANGE_TEACHERS_URL, JSON.stringify(data));
+}
+
+const tranferTeacher = (data) => {
+    return axiosClient.post(TRANFER_TEACHERS_URL, JSON.stringify(data));
 }
 
 const CalendarSchoolCrud = {
@@ -66,6 +76,8 @@ const CalendarSchoolCrud = {
     takeScheduleOff,
     previewScheduleClass,
     previewTakeBreak,
-    ChangeTeaches
+    ChangeTeaches,
+    previewChangesTeacher,
+    tranferTeacher
 };
 export default CalendarSchoolCrud;

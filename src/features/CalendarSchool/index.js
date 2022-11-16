@@ -18,6 +18,7 @@ import ModalTakeBreak from "./components/Modal/ModalTakeBreak";
 
 import moment from "moment";
 import "moment/locale/vi";
+import ModalChangesTeacher from "./components/Modal/ModalChangesTeacher";
 moment.locale("vi");
 
 function CalendarSchool(props) {
@@ -37,11 +38,13 @@ function CalendarSchool(props) {
     ScheduleClass: false,
     DeleteSchedule: false,
     TakeBreak: false,
+    ChangesTeacher: false,
   });
   const [IsModal, setIsModal] = useState({
     AddScheduleClass: false,
     DeleteSchedule: false,
     TakeBreak: false,
+    ChangesTeacher: false,
   });
   const [IsModalAdd, setIsModalAdd] = useState(false);
   const [InitialValueAdd, setInitialValueAdd] = useState(null);
@@ -320,7 +323,7 @@ function CalendarSchool(props) {
     };
     CalendarSchoolCrud.addScheduleClass(newValues)
       .then((response) => {
-        getListCalendar(false, "", () => {
+        getListCalendar(false, { ...filters, pi: 1 }, () => {
           setLoadingBtn((prevState) => ({
             ...prevState,
             ScheduleClass: false,
@@ -348,13 +351,34 @@ function CalendarSchool(props) {
     };
     CalendarSchoolCrud.ChangeTeaches(newValue)
       .then((response) => {
-        getListCalendar(false, "", () => {
+        getListCalendar(false, { ...filters, pi: 1 }, () => {
           onHideModalTakeBreak();
           setLoadingBtn((prevState) => ({ ...prevState, TakeBreak: false }));
           toast.success("Xóa lịch thành công", {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 1500,
           });
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const onSubmitTransferTeacher = (values, { resetForm }) => {
+    const newValue = {
+      FromTeacherID: values.FromTeacherID?.ID,
+      ToTeacherID: values.ToTeacherID?.ID,
+    };
+    setLoadingBtn((prevState) => ({ ...prevState, ChangesTeacher: true }));
+    CalendarSchoolCrud.tranferTeacher(newValue)
+      .then((response) => {
+        getListCalendar(false, { ...filters, pi: 1 }, () => {
+          onHideModalChangesTeacher();
+          setLoadingBtn((prevState) => ({ ...prevState, TakeBreak: false }));
+          toast.success("Thay đổi thành công", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500,
+          });
+          resetForm();
         });
       })
       .catch((error) => console.log(error));
@@ -436,7 +460,15 @@ function CalendarSchool(props) {
     setAllInitial(null);
     setIsModal((prevState) => ({ ...prevState, TakeBreak: false }));
   };
-  
+
+  const onOpenModalChangesTeacher = () => {
+    setIsModal((prevState) => ({ ...prevState, ChangesTeacher: true }));
+  };
+
+  const onHideModalChangesTeacher = () => {
+    setIsModal((prevState) => ({ ...prevState, ChangesTeacher: false }));
+  };
+
   return (
     <div className="calendar-school">
       <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
@@ -493,7 +525,9 @@ function CalendarSchool(props) {
                     <Dropdown.Item onClick={() => onOpenModalTakeBreak()}>
                       Xin nghỉ
                     </Dropdown.Item>
-                    <Dropdown.Item>Thay đổi giáo viên</Dropdown.Item>
+                    <Dropdown.Item onClick={onOpenModalChangesTeacher}>
+                      Thay đổi giáo viên
+                    </Dropdown.Item>
                     <div className="dropdown-divider"></div>
                     <Dropdown.Item
                       onClick={() =>
@@ -574,6 +608,12 @@ function CalendarSchool(props) {
             loadingBtn={loadingBtn.TakeBreak}
             onSubmit={onSubmitTakeBreak}
             AllInitial={AllInitial}
+          />
+          <ModalChangesTeacher
+            show={IsModal.ChangesTeacher}
+            onHide={onHideModalChangesTeacher}
+            loadingBtn={loadingBtn.ChangesTeacher}
+            onSubmit={onSubmitTransferTeacher}
           />
         </div>
       </div>

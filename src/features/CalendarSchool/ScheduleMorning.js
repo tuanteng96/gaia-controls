@@ -108,7 +108,7 @@ function ScheduleMorning({
                   {item.TeacherTitle && idx === 0 && (
                     <div
                       className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize px-2 cursor-pointer d-flex justify-content-between"
-                      onClick={() => onOpenModal(item.ID)}
+                      //onClick={() => onOpenModal(item.ID)}
                     >
                       <div className="text-truncate flex-fill pr-10px">
                         {item?.TeacherCode} - {getNameLast(item.TeacherTitle)}
@@ -127,9 +127,8 @@ function ScheduleMorning({
       ) : (
         <div
           className="w-100 min-h-100 max-h-100 cursor-pointer"
-            onClick={() => {
+          onClick={() => {
             const initialValues = {
-              
               dayItem: {
                 Date: itemAdd.Date,
                 SchoolID: {
