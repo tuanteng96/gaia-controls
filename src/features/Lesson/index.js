@@ -260,37 +260,6 @@ function Lesson(props) {
                     formatter: (cell, row) => <div>{row.Version}</div>,
                   },
                   {
-                    dataField: "LinkOnline",
-                    text: "LinkOnline",
-                    //headerAlign: "center",
-                    //style: { textAlign: "center" },
-                    attrs: { "data-title": "LinkOnline" },
-                    formatter: (cell, row) => (
-                      <div className="w-100px">
-                        {row.LinkOnline && (
-                          <OverlayTrigger
-                            key="top"
-                            placement="top"
-                            overlay={
-                              <Tooltip id={`tooltip-top`}>
-                                {row.LinkOnline}
-                              </Tooltip>
-                            }
-                          >
-                            <a
-                              href={toAbsoluteUrl(`/${row.LinkOnline}`)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="d-inline-block white-space-pw"
-                            >
-                              <i className="fas fa-link icon-md"></i>
-                            </a>
-                          </OverlayTrigger>
-                        )}
-                      </div>
-                    ),
-                  },
-                  {
                     dataField: "GiaoAnPdf",
                     text: "Giáo án",
                     //headerAlign: "center",

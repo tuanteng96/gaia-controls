@@ -214,7 +214,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     onBlur={handleBlur}
                   />
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label>Link Online</label>
                   <Select
                     isDisabled={loadingPath}
@@ -231,7 +231,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     placeholder="Chọn file"
                     noOptionsMessage={() => "Không thấy file."}
                   />
-                </div>
+                </div> */}
                 <div className="form-group">
                   <label>Giáo án</label>
                   <UploadFile
