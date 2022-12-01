@@ -9,8 +9,12 @@ import ScheduleMorning from "./ScheduleMorning";
 import ScheduleAfternoon from "./ScheduleAfternoon";
 
 import moment from "moment";
+import { extendMoment } from "moment-range";
+
 import "moment/locale/vi";
 moment.locale("vi");
+
+const moments = extendMoment(moment);
 
 BodyCalendar.propTypes = {
   filters: PropTypes.object,
@@ -66,6 +70,16 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
     return ScheduleLists;
   };
 
+  const getHolidaySchedule = ({ Dates, OffDays }) => {
+    return OffDays.filter((o) => {
+      const start = moment(moment(o.From).format("DD-MM-YYYY"), "DD-MM-YYYY");
+      const end = moment(moment(o.To).format("DD-MM-YYYY"), "DD-MM-YYYY");
+      const date = moment(moment(Dates).format("DD-MM-YYYY"), "DD-MM-YYYY");
+      const range = moments.range(start, end);
+      return range.contains(date);
+    });
+  };
+
   return (
     <ScrollSync>
       <div className="h-650px calendar-teacher__body">
@@ -82,7 +96,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                 id="scrollableUser"
               >
                 <InfiniteScroll
-                  dataLength={Lists.length}
+                  dataLength={Lists && Lists.length}
                   hasMore={options.hasMore}
                   scrollableTarget="scrollableUser"
                 >
@@ -145,7 +159,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
             <ScrollSyncPane>
               <div className="list--weeks" id="scrollableWeeks">
                 <InfiniteScroll
-                  dataLength={Lists.length}
+                  dataLength={Lists && Lists.length}
                   next={options.loadMoreData}
                   hasMore={options.hasMore}
                   loader={
@@ -172,7 +186,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                         key={indexDay}
                       >
                         {Lists &&
-                          Lists.map(({ list, teacher }, index) => (
+                          Lists.map(({ list, teacher, OffDays }, index) => (
                             <div
                               className={`h-40px d-flex ${clsx({
                                 "border-bottom":
@@ -191,6 +205,12 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     list
                                   )}
                                   Teacher={teacher}
+                                  HolidaySchedule={getHolidaySchedule({
+                                    Dates: moment(filters.from)
+                                      .add(indexDay, "days")
+                                      .toDate(),
+                                    OffDays: OffDays || [],
+                                  })}
                                 />
                               </div>
                               <div className="flex-1 h-100 min-h-100 position-relative">
@@ -202,6 +222,12 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     list
                                   )}
                                   Teacher={teacher}
+                                  HolidaySchedule={getHolidaySchedule({
+                                    Dates: moment(filters.from)
+                                      .add(indexDay, "days")
+                                      .toDate(),
+                                    OffDays: OffDays || [],
+                                  })}
                                 />
                               </div>
                               {/* <ScheduleItem

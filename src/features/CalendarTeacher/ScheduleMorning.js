@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { getArraysChildren } from "../../helpers/ArrayHelpers";
 import clsx from "clsx";
 import { ClassTeacherGenerator } from "../../helpers/ClassHelpers";
-import { getStyleSchool } from "../../helpers/DateTimeHelpers";
+import { getStyleHiliday, getStyleSchool } from "../../helpers/DateTimeHelpers";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 
 import moment from "moment";
@@ -15,7 +15,7 @@ ScheduleMorning.propTypes = {
   ScheduleDay: PropTypes.array,
 };
 
-function ScheduleMorning({ ScheduleDay, Teacher }) {
+function ScheduleMorning({ ScheduleDay, Teacher, HolidaySchedule }) {
   const [ScheduleItem, setScheduleItem] = useState([]);
   const { HourSchool } = useSelector(({ calendarTeachers }) => ({
     HourSchool: calendarTeachers.HourSchool,
@@ -24,6 +24,7 @@ function ScheduleMorning({ ScheduleDay, Teacher }) {
     setScheduleItem(getArraysChildren(ScheduleDay, "S", HourSchool));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ScheduleDay, HourSchool]);
+
   return (
     <Fragment>
       {ScheduleItem &&
@@ -156,6 +157,14 @@ function ScheduleMorning({ ScheduleDay, Teacher }) {
               </OverlayTrigger>
             </div>
           </Fragment>
+        ))}
+      {HolidaySchedule &&
+        HolidaySchedule.map((o, index) => (
+          <div
+            key={index}
+            style={getStyleHiliday(o, "S", HourSchool, null)}
+            className="bg-stripes position-absolute zindex-4 h-100 min-h-100 cursor-not-allowed"
+          ></div>
         ))}
     </Fragment>
   );

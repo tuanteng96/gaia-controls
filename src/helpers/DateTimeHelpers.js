@@ -78,6 +78,38 @@ export const getStyleSchool = (item, type, {
     return styles;
 }
 
+export const getStyleHiliday = (item, type, {
+    HourMax,
+    HourMin
+}, HourScheduleList) => {
+    let newHourMin = HourMin;
+    let newHourMax = HourMax;
+    let styles = {}
+    if (item) {
+        if (type === "S") {
+            newHourMax = getMaxHourS(HourScheduleList);
+        } else {
+            newHourMin = getMinHourC(HourScheduleList)
+        }
+        const {
+            From,
+            To
+        } = item;
+        var TotalSeconds = moment(newHourMax, "HH:mm:ss").diff(
+            moment(newHourMin, "HH:mm:ss"),
+            "seconds"
+        );
+        const TotalTime = moment(moment(To).format("HH:mm:ss"), "HH:mm:ss").diff(moment(moment(From).format("HH:mm:ss"), "HH:mm:ss"), "seconds");
+        const TotalStart = moment(moment(From).format("HH:mm:ss"), "HH:mm:ss").diff(moment(newHourMin, "HH:mm:ss"), "seconds");
+        const widthStyle = (TotalTime / TotalSeconds) * 100;
+        const leftStyle = (TotalStart / TotalSeconds) * 100
+        styles.width = `${widthStyle > 100 ? 100 : widthStyle}%`;
+        styles.top = 0;
+        styles.left = `${leftStyle < 0 ? 0 : leftStyle}%`;
+    }
+    return styles;
+}
+
 export const getStyleTeacher = (
   item,
   { HourMax, HourMin },
