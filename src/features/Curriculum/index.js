@@ -8,6 +8,11 @@ import Swal from "sweetalert2";
 import ModalKTT from "./components/Modal/ModalKTT";
 import { toAbsoluteUrl } from "../../helpers/AssetsHelpers";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import ModalAdditional from "./components/Modal/ModalAdditional";
+
+import moment from "moment";
+import "moment/locale/vi";
+moment.locale("vi");
 
 function Curriculum(props) {
   const [filters, setFilters] = useState({
@@ -22,9 +27,10 @@ function Curriculum(props) {
   const [loading, setLoading] = useState(false);
   const [ListCurriculum, setListCurriculum] = useState([]);
   const [VisibleModal, setVisibleModal] = useState(false);
+  const [isModalAddon, setIsModalAddon] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
   const [btnLoading, setBtnLoading] = useState(false);
-
+  const [btnLoadingAddon, setBtnLoadingAddon] = useState(false);
   const typingTimeoutRef = useRef(null);
 
   const retrieveCurriculum = (callback) => {
@@ -66,6 +72,16 @@ function Curriculum(props) {
     setVisibleModal(false);
   };
 
+  const openModalAddon = (item = {}) => {
+    setDefaultValues(item);
+    setIsModalAddon(true);
+  };
+
+  const hideModalAddon = (item = {}) => {
+    setDefaultValues(item);
+    setIsModalAddon(false);
+  };
+
   const onAddEdit = (values) => {
     setBtnLoading(true);
     const objPost = {
@@ -96,6 +112,7 @@ function Curriculum(props) {
       })
       .catch((error) => console.log(error));
   };
+
   const onDelete = (item) => {
     if (!item.ID) return;
     const dataPost = {
@@ -135,6 +152,44 @@ function Curriculum(props) {
     });
   };
 
+  const onAdditional = (values) => {
+    setBtnLoadingAddon(true);
+    const newValues = {
+      ...values,
+      AddonList: values.AddonList.map((addon) => ({
+        ...addon,
+        LessonList: addon.LessonList.map((lessons) => ({
+          ...lessons,
+          Lessons: lessons.Lessons.filter(
+            (lesson) => lesson.ID && lesson.From && lesson.To
+          ).map((lesson) => ({
+            ...lesson,
+            ID: lesson.ID ? lesson.ID.value : "",
+            Title: lesson.Title ? lesson.ID.label : "",
+            From: lesson.From
+              ? moment(lesson.From).format("YYYY/MM/DD HH:mm")
+              : "",
+            To: lesson.From ? moment(lesson.To).format("YYYY/MM/DD HH:mm") : "",
+            SchoolID: lesson.SchoolID ? lesson.SchoolID.value : "",
+            SchoolTitle: lesson.SchoolID ? lesson.SchoolID.label : "",
+          })),
+        })),
+      })),
+    };
+    CurriculumCrud.addItional(newValues)
+      .then((response) => {
+        retrieveCurriculum(() => {
+          hideModalAddon();
+          setBtnLoadingAddon(false);
+          toast.success("Cập nhập thành công !", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500,
+          });
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+
   const RenderCountLess = (lessons) => {
     if (lessons && lessons.length === 0) {
       return (
@@ -154,6 +209,29 @@ function Curriculum(props) {
         </span>
       );
     }
+  };
+
+  const RenderCountAddon = (lessons) => {
+    var total = 0;
+    for (let x of lessons) {
+      if (x.LessonList && x.LessonList.length > 0) {
+        for (let k of x.LessonList) {
+          total += k.Lessons ? k.Lessons.length : 0;
+        }
+      }
+    }
+    if (total > 0) {
+      return (
+        <span className="text-decoration-underline cursor-pointer">
+          Có {total} bài bổ sung
+        </span>
+      );
+    }
+    return (
+      <span className="text-decoration-underline cursor-pointer">
+        Chưa có bài bổ sung
+      </span>
+    );
   };
 
   const onChangeSearch = (value) => {
@@ -348,6 +426,21 @@ function Curriculum(props) {
                     },
                   },
                   {
+                    dataField: "AddonList",
+                    text: "Bài bổ sung",
+                    //headerAlign: "center",
+                    //style: { textAlign: "center" },
+                    attrs: { "data-title": "Bài bổ sung" },
+                    formatter: (cell, row) => (
+                      <div onClick={() => openModalAddon({ ...row })}>
+                        {RenderCountAddon(row.Addons)}
+                      </div>
+                    ),
+                    headerStyle: () => {
+                      return { minWidth: "200px", width: "200px" };
+                    },
+                  },
+                  {
                     dataField: "Status",
                     text: "Trạng thái",
                     //headerAlign: "center",
@@ -421,6 +514,13 @@ function Curriculum(props) {
         defaultValues={defaultValues}
         onAddEdit={onAddEdit}
         btnLoading={btnLoading}
+      />
+      <ModalAdditional
+        show={isModalAddon}
+        onHide={hideModalAddon}
+        defaultValues={defaultValues}
+        onAddEdit={onAdditional}
+        btnLoading={btnLoadingAddon}
       />
     </div>
   );

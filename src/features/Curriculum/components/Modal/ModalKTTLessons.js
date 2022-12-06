@@ -24,7 +24,6 @@ function ModalKTTLessons({
   const [initialValues, setInitialValues] = useState(initialValue);
   const [Key, setKey] = useState("");
   useEffect(() => {
-    console.log(ValuesCurrent);
     if (
       show &&
       ValuesCurrent &&
