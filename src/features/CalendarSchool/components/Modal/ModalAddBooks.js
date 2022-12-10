@@ -252,7 +252,7 @@ function ModalAddBooks({
                         setSchoolCurrent(option);
                         setKeyUpdate(keyUpdate + 1);
                       }}
-                      onBlur={handleBlur}
+                      //onBlur={handleBlur}
                       noOptionsMessage={({ inputValue }) =>
                         !inputValue
                           ? "Danh sách trường trống"
@@ -280,7 +280,7 @@ function ModalAddBooks({
                           setFieldValue("dayItem.TeacherID", "", false);
                         setKeyUpdate(keyUpdate + 1);
                       }}
-                      onBlur={handleBlur}
+                      //onBlur={handleBlur}
                       menuPosition="fixed"
                       isDisabled={!values.dayItem.SchoolID}
                     />
@@ -310,7 +310,7 @@ function ModalAddBooks({
                           setFieldValue("dayItem.TeacherID", "", false);
                         setKeyUpdate(keyUpdate + 1);
                       }}
-                      onBlur={handleBlur}
+                      //onBlur={handleBlur}
                       menuPosition="fixed"
                       isDisabled={!values.dayItem.SchoolID}
                     />
@@ -333,7 +333,7 @@ function ModalAddBooks({
                         onChange={(option) => {
                           setFieldValue("dayItem.TeacherID", option, false);
                         }}
-                        onBlur={handleBlur}
+                        //onBlur={handleBlur}
                         noOptionsMessage={({ inputValue }) =>
                           !inputValue
                             ? "Danh sách giáo viên trống"
@@ -343,7 +343,7 @@ function ModalAddBooks({
                     )}
                     {!values?.major?.IsThematic && (
                       <SelectTeachersParams
-                        key={keyUpdate}
+                        //key={keyUpdate}
                         isClearable
                         className={`select-control ${
                           errors?.dayItem?.TeacherID &&
@@ -363,7 +363,7 @@ function ModalAddBooks({
                         onChange={(option) => {
                           setFieldValue("dayItem.TeacherID", option, false);
                         }}
-                        onBlur={handleBlur}
+                        //onBlur={handleBlur}
                       />
                     )}
                   </div>
