@@ -32,9 +32,9 @@ function AsyncSelectSchool(props) {
   };
     return (
         <AsyncPaginate
+            isClearable={true}
             {...props}
             classNamePrefix="select"
-            isClearable={true}
             loadOptions={getAllSchool}
             additional={{
                 page: 1,
