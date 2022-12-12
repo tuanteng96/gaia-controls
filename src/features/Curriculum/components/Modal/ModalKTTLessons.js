@@ -6,12 +6,19 @@ import { AsyncPaginate } from "react-select-async-paginate";
 import LessonCrud from "../../../Lesson/_redux/LessonCrud";
 import DatePicker from "react-datepicker";
 
+import moment from "moment";
+import "moment/locale/vi";
+
+moment.locale("vi");
 ModalKTTLessons.propTypes = {
   show: PropTypes.bool,
 };
 
 const initialValue = {
   LessonList: [],
+  DateFrom: "",
+  PostTotal: "",
+  TimeExis: "",
 };
 
 function ModalKTTLessons({
@@ -63,12 +70,12 @@ function ModalKTTLessons({
                 Title: { value: lesson.ID, label: lesson.Title },
               }))
             : [
-                {
-                  ID: null,
-                  Title: "",
-                  From: "",
-                  To: "", //yyyy-mm-dd HH:mm
-                },
+                // {
+                //   ID: null,
+                //   Title: "",
+                //   From: "",
+                //   To: "", //yyyy-mm-dd HH:mm
+                // },
               ],
       }));
       setKey(`level-${newLessonList[0].Level}`);
@@ -113,7 +120,12 @@ function ModalKTTLessons({
         enableReinitialize={true}
       >
         {(formikProps) => {
-          const { values, handleBlur, setFieldValue } = formikProps;
+          const {
+            values,
+            handleChange,
+            handleBlur,
+            setFieldValue,
+          } = formikProps;
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
@@ -140,6 +152,62 @@ function ModalKTTLessons({
                         </Nav.Item>
                       ))}
                   </Nav>
+                  <div className="d-flex mt-15px">
+                    <div className="mr-12px">
+                      <label className="text-muted mb-2px font-size-sm font-weight-500">
+                        Số bài / tháng
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập số bài / tháng"
+                        name="PostTotal"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div className="mr-12px">
+                      <label className="text-muted mb-2px font-size-sm font-weight-500">
+                        Ngày bắt đầu
+                      </label>
+                      <DatePicker
+                        popperProps={{
+                          positionFixed: true,
+                        }}
+                        className="form-control"
+                        selected={
+                          values.DateFrom ? new Date(values.DateFrom) : null
+                        }
+                        onChange={(date) =>
+                          setFieldValue(`DateFrom`, date, false)
+                        }
+                        name={`DateFrom`}
+                        popperPlacement="bottom-end"
+                        shouldCloseOnSelect={false}
+                        dateFormat="dd/MM/yyyy HH:mm"
+                        timeFormat="HH:mm"
+                        timeInputLabel="Thời gian"
+                        showTimeSelect
+                        timeIntervals={15}
+                        placeholderText="Ngày bắt đầu"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-muted mb-2px font-size-sm font-weight-500">
+                        Thời gian tồn tại
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập thời gian"
+                        name="TimeExis"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
                   <Tab.Content className="tab-content">
                     {values.LessonList &&
                       values.LessonList.map((item, index) => (
@@ -162,131 +230,109 @@ function ModalKTTLessons({
                                 name={`LessonList[${index}].Lessons`}
                                 render={(arrayHelpers) => (
                                   <Fragment>
-                                    {values.LessonList[index].Lessons.map(
-                                      (lesson, idx) => (
-                                        <tr key={idx}>
-                                          <td>
-                                            <AsyncPaginate
-                                              className="select-control"
-                                              classNamePrefix="select"
-                                              isClearable={true}
-                                              name={`LessonList[${index}].Lessons[${idx}].ID`}
-                                              loadOptions={getAllLesson}
-                                              menuPosition="fixed"
-                                              placeholder="Chọn bài giảng"
-                                              value={lesson.ID}
-                                              onChange={(option) => {
-                                                setFieldValue(
-                                                  `LessonList[${index}].Lessons[${idx}].ID`,
-                                                  option,
-                                                  false
-                                                );
-                                                setFieldValue(
-                                                  `LessonList[${index}].Lessons[${idx}].Title`,
-                                                  option,
-                                                  false
-                                                );
-                                              }}
-                                              onBlur={handleBlur}
-                                              additional={{
-                                                page: 1,
-                                              }}
-                                              noOptionsMessage={({
-                                                inputValue,
-                                              }) =>
-                                                !inputValue
-                                                  ? "Danh sách trường trống"
-                                                  : "Không tìm thấy trường phù hợp."
-                                              }
-                                            />
-                                          </td>
-                                          <td>
-                                            <DatePicker
-                                              popperProps={{
-                                                positionFixed: true,
-                                              }}
-                                              className="form-control"
-                                              selected={
-                                                lesson.From
-                                                  ? new Date(lesson.From)
-                                                  : null
-                                              }
-                                              onChange={(date) =>
-                                                setFieldValue(
-                                                  `LessonList[${index}].Lessons[${idx}].From`,
-                                                  date,
-                                                  false
-                                                )
-                                              }
-                                              name={`LessonList[${index}].Lessons[${idx}].From`}
-                                              popperPlacement="bottom-end"
-                                              shouldCloseOnSelect={false}
-                                              dateFormat="dd/MM/yyyy HH:mm"
-                                              timeFormat="HH:mm"
-                                              timeInputLabel="Thời gian"
-                                              showTimeSelect
-                                              timeIntervals={15}
-                                              placeholderText="Ngày bắt đầu"
-                                            />
-                                          </td>
-                                          <td>
-                                            <DatePicker
-                                              popperProps={{
-                                                positionFixed: true,
-                                              }}
-                                              className="form-control"
-                                              selected={
-                                                lesson.To
-                                                  ? new Date(lesson.To)
-                                                  : null
-                                              }
-                                              onChange={(date) =>
-                                                setFieldValue(
-                                                  `LessonList[${index}].Lessons[${idx}].To`,
-                                                  date,
-                                                  false
-                                                )
-                                              }
-                                              name={`LessonList[${index}].Lessons[${idx}].To`}
-                                              minDate={
-                                                lesson.From
-                                                  ? new Date(lesson.From)
-                                                  : null
-                                              }
-                                              popperPlacement="bottom-end"
-                                              shouldCloseOnSelect={false}
-                                              dateFormat="dd/MM/yyyy HH:mm"
-                                              timeFormat="HH:mm"
-                                              timeInputLabel="Thời gian"
-                                              showTimeSelect
-                                              timeIntervals={15}
-                                              placeholderText="Ngày kết thúc"
-                                            />
-                                          </td>
-                                          <td>
-                                            {values.LessonList[index].Lessons
-                                              .length -
-                                              1 ===
-                                              idx && (
-                                              <button
-                                                type="button"
-                                                className="btn btn-success btn-sm"
-                                                onClick={() =>
-                                                  arrayHelpers.push({
-                                                    ID: null,
-                                                    Title: "",
-                                                    From: "",
-                                                    To: "",
-                                                  })
+                                    {values.LessonList[index].Lessons &&
+                                      values.LessonList[index].Lessons.map(
+                                        (lesson, idx) => (
+                                          <tr key={idx}>
+                                            <td>
+                                              <AsyncPaginate
+                                                className="select-control"
+                                                classNamePrefix="select"
+                                                isClearable={true}
+                                                name={`LessonList[${index}].Lessons[${idx}].ID`}
+                                                loadOptions={getAllLesson}
+                                                menuPosition="fixed"
+                                                placeholder="Chọn bài giảng"
+                                                value={lesson.ID}
+                                                onChange={(option) => {
+                                                  setFieldValue(
+                                                    `LessonList[${index}].Lessons[${idx}].ID`,
+                                                    option,
+                                                    false
+                                                  );
+                                                  setFieldValue(
+                                                    `LessonList[${index}].Lessons[${idx}].Title`,
+                                                    option,
+                                                    false
+                                                  );
+                                                }}
+                                                onBlur={handleBlur}
+                                                additional={{
+                                                  page: 1,
+                                                }}
+                                                noOptionsMessage={({
+                                                  inputValue,
+                                                }) =>
+                                                  !inputValue
+                                                    ? "Danh sách trường trống"
+                                                    : "Không tìm thấy trường phù hợp."
                                                 }
-                                              >
-                                                <i className="far fa-plus pe-0 icon-1x"></i>
-                                              </button>
-                                            )}
-                                            {values.LessonList[index].Lessons
-                                              .length -
-                                              1 !==
-                                              idx && (
+                                              />
+                                            </td>
+                                            <td>
+                                              <DatePicker
+                                                popperProps={{
+                                                  positionFixed: true,
+                                                }}
+                                                className="form-control"
+                                                selected={
+                                                  lesson.From
+                                                    ? new Date(lesson.From)
+                                                    : null
+                                                }
+                                                onChange={(date) =>
+                                                  setFieldValue(
+                                                    `LessonList[${index}].Lessons[${idx}].From`,
+                                                    date,
+                                                    false
+                                                  )
+                                                }
+                                                name={`LessonList[${index}].Lessons[${idx}].From`}
+                                                popperPlacement="bottom-end"
+                                                shouldCloseOnSelect={false}
+                                                dateFormat="dd/MM/yyyy HH:mm"
+                                                timeFormat="HH:mm"
+                                                timeInputLabel="Thời gian"
+                                                showTimeSelect
+                                                timeIntervals={15}
+                                                placeholderText="Ngày bắt đầu"
+                                              />
+                                            </td>
+                                            <td>
+                                              <DatePicker
+                                                popperProps={{
+                                                  positionFixed: true,
+                                                }}
+                                                className="form-control"
+                                                selected={
+                                                  lesson.To
+                                                    ? new Date(lesson.To)
+                                                    : null
+                                                }
+                                                onChange={(date) =>
+                                                  setFieldValue(
+                                                    `LessonList[${index}].Lessons[${idx}].To`,
+                                                    date,
+                                                    false
+                                                  )
+                                                }
+                                                name={`LessonList[${index}].Lessons[${idx}].To`}
+                                                minDate={
+                                                  lesson.From
+                                                    ? new Date(lesson.From)
+                                                    : null
+                                                }
+                                                popperPlacement="bottom-end"
+                                                shouldCloseOnSelect={false}
+                                                dateFormat="dd/MM/yyyy HH:mm"
+                                                timeFormat="HH:mm"
+                                                timeInputLabel="Thời gian"
+                                                showTimeSelect
+                                                timeIntervals={15}
+                                                placeholderText="Ngày kết thúc"
+                                              />
+                                            </td>
+                                            <td>
                                               <button
                                                 type="button"
                                                 className="btn btn-danger btn-sm"
@@ -296,11 +342,66 @@ function ModalKTTLessons({
                                               >
                                                 <i className="fas fa-trash pe-0 icon-sm"></i>
                                               </button>
-                                            )}
-                                          </td>
-                                        </tr>
-                                      )
-                                    )}
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
+                                    <tr>
+                                      <td colSpan={4} className="text-right">
+                                        <button
+                                          type="button"
+                                          className="btn btn-success btn-sm"
+                                          onClick={() => {
+                                            if (
+                                              values.DateFrom &&
+                                              values.PostTotal &&
+                                              values.TimeExis
+                                            ) {
+                                              const {
+                                                DateFrom,
+                                                PostTotal,
+                                                TimeExis,
+                                              } = values;
+                                              const itemLeng =
+                                                values.LessonList[index].Lessons
+                                                  .length;
+                                              const indexBlock = Math.floor(
+                                                itemLeng / PostTotal
+                                              );
+                                              // const indexItem =
+                                              //   itemLeng / PostTotal;
+                                              const newTimeFrom = moment(
+                                                DateFrom
+                                              ).add(indexBlock, "months");
+                                              const newTimeTo = moment(
+                                                newTimeFrom
+                                              )
+                                                .add(TimeExis, "days")
+                                                .set({ hour: 23, minute: 59 });
+                                              arrayHelpers.push({
+                                                ID: null,
+                                                Title: "",
+                                                From: moment(
+                                                  newTimeFrom
+                                                ).toString(),
+                                                To: moment(
+                                                  newTimeTo
+                                                ).toString(),
+                                              });
+                                            } else {
+                                              arrayHelpers.push({
+                                                ID: null,
+                                                Title: "",
+                                                From: "",
+                                                To: "",
+                                              });
+                                            }
+                                          }}
+                                        >
+                                          Thêm mới bài
+                                        </button>
+                                      </td>
+                                    </tr>
                                   </Fragment>
                                 )}
                               />
