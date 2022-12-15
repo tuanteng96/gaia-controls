@@ -119,12 +119,19 @@ function ModalTakeBreak({ show, onHide, onSubmit, loadingBtn, AllInitial }) {
   }, [AllInitial, show]);
 
   const onNextTeacher = ({ setFieldValue, values }, onButton) => {
+    const SelectTeachers = values.Changes
+      ? values.Changes.filter((o) => o.ID && o.ClassTeacherID).map((o) => ({
+          TeacherID: o.ClassTeacherID,
+          DayItemID: o.ID,
+        }))
+      : [];
     setLoadingBtnNext(true);
     const newValue = {
       From: values.From ? moment(values.From).format("DD-MM-YYYY HH:mm") : "",
       To: values.To ? moment(values.To).format("DD-MM-YYYY HH:mm") : "",
       TeacherIDs: values.TeacherID?.value ? [values.TeacherID?.value] : [],
       Items: [],
+      SelectTeachers: SelectTeachers,
     };
     CalendarSchoolCrud.previewTakeBreak(newValue)
       .then((response) => {
@@ -193,7 +200,7 @@ function ModalTakeBreak({ show, onHide, onSubmit, loadingBtn, AllInitial }) {
             handleBlur,
             setFieldValue,
           } = formikProps;
-          console.log(values);
+
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
