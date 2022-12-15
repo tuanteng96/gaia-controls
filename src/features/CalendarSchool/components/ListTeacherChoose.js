@@ -54,7 +54,7 @@ function ListTeacherChoose({
                 )}
               </Field>
               <span />
-              <div className="d-flex flex-column flex-1">
+              <div className="d-flex flex-column flex-1 align-items-baseline">
                 <div className="text">{teacher?.FullName}</div>
                 {/* <span className="location">
                   Khoảng {formatSeconds(teacher?.DurationValue)}

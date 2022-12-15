@@ -17,7 +17,6 @@ function SelectTeachersParams({ params, ...props }) {
   const [ListTeacher, setListTeacher] = useState([]);
 
   useEffect(() => {
-    console.log(params);
     if (params.Date && params.ClassID && params.Index && params.SchoolID) {
       getListTeachers();
     } else {

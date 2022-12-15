@@ -99,6 +99,12 @@ function ModalTakeBreak({ show, onHide, onSubmit, loadingBtn, AllInitial }) {
               setInitialValues((initialValues) => ({
                 ...initialValues,
                 Changes: newList,
+                TeacherID: {
+                  value: AllInitial?.TeacherID,
+                  label: AllInitial?.TeacherName,
+                },
+                From: AllInitial?.From,
+                To: AllInitial?.To,
               }));
               setTabCurrent("Teacher");
             }
@@ -107,8 +113,7 @@ function ModalTakeBreak({ show, onHide, onSubmit, loadingBtn, AllInitial }) {
           }
         })
         .catch((error) => console.log(error));
-    }
-    else {
+    } else {
       setInitialValues(initialValue);
     }
   }, [AllInitial, show]);
@@ -188,7 +193,7 @@ function ModalTakeBreak({ show, onHide, onSubmit, loadingBtn, AllInitial }) {
             handleBlur,
             setFieldValue,
           } = formikProps;
-
+          console.log(values);
           return (
             <Form className="d-flex flex-column overflow-hidden align-items-stretch">
               <Modal.Header closeButton>
