@@ -48,7 +48,7 @@ function SelectTeachersParams({ params, ...props }) {
     const { Previews } = await CalendarSchoolCrud.previewScheduleClass(
       newValues
     );
-    const indexClass = Previews.findIndex((o) => o.ClassID === ClassID.ID);
+    const indexClass = Previews && Previews.findIndex((o) => o.ClassID === ClassID.ID);
     let newAvaiList = [];
     if (indexClass > -1) {
       const { AvaiList } = Previews[indexClass];

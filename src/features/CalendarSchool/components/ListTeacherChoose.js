@@ -5,6 +5,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 
 import moment from "moment";
 import "moment/locale/vi";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 moment.locale("vi");
 
@@ -55,7 +56,18 @@ function ListTeacherChoose({
               </Field>
               <span />
               <div className="d-flex flex-column flex-1 align-items-baseline">
-                <div className="text">{teacher?.FullName}</div>
+                <div className="text">
+                  {teacher?.FullName}
+                  <OverlayTrigger
+                    key="top"
+                    placement="top"
+                    overlay={
+                      <Tooltip id={`tooltip-top`}>{teacher.Text}</Tooltip>
+                    }
+                  >
+                    <i className="fas fa-engine-warning pl-8px text-muted"></i>
+                  </OverlayTrigger>
+                </div>
                 {/* <span className="location">
                   Khoảng {formatSeconds(teacher?.DurationValue)}
                 </span>
