@@ -307,7 +307,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                               {ClassList &&
                                 ClassList.map(({ Class, Dates }, idx) => (
                                   <div
-                                    className={`h-${
+                                    className={`list--weeks_box h-${
                                       getMaxSession(Dates, HourSchool) > 0
                                         ? 40 * getMaxSession(Dates, HourSchool)
                                         : 40

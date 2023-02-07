@@ -5,6 +5,7 @@ import { getArrayChildren } from "../../helpers/ArrayHelpers";
 import { ClassSchoolGenerator, getNameLast } from "../../helpers/ClassHelpers";
 import { getStyleSchool } from "../../helpers/DateTimeHelpers";
 import clsx from "clsx";
+import Text from "react-texty";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -101,11 +102,13 @@ function ScheduleAfternoon({
                       onOpenModalAdd(initialValues);
                     }}
                   >
-                    <span className="text-white font-size-xs font-weight-border">
-                      {item.Index}
+                    <span className="text-white font-size-xs font-weight-border d-block w-100 px-5px">
+                      <Text tooltipMaxWidth={280}>
+                        Tiết {item.Index} - Lớp {item.ClassTitle}
+                      </Text>
                     </span>
                   </div>
-                  {item.TeacherTitle && idx === 0 && (
+                  {/* {item.TeacherTitle && idx === 0 && (
                     <div
                       className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize px-2 cursor-pointer d-flex justify-content-between"
                       //onClick={() => onOpenModal(item.ID)}
@@ -119,7 +122,23 @@ function ScheduleAfternoon({
                         </span>
                       )}
                     </div>
-                  )}
+                  )} */}
+
+                  <div
+                    className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize cursor-pointer d-flex justify-content-between"
+                    //onClick={() => onOpenModal(item.ID)}
+                  >
+                    <div className="text-truncate flex-fill pr-10px">
+                      <Text tooltipMaxWidth={280} className="px-2">
+                        {item?.TeacherCode} - {getNameLast(item.TeacherTitle)}
+                      </Text>
+                    </div>
+                    {item.TeacherJoins && item.TeacherJoins.length > 0 && (
+                      <span className="text-danger font-weight-bolder">
+                        {item.TeacherJoins.length}
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
           </Fragment>

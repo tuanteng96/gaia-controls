@@ -2,6 +2,32 @@
 $width-content-user: 200px;
 $width-col-day: 220px;
 $height-title: 80px;
+// Chạy sẽ xóa
+body {
+    .list--weeks_box {
+        height: 40px !important;
+        .list--weeks_item {
+            display: flex;
+            >div {
+                >div {
+                    width: 100% !important;
+                    left: 0 !important;
+                    border-right: 1px solid #fff;
+                }
+                &:last-child {
+                    >div {
+                        border-right: 0;
+                    }
+                }
+            }
+        }
+    }
+    .class-title {
+        height: 40px !important;
+    }
+}
+
+// Chạy sẽ xóa
 .calendar-school {
     &__name {
         width: $width-content-user;

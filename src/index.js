@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./app/App";
+import 'react-texty/styles.css'
 import "./index.scss";
 import "./_assets/plugins/keenthemes-icons/font/ki.css";
 import * as _redux from "./redux";

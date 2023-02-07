@@ -37,6 +37,7 @@
         "react-select": "^5.2.2",
         "react-select-async-paginate": "^0.6.1",
         "react-simple-timefield": "^3.2.5",
+        "react-texty": "^0.6.0",
         "react-toastify": "^8.1.1",
         "redux": "^4.1.2",
         "redux-persist": "^6.0.0",

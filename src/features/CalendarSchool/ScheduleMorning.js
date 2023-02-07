@@ -105,7 +105,7 @@ function ScheduleMorning({
                       {item.Index}
                     </span>
                   </div>
-                  {item.TeacherTitle && idx === 0 && (
+                  {/* {item.TeacherTitle && idx === 0 && (
                     <div
                       className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize px-2 cursor-pointer d-flex justify-content-between"
                       //onClick={() => onOpenModal(item.ID)}
@@ -119,7 +119,20 @@ function ScheduleMorning({
                         </span>
                       )}
                     </div>
-                  )}
+                  )} */}
+                  <div
+                    className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize px-2 cursor-pointer d-flex justify-content-between"
+                    //onClick={() => onOpenModal(item.ID)}
+                  >
+                    <div className="text-truncate flex-fill pr-10px">
+                      {item?.TeacherCode} - {getNameLast(item.TeacherTitle)}
+                    </div>
+                    {item.TeacherJoins && item.TeacherJoins.length > 0 && (
+                      <span className="text-danger font-weight-bolder">
+                        {item.TeacherJoins.length}
+                      </span>
+                    )}
+                  </div>
                 </Fragment>
               ))}
           </div>
