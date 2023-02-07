@@ -5,6 +5,7 @@ import { getArrayChildren } from "../../helpers/ArrayHelpers";
 import { ClassSchoolGenerator, getNameLast } from "../../helpers/ClassHelpers";
 import { getStyleSchool } from "../../helpers/DateTimeHelpers";
 import clsx from "clsx";
+import Text from "react-texty";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -34,13 +35,13 @@ function ScheduleMorning({
     <Fragment>
       {ScheduleItem && ScheduleItem.length > 0 ? (
         ScheduleItem.map((schedule, index) => (
-          <div
-            className="position-relative flex-grow-1 h-40px max-h-40px w-100"
-            key={index}
-          >
+          <Fragment key={index}>
             {schedule &&
               schedule.map((item, idx) => (
-                <Fragment key={idx}>
+                <div
+                  className="position-relative flex-grow-1 h-40px max-h-40px w-100"
+                  key={idx}
+                >
                   <div
                     className={`cursor-pointer position-absolute top-1px zindex-5 d-flex align-items-center justify-content-center ${ClassSchoolGenerator(
                       item
@@ -101,8 +102,14 @@ function ScheduleMorning({
                       onOpenModalAdd(initialValues);
                     }}
                   >
-                    <span className="text-white font-size-xs font-weight-border">
-                      {item.Index}
+                    <span className="text-white font-size-xs font-weight-border d-block w-100 px-5px">
+                      <Text
+                        tooltipMaxWidth={280}
+                        tooltip={`Tiết ${item.Index} - Lớp ${item.ClassTitle}`}
+                        className="text-center"
+                      >
+                        {item.Index} - {item.ClassTitle}
+                      </Text>
                     </span>
                   </div>
                   {/* {item.TeacherTitle && idx === 0 && (
@@ -121,11 +128,13 @@ function ScheduleMorning({
                     </div>
                   )} */}
                   <div
-                    className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize px-2 cursor-pointer d-flex justify-content-between"
+                    className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize cursor-pointer d-flex justify-content-between"
                     //onClick={() => onOpenModal(item.ID)}
                   >
-                    <div className="text-truncate flex-fill pr-10px">
-                      {item?.TeacherCode} - {getNameLast(item.TeacherTitle)}
+                    <div className="text-truncate flex-fill">
+                      <Text tooltipMaxWidth={280} className="px-1 text-center">
+                        {item?.TeacherCode} - {getNameLast(item.TeacherTitle)}
+                      </Text>
                     </div>
                     {item.TeacherJoins && item.TeacherJoins.length > 0 && (
                       <span className="text-danger font-weight-bolder">
@@ -133,9 +142,9 @@ function ScheduleMorning({
                       </span>
                     )}
                   </div>
-                </Fragment>
+                </div>
               ))}
-          </div>
+          </Fragment>
         ))
       ) : (
         <div

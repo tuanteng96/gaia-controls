@@ -103,8 +103,12 @@ function ScheduleAfternoon({
                     }}
                   >
                     <span className="text-white font-size-xs font-weight-border d-block w-100 px-5px">
-                      <Text tooltipMaxWidth={280}>
-                        Tiết {item.Index} - Lớp {item.ClassTitle}
+                      <Text
+                        tooltipMaxWidth={280}
+                        tooltip={`Tiết ${item.Index} - Lớp ${item.ClassTitle}`}
+                        className="text-center"
+                      >
+                        {item.Index} - {item.ClassTitle}
                       </Text>
                     </span>
                   </div>
@@ -128,8 +132,8 @@ function ScheduleAfternoon({
                     className="shadow h-20px w-100 position-absolute bottom-0 font-size-xs pt-2px text-capitalize cursor-pointer d-flex justify-content-between"
                     //onClick={() => onOpenModal(item.ID)}
                   >
-                    <div className="text-truncate flex-fill pr-10px">
-                      <Text tooltipMaxWidth={280} className="px-2">
+                    <div className="text-truncate flex-fill">
+                      <Text tooltipMaxWidth={280} className="px-1 text-center">
                         {item?.TeacherCode} - {getNameLast(item.TeacherTitle)}
                       </Text>
                     </div>

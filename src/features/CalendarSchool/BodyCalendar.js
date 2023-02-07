@@ -317,7 +317,7 @@ function BodyCalendar({ filters, options, onChange, Lists }) {
                                     })}`}
                                     key={idx}
                                   >
-                                    <div className="list--weeks_item position-relative flex-1 border-right d-flex flex-column">
+                                    <div className="list--weeks_item position-relative flex-1 border-right">
                                       <ScheduleMorning
                                         itemAdd={{
                                           Date: moment(filters.from)
