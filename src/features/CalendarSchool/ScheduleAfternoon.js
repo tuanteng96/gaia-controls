@@ -108,7 +108,8 @@ function ScheduleAfternoon({
                         tooltip={`Tiết ${item.Index} - Lớp ${item.ClassTitle}`}
                         className="text-center"
                       >
-                        {item.Index} - {item.ClassTitle}
+                        {item.Index} ({moment(item.From).format("HH:mm")} -{" "}
+                        {moment(item.To).format("HH:mm")}) - {item.ClassTitle}
                       </Text>
                     </span>
                   </div>
