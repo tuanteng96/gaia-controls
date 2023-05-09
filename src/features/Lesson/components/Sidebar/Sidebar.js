@@ -169,10 +169,7 @@ function Sidebar({ openModal }) {
                         className="btn btn-sm btn-success w-24px h-24px"
                         onClick={() =>
                           openModal({
-                            Type: {
-                              label: item.Title,
-                              value: item.ID,
-                            },
+                            Type: item.ID,
                           })
                         }
                       >

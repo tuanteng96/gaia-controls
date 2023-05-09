@@ -178,7 +178,7 @@ function Lesson(props) {
               <button
                 type="button"
                 className="btn btn-sm btn-fix btn-success position-absolute top-9px right-9px"
-                onClick={() => onOpenModal()}
+                onClick={() => onOpenModal(id ? { Type: id } : "")}
               >
                 Thêm mới
               </button>
@@ -266,28 +266,18 @@ function Lesson(props) {
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Giáo án" },
                     formatter: (cell, row) => (
-                      <div className="w-100px">
+                      <div className="w-100">
                         {row.GiaoAnPdf && (
-                          <OverlayTrigger
-                            key="top"
-                            placement="top"
-                            overlay={
-                              <Tooltip id={`tooltip-top`}>
-                                {row.GiaoAnPdf}
-                              </Tooltip>
-                            }
+                          <a
+                            href={toAbsoluteUrl(
+                              `/upload/image/${row.GiaoAnPdf}`
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="d-inline-block white-space-pw"
                           >
-                            <a
-                              href={toAbsoluteUrl(
-                                `/upload/image/${row.GiaoAnPdf}`
-                              )}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="d-inline-block white-space-pw"
-                            >
-                              <i className="fas fa-file-pdf icon-md"></i>
-                            </a>
-                          </OverlayTrigger>
+                            {row.GiaoAnPdf}
+                          </a>
                         )}
                       </div>
                     ),
@@ -299,27 +289,15 @@ function Lesson(props) {
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "File Mã hóa" },
                     formatter: (cell, row) => (
-                      <div className="w-100px">
-                        {row.FileMaHoa && (
-                          <OverlayTrigger
-                            key="top"
-                            placement="top"
-                            overlay={
-                              <Tooltip id={`tooltip-top`}>
-                                {row.FileMaHoa}
-                              </Tooltip>
-                            }
-                          >
-                            <a
-                              href={toAbsoluteUrl(`/${row.FileMaHoa}`)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="d-inline-block white-space-pw"
-                            >
-                              <i className="fas fa-file-alt icon-md"></i>
-                            </a>
-                          </OverlayTrigger>
-                        )}
+                      <div className="w-100">
+                        <a
+                          href={toAbsoluteUrl(`/${row.FileMaHoa}`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="d-inline-block white-space-pw"
+                        >
+                          {row.FileMaHoa}
+                        </a>
                       </div>
                     ),
                   },

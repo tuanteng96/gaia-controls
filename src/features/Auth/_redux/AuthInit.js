@@ -6,7 +6,7 @@ import { setToken } from "./AuthSlice";
 
 if (isDevelopment()) {
   window.Token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjIwIiwibmJmIjoxNjcxMDc5ODkwLCJleHAiOjE2NzE2ODQ2OTAsImlhdCI6MTY3MTA3OTg5MH0.tYv7x8UjKSuBP7rWG4CpMrHSoyh9Ypujz36Tx-jy9mI";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE0MiIsIm5iZiI6MTY4MzU5ODQwNywiZXhwIjoxNjg0MjAzMjA3LCJpYXQiOjE2ODM1OTg0MDd9.hnS4tTQnGGD0_EjRIWfR616-65LqUgEmAAPtpPxcdqo";
 }
   function getScrollbarWidth() {
     // Creating invisible container

@@ -207,7 +207,10 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                     name="Type"
                     options={arrCate}
                     placeholder="Chọn danh mục"
-                    value={values.Type}
+                    value={
+                      arrCate &&
+                      arrCate.filter((x) => x.ID === Number(values.Type))
+                    }
                     onChange={(option) => {
                       setFieldValue("Type", option, false);
                     }}
