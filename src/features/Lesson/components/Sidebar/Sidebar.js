@@ -6,16 +6,20 @@ import LessonCrud from "../../_redux/LessonCrud";
 import { fetchCateList } from "../../_redux/LessonSlice";
 import ModalCategories from "../Modal/ModalCategories";
 import PropTypes from "prop-types";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
+import { useLession } from "../..";
 
 Sidebar.propTypes = {
   openModal: PropTypes.func,
 };
 
 function Sidebar({ openModal }) {
+  const { id } = useParams();
   const [isModal, setIsModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [defaultValues, setDefaultValues] = useState({});
+
+  const { updateTitle } = useLession();
 
   const { listCate, loading } = useSelector(({ lesson }) => ({
     listCate: lesson.listCate,
@@ -37,6 +41,13 @@ function Sidebar({ openModal }) {
         console.log(rejectedValueOrSerializedError);
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    if (id && listCate && listCate.length > 0) {
+      const index = listCate.findIndex((x) => Number(x.ID) === Number(id));
+      updateTitle(listCate[index].Title);
+    }
+  }, [listCate, id, updateTitle]);
 
   const onOpenModal = (item = {}) => {
     setIsModal(true);

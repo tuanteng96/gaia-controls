@@ -42,7 +42,17 @@ $toast-danger: #f64e60;
     }
 }
 
+.Toastify .Toastify__toast-container .Toastify__toast.Toastify__toast--default {
+    padding: 15px !important;
+    background: #333;
+    font-weight: 500;
+}
 
+.Toastify .Toastify__toast-container .Toastify__toast.Toastify__toast--default .Toastify__toast-icon {
+    display: block;
+}
+
+.Toastify .Toastify__toast-container .Toastify__toast.Toastify__toast--default
 /** Used to define the position of the ToastContainer **/
 
 .Toastify__toast-container--top-left {}

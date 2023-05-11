@@ -8,6 +8,7 @@ const DELETE_FILE_URL = "/services/Uploader/Del.ashx";
 const GET_ROOT_URL = "/api/v3/content?cmd=files&root=";
 const GET_LIST_LESSON_URL = "/api/v3/content?cmd=pgs&type=ProductEnt";
 const ADD_EDIT_LESSON_URL = "/api/v3/content?cmd=edit&type=ProductEnt";
+const ADD_EDIT_LESSON_MUTI_URL = "/api/v3/content4?cmd=AddProducts";
 const DELETE_LESSON_URL = "/api/v3/content?cmd=delete&type=ProductEnt";
 
 const getAllCate = (data) => {
@@ -35,6 +36,9 @@ const getRootFile = (root = "Upload/data/") => {
 const addEditLesson = (data) => {
     return axiosClient.post(ADD_EDIT_LESSON_URL, JSON.stringify(data));
 }
+const addEditLessonMuti = (data) => {
+    return axiosClient.post(ADD_EDIT_LESSON_MUTI_URL, JSON.stringify(data));
+}
 const getListLesson = (data) => {
     return axiosClient.post(GET_LIST_LESSON_URL, JSON.stringify(data));
 }
@@ -51,6 +55,7 @@ const LessonCrud = {
     getRootFile,
     getListLesson,
     addEditLesson,
+    addEditLessonMuti,
     deleteLesson
 };
 export default LessonCrud;

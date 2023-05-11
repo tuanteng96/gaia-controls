@@ -42,6 +42,9 @@ export const getRequestParams = (filters) => {
     if (filters.SchoolID) {
         params.SchoolID = filters.SchoolID;
     }
+    if (filters.Version) {
+        params.Version = filters.Version ? filters.Version.value : '';
+    }
     if (filters.Status || filters.Status === 0) {
         params.Status = filters.Status;
     }

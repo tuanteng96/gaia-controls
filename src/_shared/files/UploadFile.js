@@ -59,6 +59,7 @@ function UploadFile({ onChange, value, name, arrowProps }) {
         name={name}
         onChange={onFileChange}
         title={"Chọn File"}
+        value={""}
       />
       <label className="custom-file-label" htmlFor="customFile">
         <span>{arrowProps.Placeholder}</span>

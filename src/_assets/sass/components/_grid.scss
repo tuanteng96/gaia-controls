@@ -1,0 +1,21 @@
+$sizes: 1,
+2,
+3,
+4,
+5,
+6,
+7,
+8,
+9,
+10,
+11,
+12;
+.grid {
+    display: grid;
+}
+
+@each $size in $sizes {
+    .grid-cols-#{$size} {
+        grid-template-columns: repeat($size, minmax(0, 1fr));
+    }
+}

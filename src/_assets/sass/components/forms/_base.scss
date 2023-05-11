@@ -368,7 +368,8 @@
 }
 
 //React Select
-.select-control {
+.select-control,
+.select__menu-portal {
     &.is-invalid {
         @include border-radius($input-border-radius);
     }
