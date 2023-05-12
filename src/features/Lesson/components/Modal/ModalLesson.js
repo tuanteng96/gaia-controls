@@ -15,6 +15,7 @@ ModalLesson.propTypes = {
 };
 
 const initialValue = {
+  ID: "",
   List: [
     {
       Title: "",
@@ -130,22 +131,34 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
       }));
     } else {
       if (defaultValues.Type) {
-        setInitialValues(() => ({
-          List: [{ ...initialValue, ...defaultValues }],
+        setInitialValues((prevState) => ({
+          ID: "",
+          List: prevState.List.map((x) => ({
+            ...x,
+            ...defaultValues,
+          })),
         }));
       } else {
         setInitialValues((prevState) => ({
           ...prevState,
+          ID: "",
           List: prevState.List.map((x) => ({
+            ...x,
             Type: x.Type ? x.Type : listCate.length > 0 ? listCate[0].ID : "",
           })),
         }));
       }
     }
   }, [defaultValues, listCate]);
-
+  console.log(initialValues);
   return (
-    <Modal show={show} onHide={onHide} size="lg" scrollable={true}>
+    <Modal
+      show={show}
+      onHide={onHide}
+      dialogClassName={defaultValues?.ID && "modal-max2-sm"}
+      scrollable={true}
+      fullscreen={!defaultValues?.ID}
+    >
       <Formik
         initialValues={initialValues}
         validationSchema={lessonSchema}
@@ -179,226 +192,450 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                   name="List"
                   render={(arrayHelpers) => (
                     <>
-                      {values.List &&
-                        values.List.map((item, index) => (
-                          <div
-                            className={clsx(
-                              "p-15px",
-                              values.List.length > 1 &&
-                                values.List.length - 1 !== index &&
-                                "border-bottom"
-                            )}
-                            key={index}
-                          >
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="form-group">
-                                <label>
-                                  Tên bài giảng{" "}
-                                  <span className="text-danger">*</span>
-                                </label>
-                                <input
-                                  type="text"
-                                  className={`form-control ${
-                                    errors.List &&
-                                    errors.List[index] &&
-                                    errors.List[index].Title &&
-                                    touched.List &&
-                                    touched.List[index]
-                                      ? "is-invalid solid-invalid"
-                                      : ""
-                                  }`}
-                                  name={`List[${index}].Title`}
-                                  placeholder="Nhập tên bài giảng"
-                                  autoComplete="off"
-                                  value={item.Title}
-                                  onChange={handleChange}
-                                  onBlur={handleBlur}
-                                />
+                      {values?.ID && (
+                        <>
+                          {values.List &&
+                            values.List.map((item, index) => (
+                              <div
+                                className={clsx(
+                                  "p-15px",
+                                  values.List.length > 1 &&
+                                    values.List.length - 1 !== index &&
+                                    "border-bottom"
+                                )}
+                                key={index}
+                              >
+                                <div className="form-group">
+                                  <label>
+                                    Tên bài giảng{" "}
+                                    <span className="text-danger">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className={`form-control ${
+                                      errors.List &&
+                                      errors.List[index] &&
+                                      errors.List[index].Title &&
+                                      touched.List &&
+                                      touched.List[index]
+                                        ? "is-invalid solid-invalid"
+                                        : ""
+                                    }`}
+                                    name={`List[${index}].Title`}
+                                    placeholder="Nhập tên bài giảng"
+                                    autoComplete="off"
+                                    value={item.Title}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label>Danh mục</label>
+                                  <Select
+                                    className={`select-control ${
+                                      errors.Type && touched.Type
+                                        ? "is-invalid solid-invalid"
+                                        : ""
+                                    }`}
+                                    classNamePrefix="select"
+                                    isDisabled={loading.fetchCate}
+                                    isLoading={loading.fetchCate}
+                                    isClearable={false}
+                                    isSearchable={true}
+                                    name={`List[${index}].Type`}
+                                    options={arrCate}
+                                    placeholder="Chọn danh mục"
+                                    value={
+                                      arrCate &&
+                                      arrCate.filter(
+                                        (x) => x.ID === Number(item.Type)
+                                      )
+                                    }
+                                    onChange={(option) => {
+                                      setFieldValue(
+                                        `List[${index}].Type`,
+                                        option ? option.value : "",
+                                        false
+                                      );
+                                    }}
+                                    onBlur={handleBlur}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    styles={{
+                                      menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                      }),
+                                    }}
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label>Khối</label>
+                                  <Select
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    styles={{
+                                      menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                      }),
+                                    }}
+                                    className={`select-control`}
+                                    classNamePrefix="select"
+                                    isClearable
+                                    isSearchable={true}
+                                    name={`List[${index}].Version`}
+                                    options={ListKHOI()}
+                                    placeholder="Chọn khối"
+                                    value={ListKHOI().filter(
+                                      (x) => x.value === Number(item.Version)
+                                    )}
+                                    onChange={(option) => {
+                                      setFieldValue(
+                                        `List[${index}].Version`,
+                                        option ? option.value : "",
+                                        false
+                                      );
+                                    }}
+                                    onBlur={handleBlur}
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label>Giáo án</label>
+                                  <UploadFile
+                                    name={`List[${index}].GiaoAnPdf`}
+                                    onChange={(file) =>
+                                      setFieldValue(
+                                        `List[${index}].GiaoAnPdf`,
+                                        file,
+                                        false
+                                      )
+                                    }
+                                    value={item.GiaoAnPdf}
+                                    arrowProps={{
+                                      Placeholder: "Chọn file giáo án",
+                                    }}
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label>File Mã hóa</label>
+                                  <Select
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    styles={{
+                                      menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                      }),
+                                    }}
+                                    isDisabled={loadingPath}
+                                    isLoading={loadingPath}
+                                    options={PathFile.Wow}
+                                    isClearable
+                                    name={`List[${index}].FileMaHoa`}
+                                    value={item.FileMaHoa}
+                                    onChange={(val) => {
+                                      setFieldValue(
+                                        `List[${index}].FileMaHoa`,
+                                        val,
+                                        false
+                                      );
+                                    }}
+                                    className="select-control"
+                                    classNamePrefix="select"
+                                    placeholder="Chọn file"
+                                    noOptionsMessage={() => "Không thấy file."}
+                                  />
+                                </div>
+                                <div className="form-group mb-0">
+                                  <label>Hình ảnh</label>
+                                  <UploadFile
+                                    name={`List[${index}].Thumbnail`}
+                                    onChange={(file) =>
+                                      setFieldValue(
+                                        `List[${index}].Thumbnail`,
+                                        file,
+                                        false
+                                      )
+                                    }
+                                    value={item.Thumbnail}
+                                    arrowProps={{
+                                      Placeholder: "Chọn file hình ảnh",
+                                      Type: "image",
+                                    }}
+                                  />
+                                </div>
                               </div>
-                              <div className="form-group">
-                                <label>Danh mục</label>
-                                <Select
-                                  className={`select-control ${
-                                    errors.Type && touched.Type
-                                      ? "is-invalid solid-invalid"
-                                      : ""
-                                  }`}
-                                  classNamePrefix="select"
-                                  isDisabled={loading.fetchCate}
-                                  isLoading={loading.fetchCate}
-                                  isClearable={false}
-                                  isSearchable={true}
-                                  name={`List[${index}].Type`}
-                                  options={arrCate}
-                                  placeholder="Chọn danh mục"
-                                  value={
-                                    arrCate &&
-                                    arrCate.filter(
-                                      (x) => x.ID === Number(item.Type)
-                                    )
-                                  }
-                                  onChange={(option) => {
-                                    setFieldValue(
-                                      `List[${index}].Type`,
-                                      option ? option.value : "",
-                                      false
-                                    );
-                                  }}
-                                  onBlur={handleBlur}
-                                  menuPortalTarget={document.body}
-                                  menuPosition="fixed"
-                                  styles={{
-                                    menuPortal: (base) => ({
-                                      ...base,
-                                      zIndex: 9999,
-                                    }),
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="form-group">
-                                <label>Khối</label>
-                                <Select
-                                  menuPortalTarget={document.body}
-                                  menuPosition="fixed"
-                                  styles={{
-                                    menuPortal: (base) => ({
-                                      ...base,
-                                      zIndex: 9999,
-                                    }),
-                                  }}
-                                  className={`select-control`}
-                                  classNamePrefix="select"
-                                  isClearable
-                                  isSearchable={true}
-                                  name={`List[${index}].Version`}
-                                  options={ListKHOI()}
-                                  placeholder="Chọn khối"
-                                  value={ListKHOI().filter(
-                                    (x) => x.value === Number(item.Version)
-                                  )}
-                                  onChange={(option) => {
-                                    setFieldValue(
-                                      `List[${index}].Version`,
-                                      option ? option.value : "",
-                                      false
-                                    );
-                                  }}
-                                  onBlur={handleBlur}
-                                />
-                              </div>
-                              <div className="form-group">
-                                <label>Giáo án</label>
-                                <UploadFile
-                                  name={`List[${index}].GiaoAnPdf`}
-                                  onChange={(file) =>
-                                    setFieldValue(
-                                      `List[${index}].GiaoAnPdf`,
-                                      file,
-                                      false
-                                    )
-                                  }
-                                  value={item.GiaoAnPdf}
-                                  arrowProps={{
-                                    Placeholder: "Chọn file giáo án",
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="form-group mb-0">
-                                <label>File Mã hóa</label>
-                                <Select
-                                  menuPortalTarget={document.body}
-                                  menuPosition="fixed"
-                                  styles={{
-                                    menuPortal: (base) => ({
-                                      ...base,
-                                      zIndex: 9999,
-                                    }),
-                                  }}
-                                  isDisabled={loadingPath}
-                                  isLoading={loadingPath}
-                                  options={PathFile.Wow}
-                                  isClearable
-                                  name={`List[${index}].FileMaHoa`}
-                                  value={item.FileMaHoa}
-                                  onChange={(val) => {
-                                    setFieldValue(
-                                      `List[${index}].FileMaHoa`,
-                                      val,
-                                      false
-                                    );
-                                  }}
-                                  className="select-control"
-                                  classNamePrefix="select"
-                                  placeholder="Chọn file"
-                                  noOptionsMessage={() => "Không thấy file."}
-                                />
-                              </div>
-                              <div className="form-group mb-0">
-                                <label>Hình ảnh</label>
-                                <UploadFile
-                                  name={`List[${index}].Thumbnail`}
-                                  onChange={(file) =>
-                                    setFieldValue(
-                                      `List[${index}].Thumbnail`,
-                                      file,
-                                      false
-                                    )
-                                  }
-                                  value={item.Thumbnail}
-                                  arrowProps={{
-                                    Placeholder: "Chọn file hình ảnh",
-                                    Type: "image",
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <div className="d-flex justify-content-center mt-12px">
-                              {values.List.length - 1 === index && (
-                                <button
-                                  className="btn btn-sm btn-primary mx-3px"
-                                  type="button"
-                                  onClick={() =>
-                                    arrayHelpers.push({
-                                      Title: "",
-                                      Type: defaultValues.Type
-                                        ? defaultValues.Type
-                                        : arrCate && arrCate.length > 0
-                                        ? arrCate[0].ID
-                                        : null,
-                                      Thumbnail: "",
-                                      GiaoAnPdf: "",
-                                      LinkOnline: null,
-                                      DynamicID: "",
-                                      Version: "",
-                                    })
-                                  }
-                                >
-                                  <i
-                                    className="far fa-plus pe-0"
-                                    style={{ fontSize: "14px" }}
-                                  ></i>
-                                </button>
-                              )}
+                            ))}
+                        </>
+                      )}
+                      {!values?.ID && (
+                        <div className="p-15px">
+                          <div className="table-responsive">
+                            <table className="table table-bordered mb-0">
+                              <thead>
+                                <tr>
+                                  <th
+                                    className="py-12px px-15px"
+                                    scope="col"
+                                    style={{ minWidth: 200 }}
+                                  >
+                                    Tên bài giảng
+                                  </th>
+                                  <th
+                                    className="py-12px px-15px"
+                                    scope="col"
+                                    style={{ minWidth: 180 }}
+                                  >
+                                    Danh mục
+                                  </th>
+                                  <th
+                                    className="py-12px px-15px"
+                                    scope="col"
+                                    style={{ minWidth: 140 }}
+                                  >
+                                    Khối
+                                  </th>
+                                  <th
+                                    className="py-12px px-15px"
+                                    scope="col"
+                                    style={{ minWidth: 230 }}
+                                  >
+                                    Giáo án
+                                  </th>
+                                  <th
+                                    className="py-12px px-15px"
+                                    scope="col"
+                                    style={{ minWidth: 180 }}
+                                  >
+                                    File Mã hóa
+                                  </th>
+                                  <th
+                                    className="py-12px px-15px"
+                                    scope="col"
+                                    style={{ minWidth: 245 }}
+                                  >
+                                    Hình ảnh
+                                  </th>
+                                  <th
+                                    className="py-12px px-15px text-center"
+                                    scope="col"
+                                  >
+                                    #
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {values.List &&
+                                  values.List.map((item, index) => (
+                                    <tr key={index}>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          className={`form-control ${
+                                            errors.List &&
+                                            errors.List[index] &&
+                                            errors.List[index].Title &&
+                                            touched.List &&
+                                            touched.List[index]
+                                              ? "is-invalid solid-invalid"
+                                              : ""
+                                          }`}
+                                          name={`List[${index}].Title`}
+                                          placeholder="Nhập tên bài giảng"
+                                          autoComplete="off"
+                                          value={item.Title}
+                                          onChange={handleChange}
+                                          onBlur={handleBlur}
+                                        />
+                                      </td>
+                                      <td>
+                                        <Select
+                                          className={`select-control ${
+                                            errors.Type && touched.Type
+                                              ? "is-invalid solid-invalid"
+                                              : ""
+                                          }`}
+                                          classNamePrefix="select"
+                                          isDisabled={loading.fetchCate}
+                                          isLoading={loading.fetchCate}
+                                          isClearable={false}
+                                          isSearchable={true}
+                                          name={`List[${index}].Type`}
+                                          options={arrCate}
+                                          placeholder="Chọn danh mục"
+                                          value={
+                                            arrCate &&
+                                            arrCate.filter(
+                                              (x) => x.ID === Number(item.Type)
+                                            )
+                                          }
+                                          onChange={(option) => {
+                                            setFieldValue(
+                                              `List[${index}].Type`,
+                                              option ? option.value : "",
+                                              false
+                                            );
+                                          }}
+                                          onBlur={handleBlur}
+                                          menuPortalTarget={document.body}
+                                          menuPosition="fixed"
+                                          styles={{
+                                            menuPortal: (base) => ({
+                                              ...base,
+                                              zIndex: 9999,
+                                            }),
+                                          }}
+                                        />
+                                      </td>
+                                      <td>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          menuPosition="fixed"
+                                          styles={{
+                                            menuPortal: (base) => ({
+                                              ...base,
+                                              zIndex: 9999,
+                                            }),
+                                          }}
+                                          className={`select-control`}
+                                          classNamePrefix="select"
+                                          isClearable
+                                          isSearchable={true}
+                                          name={`List[${index}].Version`}
+                                          options={ListKHOI()}
+                                          placeholder="Chọn khối"
+                                          value={ListKHOI().filter(
+                                            (x) =>
+                                              x.value === Number(item.Version)
+                                          )}
+                                          onChange={(option) => {
+                                            setFieldValue(
+                                              `List[${index}].Version`,
+                                              option ? option.value : "",
+                                              false
+                                            );
+                                          }}
+                                          onBlur={handleBlur}
+                                        />
+                                      </td>
+                                      <td>
+                                        <UploadFile
+                                          name={`List[${index}].GiaoAnPdf`}
+                                          onChange={(file) =>
+                                            setFieldValue(
+                                              `List[${index}].GiaoAnPdf`,
+                                              file,
+                                              false
+                                            )
+                                          }
+                                          value={item.GiaoAnPdf}
+                                          arrowProps={{
+                                            Placeholder: "Chọn file giáo án",
+                                          }}
+                                        />
+                                      </td>
+                                      <td>
+                                        <Select
+                                          menuPortalTarget={document.body}
+                                          menuPosition="fixed"
+                                          styles={{
+                                            menuPortal: (base) => ({
+                                              ...base,
+                                              zIndex: 9999,
+                                            }),
+                                          }}
+                                          isDisabled={loadingPath}
+                                          isLoading={loadingPath}
+                                          options={PathFile.Wow}
+                                          isClearable
+                                          name={`List[${index}].FileMaHoa`}
+                                          value={item.FileMaHoa}
+                                          onChange={(val) => {
+                                            setFieldValue(
+                                              `List[${index}].FileMaHoa`,
+                                              val,
+                                              false
+                                            );
+                                          }}
+                                          className="select-control"
+                                          classNamePrefix="select"
+                                          placeholder="Chọn file"
+                                          noOptionsMessage={() =>
+                                            "Không thấy file."
+                                          }
+                                        />
+                                      </td>
+                                      <td>
+                                        <UploadFile
+                                          name={`List[${index}].Thumbnail`}
+                                          onChange={(file) =>
+                                            setFieldValue(
+                                              `List[${index}].Thumbnail`,
+                                              file,
+                                              false
+                                            )
+                                          }
+                                          value={item.Thumbnail}
+                                          arrowProps={{
+                                            Placeholder: "Chọn file hình ảnh",
+                                            Type: "image",
+                                          }}
+                                        />
+                                      </td>
+                                      <td>
+                                        <div className="d-flex justify-content-center">
+                                          {values.List.length - 1 === index && (
+                                            <button
+                                              className="btn btn-sm btn-primary mx-3px"
+                                              type="button"
+                                              onClick={() =>
+                                                arrayHelpers.push({
+                                                  Title: "",
+                                                  Type: defaultValues.Type
+                                                    ? defaultValues.Type
+                                                    : arrCate &&
+                                                      arrCate.length > 0
+                                                    ? arrCate[0].ID
+                                                    : null,
+                                                  Thumbnail: "",
+                                                  GiaoAnPdf: "",
+                                                  LinkOnline: null,
+                                                  DynamicID: "",
+                                                  Version: "",
+                                                })
+                                              }
+                                            >
+                                              <i
+                                                className="far fa-plus pe-0"
+                                                style={{ fontSize: "14px" }}
+                                              ></i>
+                                            </button>
+                                          )}
 
-                              {values.List.length > 1 && (
-                                <button
-                                  className="btn btn-sm btn-danger mx-3px"
-                                  type="button"
-                                  onClick={() => arrayHelpers.remove(index)}
-                                >
-                                  <i
-                                    className="fas fa-trash icon-sm pe-0"
-                                    aria-hidden="true"
-                                  ></i>
-                                </button>
-                              )}
-                            </div>
+                                          {values.List.length > 1 && (
+                                            <button
+                                              className="btn btn-sm btn-danger mx-3px"
+                                              type="button"
+                                              onClick={() =>
+                                                arrayHelpers.remove(index)
+                                              }
+                                            >
+                                              <i
+                                                className="fas fa-trash icon-sm pe-0"
+                                                aria-hidden="true"
+                                              ></i>
+                                            </button>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
                           </div>
-                        ))}
+                        </div>
+                      )}
                       {/* 
                       <div className="form-group">
                   <label>Mã</label>

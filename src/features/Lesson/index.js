@@ -77,6 +77,63 @@ function UploadFiles({ onChange, accept = "*" }) {
   );
 }
 
+function ChangeFileMH({ PathFileWow, loadingPath, data, onChange }) {
+  const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (data?.FileMaHoa) {
+      setValue({
+        label: data?.FileMaHoa,
+        value: data?.FileMaHoa,
+      });
+    } else {
+      setValue("");
+    }
+  }, [data]);
+
+  return (
+    <>
+      {value?.value && (
+        <a
+          href={toAbsoluteUrl(`/${data.value}`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="d-inline-block white-space-pw mb-3px"
+        >
+          {value.value}
+        </a>
+      )}
+      <Select
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+        styles={{
+          menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999,
+          }),
+        }}
+        isDisabled={loadingPath || loading}
+        isLoading={loadingPath || loading}
+        options={PathFileWow}
+        isClearable
+        value={value}
+        onChange={(val) => {
+          setLoading(true);
+          setValue(val);
+          onChange(val ? val.value : "", () => {
+            setLoading(false);
+          });
+        }}
+        className="select-control"
+        classNamePrefix="select"
+        placeholder="Chọn file"
+        noOptionsMessage={() => "Không thấy file."}
+      />
+    </>
+  );
+}
+
 function Lesson(props) {
   const { id } = useParams();
   const [filters, setFilters] = useState({
@@ -91,6 +148,8 @@ function Lesson(props) {
   });
   const [TitleCate, setTitleCate] = useState("Tất cả");
   const [ListLesson, setListLesson] = useState([]);
+  const [PathFileWow, setPathFileWow] = useState([]);
+  const [loadingPath, setLoadingPath] = useState(false);
   const [PageTotal, setPageTotal] = useState(0);
   const [ModalAdd, setModalAdd] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -98,6 +157,27 @@ function Lesson(props) {
   const [defaultValues, setDefaultValues] = useState({});
 
   const typingTimeoutRef = useRef(null);
+
+  const getPathRoot = async () => {
+    setLoadingPath(true);
+    try {
+      const PathWow = await LessonCrud.getRootFile("Upload/Ftp/Data/");
+      setPathFileWow(() =>
+        PathWow.map((item) => ({
+          ...item,
+          label: item.title,
+          value: item.name,
+        }))
+      );
+      setLoadingPath(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getPathRoot();
+  }, []);
 
   const retrieveLesson = (callback) => {
     !loading && setLoading(true);
@@ -478,75 +558,26 @@ function Lesson(props) {
                       attrs: { "data-title": "File Mã hóa" },
                       formatter: (cell, row) => (
                         <div className="w-100">
-                          {row.FileMaHoa && (
-                            <a
-                              href={toAbsoluteUrl(`/${row.FileMaHoa}`)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="d-inline-block white-space-pw"
-                            >
-                              {row.FileMaHoa}
-                            </a>
-                          )}
-
-                          <div className="d-flex">
-                            <button
-                              onClick={() => onOpenModal(row)}
-                              type="button"
-                              className="text-success border-0 bg-transparent p-0 text-underline"
-                              style={{ fontWeight: "500", fontSize: "13px" }}
-                            >
-                              Upload
-                            </button>
-                            {row.FileMaHoa && (
-                              <button
-                                type="button"
-                                className="text-danger border-0 bg-transparent p-0 ml-8px text-underline"
-                                style={{ fontWeight: "500", fontSize: "13px" }}
-                                onClick={() => {
-                                  Swal.fire({
-                                    title: "Bạn muốn xóa File Mã hóa này ?",
-                                    text:
-                                      "Bạn có chắc chắn muốn xóa File Mã hóa bài giảng này không ?",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonColor: "#d33",
-                                    cancelButtonColor: "#6e7881",
-                                    confirmButtonText: "Tôi muốn xóa!",
-                                    cancelButtonText: "Đóng",
-                                    showLoaderOnConfirm: true,
-                                    allowOutsideClick: () => !Swal.isLoading(),
-                                    preConfirm: () => {
-                                      return new Promise((resolve, reject) => {
-                                        onUpdate({
-                                          ID: row.ID,
-                                          Title: row?.Title || "",
-                                          Type: row?.Type || "",
-                                          Thumbnail: row?.Thumbnail || "",
-                                          GiaoAnPdf: row?.GiaoAnPdf || "",
-                                          LinkOnline: row?.LinkOnline || "",
-                                          DynamicID: row?.DynamicID || "",
-                                          Version: row?.Version || "",
-                                          FileMaHoa: "",
-                                        }).then(() => {
-                                          resolve();
-                                        });
-                                      });
-                                    },
-                                  }).then((result) => {
-                                    if (result.isConfirmed) {
-                                      toast.success("Xóa thành công !", {
-                                        position: toast.POSITION.TOP_RIGHT,
-                                        autoClose: 1500,
-                                      });
-                                    }
-                                  });
-                                }}
-                              >
-                                Xóa
-                              </button>
-                            )}
-                          </div>
+                          <ChangeFileMH
+                            PathFileWow={PathFileWow}
+                            loadingPath={loadingPath}
+                            data={row}
+                            onChange={(val, callback) => {
+                              onUpdate({
+                                ID: row.ID,
+                                Title: row?.Title || "",
+                                Type: row?.Type || "",
+                                Thumbnail: row?.Thumbnail || "",
+                                GiaoAnPdf: row?.GiaoAnPdf || "",
+                                LinkOnline: row?.LinkOnline || "",
+                                DynamicID: row?.DynamicID || "",
+                                Version: row?.Version || "",
+                                FileMaHoa: val,
+                              }).then(() => {
+                                callback && callback();
+                              });
+                            }}
+                          />
                         </div>
                       ),
                       headerStyle: () => {
