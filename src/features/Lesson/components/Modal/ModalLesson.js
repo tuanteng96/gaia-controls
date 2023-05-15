@@ -585,34 +585,31 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                                       </td>
                                       <td>
                                         <div className="d-flex justify-content-center">
-                                          {values.List.length - 1 === index && (
-                                            <button
-                                              className="btn btn-sm btn-primary mx-3px"
-                                              type="button"
-                                              onClick={() =>
-                                                arrayHelpers.push({
-                                                  Title: "",
-                                                  Type: defaultValues.Type
-                                                    ? defaultValues.Type
-                                                    : arrCate &&
-                                                      arrCate.length > 0
-                                                    ? arrCate[0].ID
-                                                    : null,
-                                                  Thumbnail: "",
-                                                  GiaoAnPdf: "",
-                                                  LinkOnline: null,
-                                                  DynamicID: "",
-                                                  Version: "",
-                                                })
-                                              }
-                                            >
-                                              <i
-                                                className="far fa-plus pe-0"
-                                                style={{ fontSize: "14px" }}
-                                              ></i>
-                                            </button>
-                                          )}
-
+                                          <button
+                                            className="btn btn-sm btn-primary mx-3px"
+                                            type="button"
+                                            onClick={() =>
+                                              arrayHelpers.push({
+                                                Title: "",
+                                                Type: defaultValues.Type
+                                                  ? defaultValues.Type
+                                                  : arrCate &&
+                                                    arrCate.length > 0
+                                                  ? arrCate[0].ID
+                                                  : null,
+                                                Thumbnail: "",
+                                                GiaoAnPdf: "",
+                                                LinkOnline: null,
+                                                DynamicID: "",
+                                                Version: "",
+                                              })
+                                            }
+                                          >
+                                            <i
+                                              className="far fa-plus pe-0"
+                                              style={{ fontSize: "14px" }}
+                                            ></i>
+                                          </button>
                                           {values.List.length > 1 && (
                                             <button
                                               className="btn btn-sm btn-danger mx-3px"
