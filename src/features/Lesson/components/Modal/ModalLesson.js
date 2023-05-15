@@ -150,12 +150,15 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
       }
     }
   }, [defaultValues, listCate]);
-  console.log(initialValues);
+
   return (
     <Modal
       show={show}
       onHide={onHide}
-      dialogClassName={defaultValues?.ID && "modal-max2-sm"}
+      dialogClassName={
+        defaultValues?.ID ? "modal-max2-sm" : "w-100 w-xl-90 p-15px m-auto"
+      }
+      contentClassName={!defaultValues?.ID && 'h-auto max-h-100'}
       scrollable={true}
       fullscreen={!defaultValues?.ID}
     >
@@ -177,7 +180,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
 
           return (
             <Form
-              className="h-100 flex-column"
+              className="h-auto max-h-100 flex-column"
               style={{
                 display: "flex",
               }}
@@ -589,7 +592,7 @@ function ModalLesson({ show, onHide, onAddEdit, defaultValues, btnLoading }) {
                                             className="btn btn-sm btn-primary mx-3px"
                                             type="button"
                                             onClick={() =>
-                                              arrayHelpers.push({
+                                              arrayHelpers.insert(index + 1, {
                                                 Title: "",
                                                 Type: defaultValues.Type
                                                   ? defaultValues.Type
