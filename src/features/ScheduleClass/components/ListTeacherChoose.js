@@ -34,7 +34,11 @@ function ListTeacherChoose({
 
   const formatSeconds = (seconds) => {
     if (seconds > -1) {
-      return moment.duration({ seconds: seconds }).humanize();
+      if (seconds === 0) {
+        return "--";
+      } else {
+        return moment.duration({ seconds: seconds }).humanize();
+      }
     }
     return "không xác định.";
   };
