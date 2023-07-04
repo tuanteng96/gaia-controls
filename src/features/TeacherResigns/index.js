@@ -108,7 +108,7 @@ function TeacherResigns(props) {
       }
     });
   };
-  
+
   return (
     <div className={`container-fluid ${isDevelopment() ? "py-3" : "p-0"}`}>
       <div className="hpanel">
@@ -179,8 +179,15 @@ function TeacherResigns(props) {
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Loại" },
-                    formatter: (cell, row) =>
-                      row.Type === "NGHI_PHEP" ? "Nghỉ phép" : "Nghỉ thường",
+                    formatter: (cell, row) => {
+                      if (row.Type === "NGHI_PHEP") {
+                        return "Nghỉ phép";
+                      } else if (row.Type === "NGHI_GIAI_PHEP") {
+                        return "Nghỉ giải phép";
+                      } else {
+                        return "Nghỉ thường";
+                      }
+                    },
                     headerStyle: () => {
                       return { minWidth: "200px", width: "200px" };
                     },
@@ -191,8 +198,7 @@ function TeacherResigns(props) {
                     //headerAlign: "center",
                     //style: { textAlign: "center" },
                     attrs: { "data-title": "Ghi chú" },
-                    formatter: (cell, row) =>
-                      row.Desc || "Không có ghi chú.",
+                    formatter: (cell, row) => row.Desc || "Không có ghi chú.",
                     headerStyle: () => {
                       return { minWidth: "200px", width: "200px" };
                     },
@@ -228,19 +234,19 @@ function TeacherResigns(props) {
                             Ngày {moment(row.From).format("DD-MM-YYYY")}
                           </span>
                         )}
-                        {row.TimeType === "NGHI_NHIEU_NGAY" ||
-                          (row.TimeType === "NGHI_THEO_THOI_GIAN" && (
-                            <span>
-                              Từ
-                              <span className="text-capitalize px-1">
-                                {moment(row.From).format("HH:mm DD-MM-YYYY")}
-                              </span>
-                              đến
-                              <span className="text-capitalize pl-1">
-                                {moment(row.To).format("HH:mm DD-MM-YYYY")}
-                              </span>
+                        {(row.TimeType === "NGHI_NHIEU_NGAY" ||
+                          row.TimeType === "NGHI_THEO_THOI_GIAN") && (
+                          <span>
+                            Từ
+                            <span className="text-capitalize px-1">
+                              {moment(row.From).format("HH:mm DD-MM-YYYY")}
                             </span>
-                          ))}
+                            đến
+                            <span className="text-capitalize pl-1">
+                              {moment(row.To).format("HH:mm DD-MM-YYYY")}
+                            </span>
+                          </span>
+                        )}
                       </div>
                     ),
                     headerStyle: () => {
